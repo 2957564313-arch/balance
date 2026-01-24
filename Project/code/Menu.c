@@ -8,7 +8,7 @@
 //菜单选项数目
 #define NUM_SELECTION		5
 
-#define Act_Menu			0
+uint8 Act_Menu = 0;
 #define Main_Menu			0
 #define Mode_1_Menu			1
 #define Mode_2_Menu			2
@@ -16,13 +16,13 @@
 #define Mode_4_Menu			4
 #define Mode_5_Menu			5
 
-#define Act_Mode			0
+uint8 Act_Mode = 0;
 #define Browse_Mode			0
 #define Edit_Mode			1
 
 uint8 Cursor_Pos = 1;
 
-int Show_Main_Menu(Cursor_Pos)
+void Show_Main_Menu(uint8 Cursor_Pos)
 {
 	OLED_Clear();
     if(Cursor_Pos != 5)
@@ -43,7 +43,7 @@ int Show_Main_Menu(Cursor_Pos)
 
 }
 
-int Show_Mode_1_Menu(void)
+void Show_Mode_1_Menu(void)
 {
 	OLED_Clear();
    
@@ -52,11 +52,11 @@ int Show_Mode_1_Menu(void)
 		OLED_ShowChar(1, 15, 'E');
 	}
 
-    OLED_ShowChar(Curso_Pos, 1, '>');
+    OLED_ShowChar(Cursor_Pos, 1, '>');
 
 }
 
-int Show_Mode_2_Menu(void)
+void Show_Mode_2_Menu(void)
 {
 	OLED_Clear();
    
@@ -65,11 +65,11 @@ int Show_Mode_2_Menu(void)
 		OLED_ShowChar(1, 15, 'E');
 	}
 
-    OLED_ShowChar(Curso_Pos, 1, '>');
+    OLED_ShowChar(Cursor_Pos, 1, '>');
 	
 }
 
-int Show_Mode_3_Menu(void)
+void Show_Mode_3_Menu(void)
 {
 	OLED_Clear();
    
@@ -78,11 +78,11 @@ int Show_Mode_3_Menu(void)
 		OLED_ShowChar(1, 15, 'E');
 	}
 
-    OLED_ShowChar(Curso_Pos, 1, '>');
+    OLED_ShowChar(Cursor_Pos, 1, '>');
 	
 }
 
-int Show_Mode_4_Menu(void)
+void Show_Mode_4_Menu(void)
 {
 	OLED_Clear();
    
@@ -91,11 +91,11 @@ int Show_Mode_4_Menu(void)
 		OLED_ShowChar(1, 15, 'E');
 	}
 
-    OLED_ShowChar(Curso_Pos, 1, '>');
+    OLED_ShowChar(Cursor_Pos, 1, '>');
 	
 }
 
-int Show_Mode_5_Menu(void)
+void Show_Mode_5_Menu(void)
 {
 	OLED_Clear();
    
@@ -104,7 +104,7 @@ int Show_Mode_5_Menu(void)
 		OLED_ShowChar(1, 15, 'E');
 	}
 
-    OLED_ShowChar(Curso_Pos, 1, '>');
+    OLED_ShowChar(Cursor_Pos, 1, '>');
 	
 }
 

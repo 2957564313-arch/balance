@@ -13,7 +13,7 @@
 //确认键
 #define KEY_NAME_COMFIRM			2	
 //返回键
-#define KEY_NAME_BACK			3
+#define KEY_NAME_BACK				3
 
 //用宏定义替换按键标志位的位掩码，使程序的意义更清晰
 #define KEY_HOLD				0x01
