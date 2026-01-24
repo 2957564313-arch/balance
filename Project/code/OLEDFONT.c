@@ -1,6 +1,7 @@
 #include "zf_common_headfile.h"
+#include "oledfont.h"
 
-/* OLED×ÖÄ£¿â£¬¿í8ÏñËØ£¬¸ß16ÏñËØ */
+/* OLEDï¿½ï¿½Ä£ï¿½â£¬ï¿½ï¿½8ï¿½ï¿½ï¿½Ø£ï¿½ï¿½ï¿½16ï¿½ï¿½ï¿½ï¿½ */
 const uint8 OLED_F8x16[][16] =
 {
     0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,

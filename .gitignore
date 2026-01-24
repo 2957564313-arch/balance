@@ -1,51 +1,56 @@
-# Prerequisites
+# ======================
+# Common build outputs
+# ======================
 *.d
-
-# Object files
 *.o
-*.ko
 *.obj
 *.elf
-
-# Linker output
-*.ilk
 *.map
-*.exp
+*.hex
+*.bin
+*.out
 
-# Precompiled Headers
-*.gch
-*.pch
+# Debug / symbols
+*.su
+*.idb
+*.pdb
+*.dSYM/
 
 # Libraries
 *.a
 *.la
 *.lo
-
-# Shared objects (inc. Windows DLLs)
 *.dll
 *.so
-*.so.*
 *.dylib
 
-# Executables
-*.exe
-*.out
-*.app
-*.i*86
-*.x86_64
-*.hex
+# ======================
+# Keil MDK / C251 outputs
+# ======================
+Objects/
+Listings/
+DebugConfig/
 
-# Debug files
-*.dSYM/
-*.su
-*.idb
-*.pdb
+*.uvguix.*
+*.uvgui.*
+*.uvoptx
+*.uvopt
+*.uvprojx
+*.uvproj
+*.uvwsprj
 
-# Kernel Module Compile Results
-*.mod*
-*.cmd
-.tmp_versions/
-modules.order
-Module.symvers
-Mkfile.old
-dkms.conf
+# C51 / C251 compiler outputs
+*.lst
+*.m51
+*.omf
+*.abs
+*.sym
+*.plg
+*.cod
+
+# temporary files
+*.crf
+*.bak
+*.tmp
+*.lnp
+*.dep
