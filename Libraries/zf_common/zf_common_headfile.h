@@ -99,5 +99,8 @@
 
 #include "seekfree_assistant_interface.h"
 
+//xwh后面加的
+#include "zf_device_oled.h"
+#include "zf_device_oledfont.h"
 
 #endif
