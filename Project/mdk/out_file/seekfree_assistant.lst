@@ -1,5 +1,5 @@
+C251 COMPILER V5.60.0,  seekfree_assistant                                                 24/01/26  19:25:48  PAGE 1   
 
-C251 COMPILER V5.60.0,  seekfree_assistant                                                 24/01/26  18:25:11  PAGE 1   
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE seekfree_assistant
 OBJECT MODULE PLACED IN .\out_file\seekfree_assistant.obj
@@ -66,8 +66,8 @@ stmt  level    source
    48          float                   seekfree_assistant_parameter[SEEKFREE_ASSISTANT_SET_PARAMETR_COUNT] = {0};      //
              - ±£´æ½ÓÊÕµ½µÄ²ÎÊý
    49          vuint8                                  seekfree_assistant_parameter_update_flag[SEEKFREE_ASSISTANT_SET_PARAMETR_COUNT] = {0};
+C251 COMPILER V5.60.0,  seekfree_assistant                                                 24/01/26  19:25:48  PAGE 2   
 
-C251 COMPILER V5.60.0,  seekfree_assistant                                                 24/01/26  18:25:11  PAGE 2   
    50          //-------------------------------------------------------------------------------------------------------
              -------------
    51          // º¯Êý¼ò½é     Öð·ÉÖúÊÖÇóºÍº¯Êý
@@ -134,8 +134,8 @@ stmt  level    source
   104   3                  image_size = width * height;
   105   3              }break;
   106   2      
+C251 COMPILER V5.60.0,  seekfree_assistant                                                 24/01/26  19:25:48  PAGE 3   
 
-C251 COMPILER V5.60.0,  seekfree_assistant                                                 24/01/26  18:25:11  PAGE 3   
   107   2              case SEEKFREE_ASSISTANT_SCC8660:
   108   2              {
   109   3                  image_size = width * height * 2;
@@ -202,8 +202,8 @@ stmt  level    source
   163   2                      ((uint8 *)&temp_oscilloscope.dat[i])[3] = ((uint8 *)&seekfree_assistant_oscilloscope->dat[i])[0];
   164   2              }
   165   1      
+C251 COMPILER V5.60.0,  seekfree_assistant                                                 24/01/26  19:25:48  PAGE 4   
 
-C251 COMPILER V5.60.0,  seekfree_assistant                                                 24/01/26  18:25:11  PAGE 4   
   166   1          // Ö¡Í·
   167   1          temp_oscilloscope.head         = SEEKFREE_ASSISTANT_SEND_HEAD;
   168   1      
@@ -270,8 +270,8 @@ stmt  level    source
   226          // ²ÎÊýËµÃ÷     dot_y2          ´æ·Å±ßÏß2×Ý×ø±êµÄµØÖ·  Èç¹û´«µÝNULL²ÎÊýÔò±íÊ¾²»·¢ËÍ±ßÏß2
   227          // ²ÎÊýËµÃ÷     dot_y3          ´æ·Å±ßÏß3×Ý×ø±êµÄµØÖ·  Èç¹û´«µÝNULL²ÎÊýÔò±íÊ¾²»·¢ËÍ±ßÏß3
   228          // ·µ»Ø²ÎÊý     void
+C251 COMPILER V5.60.0,  seekfree_assistant                                                 24/01/26  19:25:48  PAGE 5   
 
-C251 COMPILER V5.60.0,  seekfree_assistant                                                 24/01/26  18:25:11  PAGE 5   
   229          // Ê¹ÓÃÊ¾Àý                     seekfree_assistant_camera_config(X_BOUNDARY, MT9V03X_H, x1_boundary, x2_b
              -oundary, x3_boundary, NULL, NULL, NULL);     // Í¼Ïñ·¢ËÍÊ±°üº¬ÈýÌõ±ßÏß£¬±ßÏßÖ»ÓÐºá×ø±ê
   230          // Ê¹ÓÃÊ¾Àý                     seekfree_assistant_camera_config(Y_BOUNDARY, MT9V03X_W, NULL, NULL, NULL,
@@ -338,8 +338,8 @@ stmt  level    source
   286   3                  {
   287   4                      boundary_num++;
   288   4                      seekfree_assistant_camera_dot_data.valid_flag |= 1 << 1;
+C251 COMPILER V5.60.0,  seekfree_assistant                                                 24/01/26  19:25:48  PAGE 6   
 
-C251 COMPILER V5.60.0,  seekfree_assistant                                                 24/01/26  18:25:11  PAGE 6   
   289   4                      seekfree_assistant_camera_buffer.boundary_y[i++] = dot_y2;
   290   4                  }
   291   3                  if(NULL != dot_y3)
@@ -406,8 +406,8 @@ stmt  level    source
   348   1          uint8  temp_sum = 0;
   349   1          uint32 read_length = 0;
   350   1              uint16 struct_len = sizeof(seekfree_assistant_parameter_struct);
+C251 COMPILER V5.60.0,  seekfree_assistant                                                 24/01/26  19:25:48  PAGE 7   
 
-C251 COMPILER V5.60.0,  seekfree_assistant                                                 24/01/26  18:25:11  PAGE 7   
   351   1          seekfree_assistant_parameter_struct *receive_packet;
   352   1              
   353   1          // ÕâÀïÊ¹ÓÃuint32½øÐÐ¶¨Òå£¬Ä¿µÄÊÇÎªÁË±£Ö¤Êý×éËÄ×Ö½Ú¶ÔÆë
@@ -474,8 +474,8 @@ stmt  level    source
   408   2              fifo_read_buffer(&seekfree_assistant_fifo, (uint8 *)temp_buffer, &read_length, FIFO_READ_AND_CLEA
              -N);
   409   2          }
+C251 COMPILER V5.60.0,  seekfree_assistant                                                 24/01/26  19:25:48  PAGE 8   
 
-C251 COMPILER V5.60.0,  seekfree_assistant                                                 24/01/26  18:25:11  PAGE 8   
   410   1              EA = flag;
   411   1      }
   412          //-------------------------------------------------------------------------------------------------------
@@ -484,8 +484,8 @@ stmt  level    source
   414          // ²ÎÊýËµÃ÷     void
   415          // ·µ»Ø²ÎÊý     void
   416          // Ê¹ÓÃÊ¾Àý
-  417          // ±¸×¢ÐÅÏ¢     ÔÚµ÷ÓÃÍ¼Ïñ·¢ËÍº¯ÊýÖ®Ç°£¬ÇëÎñ±Øµ÷ÓÃÒ»´Îseekfree_assistant_camera_configº¯Êý£¬½«¶ÔÓ¦µÄ²ÎÊý?
-             -èÖÃº?
+  417          // ±¸×¢ÐÅÏ¢     ÔÚµ÷ÓÃÍ¼Ïñ·¢ËÍº¯ÊýÖ®Ç°£¬ÇëÎñ±Øµ÷ÓÃÒ»´Îseekfree_assistant_camera_configº¯Êý£¬½«¶ÔÓ¦µÄ²ÎÊýÉ
+             -èÖÃºÃ
   418          //-------------------------------------------------------------------------------------------------------
              -------------
   419          void seekfree_assistant_camera_send (void)
@@ -540,4 +540,3 @@ End of Module Information.
 
 
 C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
-

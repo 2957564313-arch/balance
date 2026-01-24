@@ -1,11 +1,14 @@
 #include "zf_common_headfile.h"
-#include "zf_device_oled.h"
+
+#include "Key.h"
+#include "Menu.h"
 
 void main(void)
 {
     clock_init(SYSTEM_CLOCK_30M);
     debug_init();
 
+	Key_Init();
     OLED_Init();
 
     OLED_Clear();

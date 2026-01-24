@@ -35,7 +35,7 @@ void Key_Init(void)
 //形参指定按键；返回当前按键按下状态/未按下状态
 uint8 Key_GetState(uint8 n)
 {
-	if (n == 0)
+	if (n == KEY_NAME_UP)
 	{
 		if (gpio_get_level(KEY1_PIN) == 0)//按下
 		{
@@ -43,7 +43,7 @@ uint8 Key_GetState(uint8 n)
 		}
 		return KEY_UNPRESSED;//返回未按下
 	}
-	else if (n == 1)
+	else if (n == KEY_NAME_DOWN)
 	{
 		if (gpio_get_level(KEY2_PIN) == 0)//按下
 		{
@@ -51,7 +51,7 @@ uint8 Key_GetState(uint8 n)
 		}
 		return KEY_UNPRESSED;
     }
-	else if (n == 2)
+	else if (n == KEY_NAME_COMFIRM)
 	{
 		if (gpio_get_level(KEY3_PIN) == 0)//按下
 		{
@@ -59,7 +59,7 @@ uint8 Key_GetState(uint8 n)
 		}
 		return KEY_UNPRESSED;
 	}
-    else if (n == 3)
+    else if (n == KEY_NAME_BACK)
 	{
 		if (gpio_get_level(KEY4_PIN) == 0)//按下
 		{

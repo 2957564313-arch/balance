@@ -1,5 +1,5 @@
+C251 COMPILER V5.60.0,  zf_common_function                                                 24/01/26  19:25:41  PAGE 1   
 
-C251 COMPILER V5.60.0,  zf_common_function                                                 24/01/26  11:15:46  PAGE 1   
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE zf_common_function
 OBJECT MODULE PLACED IN .\out_file\zf_common_function.obj
@@ -58,16 +58,16 @@ stmt  level    source
    43          // ²ÎÊýËµÃ÷     num1            Êý×Ö1
    44          // ²ÎÊýËµÃ÷     num2            Êý×Ö2
    45          // ·µ»Ø²ÎÊý     uint32          ×î´ó¹«Ô¼Êý
-   46          // Ê¹ÓÃÊ¾Àý     return func_get_greatest_common_divisor(144, 36);               // »ñÈ¡ 144 Óë 36 µÄ×î´ó?
-             -«Ô¼Ê?
+   46          // Ê¹ÓÃÊ¾Àý     return func_get_greatest_common_divisor(144, 36);               // »ñÈ¡ 144 Óë 36 µÄ×î´ó¹
+             -«Ô¼Êý
    47          // ±¸×¢ÐÅÏ¢     
    48          //-------------------------------------------------------------------------------------------------------
              -------------
    49          uint32 func_get_greatest_common_divisor (uint32 num1, uint32 num2)
    50          {
    51   1          while(num1 != num2)
+C251 COMPILER V5.60.0,  zf_common_function                                                 24/01/26  19:25:41  PAGE 2   
 
-C251 COMPILER V5.60.0,  zf_common_function                                                 24/01/26  11:15:46  PAGE 2   
    52   1          {
    53   2              if(num1 > num2)
    54   2              {
@@ -134,8 +134,8 @@ stmt  level    source
   111   2      
   112   2              if(sign)
   113   2              {
+C251 COMPILER V5.60.0,  zf_common_function                                                 24/01/26  19:25:41  PAGE 3   
 
-C251 COMPILER V5.60.0,  zf_common_function                                                 24/01/26  11:15:46  PAGE 3   
   114   3                  temp = -temp;
   115   3              }
   116   2          }while(0);
@@ -179,15 +179,15 @@ stmt  level    source
   152   2              while(0 != number)                                                      // Ñ­»·Ö±µ½ÊýÖµ¹éÁã
   153   2              {
   154   3                  number_temp = number % 10;
-  155   3                  data_temp[temp_bit ++] = func_abs(number_temp);                          // µ¹Ðò½«ÊýÖµÌáÈ¡³ö?
-             -?
+  155   3                  data_temp[temp_bit ++] = func_abs(number_temp);                          // µ¹Ðò½«ÊýÖµÌáÈ¡³öÀ
+             -´
   156   3                  number /= 10;                                                       // Ï÷¼õ±»ÌáÈ¡µÄ¸öÎ»Êý
   157   3              }
-  158   2              while(0 != temp_bit)                                                         // ÌáÈ¡µÄÊý×Ö¸öÊýµÝ?
-             -õ´¦À?
+  158   2              while(0 != temp_bit)                                                         // ÌáÈ¡µÄÊý×Ö¸öÊýµÝ¼
+             -õ´¦Àí
   159   2              {
-  160   3                  *str ++ = (data_temp[temp_bit - 1] + 0x30);                              // ½«Êý×Ö´Óµ¹ÐòÊý×é?
-             -Ðµ¹ÐòÈ¡³?±ä³ÉÕýÐò·ÅÈë×Ö·û´®
+  160   3                  *str ++ = (data_temp[temp_bit - 1] + 0x30);                              // ½«Êý×Ö´Óµ¹ÐòÊý×éÖ
+             -Ðµ¹ÐòÈ¡³ö ±ä³ÉÕýÐò·ÅÈë×Ö·û´®
   161   3                  temp_bit --;
   162   3              }
   163   2          }while(0);
@@ -202,8 +202,8 @@ stmt  level    source
   171          // ±¸×¢ÐÅÏ¢     
   172          //-------------------------------------------------------------------------------------------------------
              -------------
+C251 COMPILER V5.60.0,  zf_common_function                                                 24/01/26  19:25:41  PAGE 4   
 
-C251 COMPILER V5.60.0,  zf_common_function                                                 24/01/26  11:15:46  PAGE 4   
   173          uint32 func_str_to_uint (char *str)
   174          {
   175   1              uint32 temp = 0;                                                            // ÁÙÊ±¼ÆËã±äÁ¿
@@ -258,20 +258,20 @@ stmt  level    source
   222   2      
   223   2              while(0 != number)                                                      // Ñ­»·Ö±µ½ÊýÖµ¹éÁã
   224   2              {
-  225   3                  data_temp[temp_bit ++] = (number % 10);                                  // µ¹Ðò½«ÊýÖµÌáÈ¡³ö?
-             -?
+  225   3                  data_temp[temp_bit ++] = (number % 10);                                  // µ¹Ðò½«ÊýÖµÌáÈ¡³öÀ
+             -´
   226   3                  number /= 10;                                                       // Ï÷¼õ±»ÌáÈ¡µÄ¸öÎ»Êý
   227   3              }
-  228   2              while(0 != temp_bit)                                                         // ÌáÈ¡µÄÊý×Ö¸öÊýµÝ?
-             -õ´¦À?
+  228   2              while(0 != temp_bit)                                                         // ÌáÈ¡µÄÊý×Ö¸öÊýµÝ¼
+             -õ´¦Àí
   229   2              {
-  230   3                  *str ++ = (data_temp[temp_bit - 1] + 0x30);                              // ½«Êý×Ö´Óµ¹ÐòÊý×é?
-             -Ðµ¹ÐòÈ¡³?±ä³ÉÕýÐò·ÅÈë×Ö·û´®
+  230   3                  *str ++ = (data_temp[temp_bit - 1] + 0x30);                              // ½«Êý×Ö´Óµ¹ÐòÊý×éÖ
+             -Ðµ¹ÐòÈ¡³ö ±ä³ÉÕýÐò·ÅÈë×Ö·û´®
   231   3                  temp_bit --;
   232   3              }
   233   2          }while(0);
+C251 COMPILER V5.60.0,  zf_common_function                                                 24/01/26  19:25:41  PAGE 5   
 
-C251 COMPILER V5.60.0,  zf_common_function                                                 24/01/26  11:15:46  PAGE 5   
   234   1      }
   235          
   236          //-------------------------------------------------------------------------------------------------------
@@ -318,8 +318,8 @@ stmt  level    source
   275   2              if('.' == *str)
   276   2              {
   277   3                  str ++;
-  278   3                  while(('0' <= *str) && ('9' >= *str) && point_bit < 1000000.0)      // È·ÈÏÕâÊÇ¸öÊý×Ö ²¢ÇÒ¾«?
-             -È¿ØÖÆ»¹Ã»µ½ÁùÎ?
+  278   3                  while(('0' <= *str) && ('9' >= *str) && point_bit < 1000000.0)      // È·ÈÏÕâÊÇ¸öÊý×Ö ²¢ÇÒ¾«¶
+             -È¿ØÖÆ»¹Ã»µ½ÁùÎ»
   279   3                  {
   280   4                      temp_point = temp_point * 10 + ((uint8)(*str) - 0x30);          // ÌáÈ¡Ð¡Êý²¿·ÖÊýÖµ
   281   4                      point_bit *= 10;                                                // ¼ÆËãÕâ²¿·ÖÐ¡ÊýµÄ³ýÊý
@@ -338,8 +338,8 @@ stmt  level    source
   294   1      }
   295          
   296          //-------------------------------------------------------------------------------------------------------
+C251 COMPILER V5.60.0,  zf_common_function                                                 24/01/26  19:25:41  PAGE 6   
 
-C251 COMPILER V5.60.0,  zf_common_function                                                 24/01/26  11:15:46  PAGE 6   
              -------------
   297          // º¯Êý¼ò½é     ¸¡µãÊý×Ö×ª×Ö·û´®
   298          // ²ÎÊýËµÃ÷     *str            ×Ö·û´®Ö¸Õë
@@ -396,18 +396,18 @@ stmt  level    source
   345   2              temp_bit = 0;
   346   2              do
   347   2              {
-  348   3                  data_temp[temp_bit ++] = data_int % 10;                                  // ½«ÕûÊý²¿·Öµ¹ÐòÐ´?
-             -ë×Ö·û»º³åÇ?
+  348   3                  data_temp[temp_bit ++] = data_int % 10;                                  // ½«ÕûÊý²¿·Öµ¹ÐòÐ´È
+             -ë×Ö·û»º³åÇø
   349   3                  data_int /= 10;
   350   3              }while(0 != data_int);
   351   2              while(0 != temp_bit)
   352   2              {
-  353   3                  *str ++ = (func_abs(data_temp[temp_bit - 1]) + 0x30);                    // ÔÙµ¹Ðò½«µ¹ÐòµÄÊý?
-             -µÐ´Èë×Ö·û´?µÃµ½ÕýÐòÊýÖµ
+  353   3                  *str ++ = (func_abs(data_temp[temp_bit - 1]) + 0x30);                    // ÔÙµ¹Ðò½«µ¹ÐòµÄÊýÖ
+             -µÐ´Èë×Ö·û´® µÃµ½ÕýÐòÊýÖµ
   354   3                  temp_bit --;
   355   3              }
+C251 COMPILER V5.60.0,  zf_common_function                                                 24/01/26  19:25:41  PAGE 7   
 
-C251 COMPILER V5.60.0,  zf_common_function                                                 24/01/26  11:15:46  PAGE 7   
   356   2      
   357   2              // Ð¡Êý²¿·Ö×ªÎª×Ö·û´®
   358   2              if(point_bit != 0)
@@ -422,15 +422,15 @@ stmt  level    source
   367   3                  {
   368   4                      while(0 != point_bit)                                           // ÅÐ¶ÏÓÐÐ§Î»Êý
   369   4                      {
-  370   5                          data_temp_point[temp_bit ++] = data_float % 10;                  // µ¹ÐòÐ´Èë×Ö·û»º³å?
-             -?
+  370   5                          data_temp_point[temp_bit ++] = data_float % 10;                  // µ¹ÐòÐ´Èë×Ö·û»º³åÇ
+             -ø
   371   5                          data_float /= 10;
   372   5                          point_bit --;                                                
   373   5                      }
   374   4                      while(0 != temp_bit)
   375   4                      {
-  376   5                          *str ++ = (func_abs(data_temp_point[temp_bit - 1]) + 0x30);      // ÔÙµ¹Ðò½«µ¹ÐòµÄÊý?
-             -µÐ´Èë×Ö·û´?µÃµ½ÕýÐòÊýÖµ
+  376   5                          *str ++ = (func_abs(data_temp_point[temp_bit - 1]) + 0x30);      // ÔÙµ¹Ðò½«µ¹ÐòµÄÊýÖ
+             -µÐ´Èë×Ö·û´® µÃµ½ÕýÐòÊýÖµ
   377   5                          temp_bit --;
   378   5                      }
   379   4                  }
@@ -474,8 +474,8 @@ stmt  level    source
   415   3              }
   416   2      
   417   2              // ÌáÈ¡ÕûÊý²¿·Ö
+C251 COMPILER V5.60.0,  zf_common_function                                                 24/01/26  19:25:41  PAGE 8   
 
-C251 COMPILER V5.60.0,  zf_common_function                                                 24/01/26  11:15:46  PAGE 8   
   418   2              while(('0' <= *str) && ('9' >= *str))                                   // È·¶¨ÕâÊÇ¸öÊý×Ö
   419   2              {
   420   3                  temp = temp * 10 + ((uint8)(*str) - 0x30);                          // ½«ÊýÖµÌáÈ¡³öÀ´
@@ -484,8 +484,8 @@ stmt  level    source
   423   2              if('.' == *str)
   424   2              {
   425   3                  str ++;
-  426   3                  while(('0' <= *str) && ('9' >= *str) && point_bit < 1000000000.0)   // È·ÈÏÕâÊÇ¸öÊý×Ö ²¢ÇÒ¾«?
-             -È¿ØÖÆ»¹Ã»µ½¾ÅÎ?
+  426   3                  while(('0' <= *str) && ('9' >= *str) && point_bit < 1000000000.0)   // È·ÈÏÕâÊÇ¸öÊý×Ö ²¢ÇÒ¾«¶
+             -È¿ØÖÆ»¹Ã»µ½¾ÅÎ»
   427   3                  {
   428   4                      temp_point = temp_point * 10 + ((uint8)(*str) - 0x30);          // ÌáÈ¡Ð¡Êý²¿·ÖÊýÖµ
   429   4                      point_bit *= 10;                                                // ¼ÆËãÕâ²¿·ÖÐ¡ÊýµÄ³ýÊý
@@ -542,8 +542,8 @@ stmt  level    source
   476   3              }
   477   2              else if(0.0 == number)                                                  // Èç¹ûÊÇ¸ö 0
   478   2              {
+C251 COMPILER V5.60.0,  zf_common_function                                                 24/01/26  19:25:41  PAGE 9   
 
-C251 COMPILER V5.60.0,  zf_common_function                                                 24/01/26  11:15:46  PAGE 9   
   479   3                  *str ++ = '0';
   480   3                  *str ++ = '.';
   481   3                  *str = '0';
@@ -563,14 +563,14 @@ stmt  level    source
   494   2              temp_bit = 0;
   495   2              do
   496   2              {
-  497   3                  data_temp[temp_bit ++] = data_int % 10;                                  // ½«ÕûÊý²¿·Öµ¹ÐòÐ´?
-             -ë×Ö·û»º³åÇ?
+  497   3                  data_temp[temp_bit ++] = data_int % 10;                                  // ½«ÕûÊý²¿·Öµ¹ÐòÐ´È
+             -ë×Ö·û»º³åÇø
   498   3                  data_int /= 10;
   499   3              }while(0 != data_int);
   500   2              while(0 != temp_bit)
   501   2              {
-  502   3                  *str ++ = (func_abs(data_temp[temp_bit - 1]) + 0x30);                    // ÔÙµ¹Ðò½«µ¹ÐòµÄÊý?
-             -µÐ´Èë×Ö·û´?µÃµ½ÕýÐòÊýÖµ
+  502   3                  *str ++ = (func_abs(data_temp[temp_bit - 1]) + 0x30);                    // ÔÙµ¹Ðò½«µ¹ÐòµÄÊýÖ
+             -µÐ´Èë×Ö·û´® µÃµ½ÕýÐòÊýÖµ
   503   3                  temp_bit --;
   504   3              }
   505   2      
@@ -585,15 +585,15 @@ stmt  level    source
   514   3                  {
   515   4                      while(0 != point_bit)                                           // ÅÐ¶ÏÓÐÐ§Î»Êý
   516   4                      {
-  517   5                          data_temp_point[temp_bit ++] = data_float % 10;                  // µ¹ÐòÐ´Èë×Ö·û»º³å?
-             -?
+  517   5                          data_temp_point[temp_bit ++] = data_float % 10;                  // µ¹ÐòÐ´Èë×Ö·û»º³åÇ
+             -ø
   518   5                          data_float /= 10;
   519   5                          point_bit --;                                                
   520   5                      }
   521   4                      while(0 != temp_bit)
   522   4                      {
-  523   5                          *str ++ = (func_abs(data_temp_point[temp_bit - 1]) + 0x30);      // ÔÙµ¹Ðò½«µ¹ÐòµÄÊý?
-             -µÐ´Èë×Ö·û´?µÃµ½ÕýÐòÊýÖµ
+  523   5                          *str ++ = (func_abs(data_temp_point[temp_bit - 1]) + 0x30);      // ÔÙµ¹Ðò½«µ¹ÐòµÄÊýÖ
+             -µÐ´Èë×Ö·û´® µÃµ½ÕýÐòÊýÖµ
   524   5                          temp_bit --;
   525   5                      }
   526   4                  }
@@ -610,8 +610,8 @@ stmt  level    source
   536          // ±¸×¢ÐÅÏ¢     
   537          //-------------------------------------------------------------------------------------------------------
              -------------
+C251 COMPILER V5.60.0,  zf_common_function                                                 24/01/26  19:25:41  PAGE 10  
 
-C251 COMPILER V5.60.0,  zf_common_function                                                 24/01/26  11:15:46  PAGE 10  
   538          uint32 func_str_to_hex (char *str)
   539          {
   540   1          uint32 str_len = strlen(str);                                               // ×Ö·û´®³¤
@@ -678,8 +678,8 @@ stmt  level    source
   598          {
   599   1          const char hex_index[16] = {
   600   1              '0', '1', '2', '3',
+C251 COMPILER V5.60.0,  zf_common_function                                                 24/01/26  19:25:41  PAGE 11  
 
-C251 COMPILER V5.60.0,  zf_common_function                                                 24/01/26  11:15:46  PAGE 11  
   601   1              '4', '5', '6', '7',
   602   1              '8', '9', 'A', 'B',
   603   1              'C', 'D', 'E', 'F'};
@@ -705,15 +705,15 @@ stmt  level    source
   623   2      
   624   2              while(0 != number)                                                      // Ñ­»·Ö±µ½ÊýÖµ¹éÁã
   625   2              {
-  626   3                  data_temp[temp_bit ++] = (number & 0xF);                                 // µ¹Ðò½«ÊýÖµÌáÈ¡³ö?
-             -?
+  626   3                  data_temp[temp_bit ++] = (number & 0xF);                                 // µ¹Ðò½«ÊýÖµÌáÈ¡³öÀ
+             -´
   627   3                  number >>= 4;                                                       // Ï÷¼õ±»ÌáÈ¡µÄ¸öÎ»Êý
   628   3              }
-  629   2              while(0 != temp_bit)                                                         // ÌáÈ¡µÄÊý×Ö¸öÊýµÝ?
-             -õ´¦À?
+  629   2              while(0 != temp_bit)                                                         // ÌáÈ¡µÄÊý×Ö¸öÊýµÝ¼
+             -õ´¦Àí
   630   2              {
-  631   3                  *str ++ = hex_index[data_temp[temp_bit - 1]];                            // ½«Êý×Ö´Óµ¹ÐòÊý×é?
-             -Ðµ¹ÐòÈ¡³?±ä³ÉÕýÐò·ÅÈë×Ö·û´®
+  631   3                  *str ++ = hex_index[data_temp[temp_bit - 1]];                            // ½«Êý×Ö´Óµ¹ÐòÊý×éÖ
+             -Ðµ¹ÐòÈ¡³ö ±ä³ÉÕýÐò·ÅÈë×Ö·û´®
   632   3                  temp_bit --;
   633   3              }
   634   2          }while(0);
@@ -746,8 +746,8 @@ stmt  level    source
   659   3                  neg_dat = -neg_dat;
   660   3              }
   661   2              while(1)
+C251 COMPILER V5.60.0,  zf_common_function                                                 24/01/26  19:25:41  PAGE 12  
 
-C251 COMPILER V5.60.0,  zf_common_function                                                 24/01/26  11:15:46  PAGE 12  
   662   2              {
   663   3                  *p = neg_dat%radix + '0';
   664   3                  neg_dat = neg_dat/radix;
@@ -814,8 +814,8 @@ stmt  level    source
   723          
   724          
   725          
+C251 COMPILER V5.60.0,  zf_common_function                                                 24/01/26  19:25:41  PAGE 13  
 
-C251 COMPILER V5.60.0,  zf_common_function                                                 24/01/26  11:15:46  PAGE 13  
   726          //-------------------------------------------------------------------------------------------------------
              -------------
   727          // º¯Êý¼ò½é     sprintf º¯ÊýÊµÏÖ
@@ -882,8 +882,8 @@ stmt  level    source
   787   3      
   788   3                      /* Ìí¼Ó¸ººÅ */
   789   3                      if (is_negative) 
+C251 COMPILER V5.60.0,  zf_common_function                                                 24/01/26  19:25:41  PAGE 14  
 
-C251 COMPILER V5.60.0,  zf_common_function                                                 24/01/26  11:15:46  PAGE 14  
   790   3                                      {
   791   4                          temp[len++] = '-';
   792   4                      }
@@ -950,8 +950,8 @@ stmt  level    source
   853   3      
   854   3                  default:
   855   3                      *ptr++ = *format;
+C251 COMPILER V5.60.0,  zf_common_function                                                 24/01/26  19:25:41  PAGE 15  
 
-C251 COMPILER V5.60.0,  zf_common_function                                                 24/01/26  11:15:46  PAGE 15  
   856   3                      i++;
   857   3                      break;
   858   3              }
@@ -1018,8 +1018,8 @@ stmt  level    source
   917   5                              buff_len += vlen;
   918   5                          }
   919   4                          break;
+C251 COMPILER V5.60.0,  zf_common_function                                                 24/01/26  19:25:41  PAGE 16  
 
-C251 COMPILER V5.60.0,  zf_common_function                                                 24/01/26  11:15:46  PAGE 16  
   920   4      
   921   4                      case 'f':// ¸¡µãÊý£¬Êä³öÐ¡ÊýµãºóÁùÎ»  ²»ÄÜÖ¸¶¨Êä³ö¾«¶È
   922   4                      case 'F':// ¸¡µãÊý£¬Êä³öÐ¡ÊýµãºóÁùÎ»  ²»ÄÜÖ¸¶¨Êä³ö¾«¶È
@@ -1086,8 +1086,8 @@ stmt  level    source
   983   5      
   984   5                              printf_reverse_order(vstr, vlen);
   985   5                              memcpy(buff, vstr, vlen);
+C251 COMPILER V5.60.0,  zf_common_function                                                 24/01/26  19:25:41  PAGE 17  
 
-C251 COMPILER V5.60.0,  zf_common_function                                                 24/01/26  11:15:46  PAGE 17  
   986   5                              buff += vlen;
   987   5                              buff_len += vlen;
   988   5      
@@ -1154,8 +1154,8 @@ stmt  level    source
  1049   3              }
  1050   2              format ++;
  1051   2          }
+C251 COMPILER V5.60.0,  zf_common_function                                                 24/01/26  19:25:41  PAGE 18  
 
-C251 COMPILER V5.60.0,  zf_common_function                                                 24/01/26  11:15:46  PAGE 18  
  1052   1          va_end(arg);
  1053   1      
  1054   1          return buff_len;
@@ -1186,4 +1186,3 @@ End of Module Information.
 
 
 C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
-

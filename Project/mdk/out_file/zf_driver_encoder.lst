@@ -1,5 +1,5 @@
+C251 COMPILER V5.60.0,  zf_driver_encoder                                                  24/01/26  19:25:42  PAGE 1   
 
-C251 COMPILER V5.60.0,  zf_driver_encoder                                                  24/01/26  11:15:47  PAGE 1   
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE zf_driver_encoder
 OBJECT MODULE PLACED IN .\out_file\zf_driver_encoder.obj
@@ -66,8 +66,8 @@ stmt  level    source
    50   1          switch(encoder_n)
    51   1          {
    52   2              case TIM0_ENCOEDER:
+C251 COMPILER V5.60.0,  zf_driver_encoder                                                  24/01/26  19:25:42  PAGE 2   
 
-C251 COMPILER V5.60.0,  zf_driver_encoder                                                  24/01/26  11:15:47  PAGE 2   
    53   2              {
    54   3                  dat = (uint16)TH0 << 8;
    55   3                  dat = ((uint8)TL0) | dat;
@@ -134,8 +134,8 @@ stmt  level    source
   114   3                  TR1 = 1;
   115   3                  break;
   116   3              }
+C251 COMPILER V5.60.0,  zf_driver_encoder                                                  24/01/26  19:25:42  PAGE 3   
 
-C251 COMPILER V5.60.0,  zf_driver_encoder                                                  24/01/26  11:15:47  PAGE 3   
   117   2              case TIM2_ENCOEDER:
   118   2              {
   119   3                  AUXR &= ~(1 << 4);
@@ -172,7 +172,7 @@ stmt  level    source
   149          // ·µ»Ø²ÎÊý     void
   150          //          ÍÆ¼öÊ¹ÓÃ´ø·½Ïò½âÂë±àÂëÆ÷¡£
   151          // Ê¹ÓÃÊ¾Àý      encoder_init_dir(TIM1_ENCOEDER, TIM1_CH1_ENCOEDER_E9, TIM1_CH2_ENCOEDER_E11)
-  152          //                              // Ê¹ÓÃ¶¨Ê±Æ÷1 ×ö´ø·½ÏòµÄ±àÂëÆ÷½âÂë£¬ Í¨µÀ1·½ÏòÐÅºÅÒý½ÅE9£¬Í¨µÀ2Âö³åÐÅºÅ?
+  152          //                              // Ê¹ÓÃ¶¨Ê±Æ÷1 ×ö´ø·½ÏòµÄ±àÂëÆ÷½âÂë£¬ Í¨µÀ1·½ÏòÐÅºÅÒý½ÅE9£¬Í¨µÀ2Âö³åÐÅºÅÒ
              -ý½ÅE11
   153          //-------------------------------------------------------------------------------------------------------
              -------------
@@ -202,8 +202,8 @@ stmt  level    source
   177   2              case TIM1_ENCOEDER:
   178   2              {
   179   3                  TL1 = 0x00;
+C251 COMPILER V5.60.0,  zf_driver_encoder                                                  24/01/26  19:25:42  PAGE 4   
 
-C251 COMPILER V5.60.0,  zf_driver_encoder                                                  24/01/26  11:15:47  PAGE 4   
   180   3                  TH1 = 0x00;
   181   3                  TMOD |= 0x40; // Íâ²¿¼ÆÊýÄ£Ê½
   182   3                  TR1 = 1; // Æô¶¯¶¨Ê±Æ÷
@@ -256,4 +256,3 @@ End of Module Information.
 
 
 C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
-

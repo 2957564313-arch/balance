@@ -1,5 +1,5 @@
+C251 COMPILER V5.60.0,  zf_driver_timer                                                    24/01/26  19:25:44  PAGE 1   
 
-C251 COMPILER V5.60.0,  zf_driver_timer                                                    24/01/26  11:15:48  PAGE 1   
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE zf_driver_timer
 OBJECT MODULE PLACED IN .\out_file\zf_driver_timer.obj
@@ -66,8 +66,8 @@ stmt  level    source
              -------------
    52          // 函数简介      TIMER 外设确认功能状态 库内部调用
    53          // 参数说明     index           TIMER 外设模块号
+C251 COMPILER V5.60.0,  zf_driver_timer                                                    24/01/26  19:25:44  PAGE 2   
 
-C251 COMPILER V5.60.0,  zf_driver_timer                                                    24/01/26  11:15:48  PAGE 2   
    54          // 参数说明     mode            需要确的功能模块
    55          // 返回参数     uint8           1-可以使用 0-不可以使用
    56          // 使用示例     zf_assert(timer_funciton_check(TIM_1, TIMER_FUNCTION_PWM);
@@ -114,4 +114,3 @@ End of Module Information.
 
 
 C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
-

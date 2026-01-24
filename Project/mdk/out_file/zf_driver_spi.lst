@@ -1,5 +1,5 @@
+C251 COMPILER V5.60.0,  zf_driver_spi                                                      24/01/26  19:25:43  PAGE 1   
 
-C251 COMPILER V5.60.0,  zf_driver_spi                                                      24/01/26  11:15:48  PAGE 1   
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE zf_driver_spi
 OBJECT MODULE PLACED IN .\out_file\zf_driver_spi.obj
@@ -66,8 +66,8 @@ stmt  level    source
    53                          SBUF = dat;                                     \
    54                          while (!TI)
    55          
+C251 COMPILER V5.60.0,  zf_driver_spi                                                      24/01/26  19:25:43  PAGE 2   
 
-C251 COMPILER V5.60.0,  zf_driver_spi                                                      24/01/26  11:15:48  PAGE 2   
    56          #define SPI2_WRITE_DAT(dat)             \
    57                          S2TI = 0x0;                     \
    58                          S2BUF = dat;                            \
@@ -134,8 +134,8 @@ stmt  level    source
   119   2                              TI = 0x0;                       
   120   2                              SBUF = dat;                                     
   121   2                              while (!TI);
+C251 COMPILER V5.60.0,  zf_driver_spi                                                      24/01/26  19:25:43  PAGE 3   
 
-C251 COMPILER V5.60.0,  zf_driver_spi                                                      24/01/26  11:15:48  PAGE 3   
   122   2                              ret = SBUF;
   123   2                              break;                  
   124   2                      case SPI_2:
@@ -202,8 +202,8 @@ stmt  level    source
   179   1      }
   180          
   181          //-------------------------------------------------------------------------------------------------------
+C251 COMPILER V5.60.0,  zf_driver_spi                                                      24/01/26  19:25:43  PAGE 4   
 
-C251 COMPILER V5.60.0,  zf_driver_spi                                                      24/01/26  11:15:48  PAGE 4   
              -------------
   182          // º¯Êý¼ò½é      SPI ½Ó¿ÚÐ´ 16bit Êý×é
   183          // ²ÎÊýËµÃ÷     spi_n           SPI Ä£¿éºÅ ²ÎÕÕ zf_driver_spi.h ÄÚ spi_index_enum Ã¶¾ÙÌå¶¨Òå
@@ -270,8 +270,8 @@ stmt  level    source
   237          // Ê¹ÓÃÊ¾Àý     spi_write_16bit_register(SPI_1,0x1011,0x0101);
   238          //-------------------------------------------------------------------------------------------------------
              -------------
+C251 COMPILER V5.60.0,  zf_driver_spi                                                      24/01/26  19:25:43  PAGE 5   
 
-C251 COMPILER V5.60.0,  zf_driver_spi                                                      24/01/26  11:15:48  PAGE 5   
   239          void spi_write_16bit_register (spi_index_enum spi_n, const uint16 register_name, const uint16 dat)
   240          {
   241   1              SPI_WRITE_DAT(spi_n, (uint8)((register_name & 0xFF00) >> 8));
@@ -338,8 +338,8 @@ stmt  level    source
   294          // ²ÎÊýËµÃ÷     spi_n           SPI Ä£¿éºÅ ²ÎÕÕ zf_driver_spi.h ÄÚ spi_index_enum Ã¶¾ÙÌå¶¨Òå
   295          // ²ÎÊýËµÃ÷     register_name   ¼Ä´æÆ÷µØÖ·
   296          // ·µ»Ø²ÎÊý     uint16        Êý¾Ý
+C251 COMPILER V5.60.0,  zf_driver_spi                                                      24/01/26  19:25:43  PAGE 6   
 
-C251 COMPILER V5.60.0,  zf_driver_spi                                                      24/01/26  11:15:48  PAGE 6   
   297          // Ê¹ÓÃÊ¾Àý     spi_read_16bit(SPI_1);
   298          //-------------------------------------------------------------------------------------------------------
              -------------
@@ -406,8 +406,8 @@ stmt  level    source
   353   1          while(len--)
   354   1          {
   355   2              *dat++ = SPI_READ_DAT(spi_n, 0);
+C251 COMPILER V5.60.0,  zf_driver_spi                                                      24/01/26  19:25:43  PAGE 7   
 
-C251 COMPILER V5.60.0,  zf_driver_spi                                                      24/01/26  11:15:48  PAGE 7   
   356   2          }
   357   1      }
   358          
@@ -474,8 +474,8 @@ stmt  level    source
   413   1          {
   414   2              if(read_buffer != NULL)
   415   2              {
+C251 COMPILER V5.60.0,  zf_driver_spi                                                      24/01/26  19:25:43  PAGE 8   
 
-C251 COMPILER V5.60.0,  zf_driver_spi                                                      24/01/26  11:15:48  PAGE 8   
   416   3                  *read_buffer++ = SPI_READ_DAT(spi_n, *(write_buffer++));
   417   3              }
   418   2                      else
@@ -527,8 +527,8 @@ stmt  level    source
   460          // ²ÎÊýËµÃ÷     miso_pin        Ñ¡Ôñ MISO Òý½Å ²ÎÕÕ zf_driver_spi.h ÄÚ spi_pin_enum Ã¶¾ÙÌå¶¨Òå
   461          // ²ÎÊýËµÃ÷     cs_pin          Ñ¡Ôñ CS Òý½Å ²ÎÕÕ zf_driver_gpio.h ÄÚ gpio_pin_enum Ã¶¾ÙÌå¶¨Òå
   462          // ·µ»Ø²ÎÊý     void
-  463          // Ê¹ÓÃÊ¾Àý     spi_init(SPI_1, 0, 1*1000*1000, SPI1_SCK_A5, SPI1_MOSI_A7, SPI1_MISO_A6, A4);  //Ó²¼þSPI?
-             -õÊ¼»? Ä£Ê½0 ²¨ÌØÂÊÎª1Mhz
+  463          // Ê¹ÓÃÊ¾Àý     spi_init(SPI_1, 0, 1*1000*1000, SPI1_SCK_A5, SPI1_MOSI_A7, SPI1_MISO_A6, A4);  //Ó²¼þSPI³
+             -õÊ¼»¯  Ä£Ê½0 ²¨ÌØÂÊÎª1Mhz
   464          //-------------------------------------------------------------------------------------------------------
              -------------
   465          void spi_init(spi_index_enum spi_n, spi_mode_enum mode, uint32 baud, spi_pin_enum sck_pin, spi_pin_enum m
@@ -542,8 +542,8 @@ stmt  level    source
   472   2              zf_assert(0);
   473   2              // SPIÖ»ÄÜÊ¹ÓÃÍ¬Ò»×éÒý½Å£¬²»ÔÊÐí»ìÓÃÒý½Å
   474   2          }
+C251 COMPILER V5.60.0,  zf_driver_spi                                                      24/01/26  19:25:43  PAGE 9   
 
-C251 COMPILER V5.60.0,  zf_driver_spi                                                      24/01/26  11:15:48  PAGE 9   
   475   1          
   476   1          gpio_init(sck_pin  & 0xFF, GPO, 1, GPO_PUSH_PULL);
   477   1          gpio_init(mosi_pin & 0xFF, GPO, 1, GPO_PUSH_PULL);
@@ -610,8 +610,8 @@ stmt  level    source
   538   3                  SPCTL |= 0x02;      // SPIÊäÈëÊ±ÖÓ/16
   539   3              }
   540   2              else if(spi_psc > 4)
+C251 COMPILER V5.60.0,  zf_driver_spi                                                      24/01/26  19:25:43  PAGE 10  
 
-C251 COMPILER V5.60.0,  zf_driver_spi                                                      24/01/26  11:15:48  PAGE 10  
   541   2              {
   542   3                  SPCTL |= 0x01;      // SPIÊäÈëÊ±ÖÓ/8
   543   3              }
@@ -678,8 +678,8 @@ stmt  level    source
   604   3                      break;
   605   3              }
   606   2              
+C251 COMPILER V5.60.0,  zf_driver_spi                                                      24/01/26  19:25:43  PAGE 11  
 
-C251 COMPILER V5.60.0,  zf_driver_spi                                                      24/01/26  11:15:48  PAGE 11  
   607   2              SCON = 0x10;            // ½ÓÊÕÊ¹ÄÜ
   608   2              USARTCR1 = 0x10;        // Ê¹ÄÜSPIÄ£Ê½£¬Ö÷»ú¹¦ÄÜ
   609   2              
@@ -746,8 +746,8 @@ stmt  level    source
   670   2              {
   671   3                  case 0:
   672   3                      P_SW3 |= (0x00 << 4);
+C251 COMPILER V5.60.0,  zf_driver_spi                                                      24/01/26  19:25:43  PAGE 12  
 
-C251 COMPILER V5.60.0,  zf_driver_spi                                                      24/01/26  11:15:48  PAGE 12  
   673   3                      break;
   674   3                      
   675   3                  case 1:
@@ -814,8 +814,8 @@ stmt  level    source
   736          
   737          
   738          
+C251 COMPILER V5.60.0,  zf_driver_spi                                                      24/01/26  19:25:43  PAGE 13  
 
-C251 COMPILER V5.60.0,  zf_driver_spi                                                      24/01/26  11:15:48  PAGE 13  
 
 
 Module Information          Static   Overlayable
@@ -840,4 +840,3 @@ End of Module Information.
 
 
 C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
-

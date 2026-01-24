@@ -1,5 +1,5 @@
+C251 COMPILER V5.60.0,  zf_driver_soft_spi                                                 24/01/26  19:25:43  PAGE 1   
 
-C251 COMPILER V5.60.0,  zf_driver_soft_spi                                                 24/01/26  11:15:48  PAGE 1   
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE zf_driver_soft_spi
 OBJECT MODULE PLACED IN .\out_file\zf_driver_soft_spi.obj
@@ -12,41 +12,41 @@ stmt  level    source
 
     1          /********************************************************************************************************
              -*************
-    2          * CH32V307VCT6 Opensourec Library 即（CH32V307VCT6 开源库）是一个基于官�?SDK 接口的第�
+    2          * CH32V307VCT6 Opensourec Library 即（CH32V307VCT6 开源库）是一个基于官方 SDK 接口的第�
              -�方开源库
     3          * Copyright (c) 2022 SEEKFREE 逐飞科技
     4          *
     5          * 本文件是CH32V307VCT6 开源库的一部分
     6          *
-    7          * CH32V307VCT6 开源库 是免费软�?
-    8          * 您可以根据自由软件基金会发布�?GPL（GNU General Public License，即 GNU通用公共�?
+    7          * CH32V307VCT6 开源库 是免费软件
+    8          * 您可以根据自由软件基金会发布的 GPL（GNU General Public License，即 GNU通用公共许
              -可证）的条款
-    9          * �?GPL 的第3版（�?GPL3.0）或（您选择的）任何后来的版本，重新发布�?或修�
+    9          * 即 GPL 的第3版（即 GPL3.0）或（您选择的）任何后来的版本，重新发布和/或修�
              -�它
    10          *
    11          * 本开源库的发布是希望它能发挥作用，但并未对其作任何的保证
    12          * 甚至没有隐含的适销性或适合特定用途的保证
-   13          * 更多细节请参�?GPL
+   13          * 更多细节请参见 GPL
    14          *
-   15          * 您应该在收到本开源库的同时收到一�?GPL 的副�?
+   15          * 您应该在收到本开源库的同时收到一份 GPL 的副本
    16          * 如果没有，请参阅<https://www.gnu.org/licenses/>
    17          *
-   18          * 额外注明�?
-   19          * 本开源库使用 GPL3.0 开源许可证协议 以上许可申明为译文版�?
-   20          * 许可申明英文版在 libraries/doc 文件夹下�?GPL3_permission_statement.txt 文件�?
-   21          * 许可证副本在 libraries 文件夹下 即该文件夹下�?LICENSE 文件
+   18          * 额外注明：
+   19          * 本开源库使用 GPL3.0 开源许可证协议 以上许可申明为译文版本
+   20          * 许可申明英文版在 libraries/doc 文件夹下的 GPL3_permission_statement.txt 文件中
+   21          * 许可证副本在 libraries 文件夹下 即该文件夹下的 LICENSE 文件
    22          * 欢迎各位使用并传播本程序 但修改内容时必须保留逐飞科技的版权声明（即本
-             -声明�?
+             -声明）
    23          *
    24          * 文件名称          zf_driver_soft_spi
    25          * 公司名称          成都逐飞科技有限公司
    26          * 版本信息          查看 libraries/doc 文件夹内 version 文件 版本说明
-   27          * 开发环�?         MounRiver Studio V1.8.1
+   27          * 开发环境          MounRiver Studio V1.8.1
    28          * 适用平台          CH32V307VCT6
    29          * 店铺链接          https://seekfree.taobao.com/
    30          *
    31          * 修改记录
-   32          * 日期                                      作�?                             备注
+   32          * 日期                                      作者                              备注
    33          * 2022-09-15        大W            first version
    34          *********************************************************************************************************
              -***********/
@@ -57,7 +57,7 @@ stmt  level    source
    39          
    40          //-------------------------------------------------------------------------------------------------------
              -------------
-   41          // 函数简�?    软件 SPI 延时
+   41          // 函数简介     软件 SPI 延时
    42          // 参数说明     void
    43          // 返回参数     void
    44          // 使用示例     //soft_spi_delay(1);
@@ -66,18 +66,18 @@ stmt  level    source
              -------------
    47          void soft_spi_delay(uint32 x)  
    48          {
+C251 COMPILER V5.60.0,  zf_driver_soft_spi                                                 24/01/26  19:25:43  PAGE 2   
 
-C251 COMPILER V5.60.0,  zf_driver_soft_spi                                                 24/01/26  11:15:48  PAGE 2   
    49   1              vuint32 i = x;
    50   1              while(i--);
    51   1      }
    52          
    53          //-------------------------------------------------------------------------------------------------------
              -------------
-   54          // 函数简�?    软件 SPI 8bit 数据读写
+   54          // 函数简介     软件 SPI 8bit 数据读写
    55          // 参数说明     *soft_spi_obj   软件 SPI 指定信息存放结构体的指针
    56          // 参数说明     dat            数据
-   57          // 返回参数     uint8           读取的数�?
+   57          // 返回参数     uint8           读取的数据
    58          // 使用示例     soft_spi_8bit_data_handler(soft_spi_obj, 1);
    59          // 备注信息     内部调用
    60          //-------------------------------------------------------------------------------------------------------
@@ -93,18 +93,18 @@ stmt  level    source
    69   1      //        gpio_low(soft_spi_obj->cs_pin);
    70   1      //    }
    71   1      
-   72   1          if(0 == soft_spi_obj->config.mode || 1 == soft_spi_obj->config.mode)        // CPOL = 0 SCK 空闲�?
+   72   1          if(0 == soft_spi_obj->config.mode || 1 == soft_spi_obj->config.mode)        // CPOL = 0 SCK 空闲低
              -电平
    73   1          {
    74   2              gpio_low(soft_spi_obj->sck_pin);
    75   2          }
-   76   1          else                                                                        // CPOL = 1 SCK 空闲�?
+   76   1          else                                                                        // CPOL = 1 SCK 空闲高
              -电平
    77   1          {
    78   2              gpio_high(soft_spi_obj->sck_pin);
    79   2          }
    80   1      
-   81   1          if(!(soft_spi_obj->config.mode % 2))                                      // CPHA = 0 第一个边�?
+   81   1          if(!(soft_spi_obj->config.mode % 2))                                      // CPHA = 0 第一个边沿
              -采样
    82   1          {
    83   2              for(temp = 8; temp > 0; temp --)
@@ -129,13 +129,13 @@ stmt  level    source
   102   3                  gpio_toggle_level(soft_spi_obj->sck_pin);
   103   3              }
   104   2          }
-  105   1          else                                                                        // CPHA = 1 第二个边?
+  105   1          else                                                                        // CPHA = 1 第二个边�
              -��采样
   106   1          {
   107   2              for(temp = 8; 0 < temp; temp --)
   108   2              {
+C251 COMPILER V5.60.0,  zf_driver_soft_spi                                                 24/01/26  19:25:43  PAGE 3   
 
-C251 COMPILER V5.60.0,  zf_driver_soft_spi                                                 24/01/26  11:15:48  PAGE 3   
   109   3                  gpio_toggle_level(soft_spi_obj->sck_pin);
   110   3                  if(0x80 & write_data)
   111   3                  {
@@ -166,10 +166,10 @@ stmt  level    source
   136          
   137          //-------------------------------------------------------------------------------------------------------
              -------------
-  138          // 函数简�?    软件 SPI 16bit 数据读写
+  138          // 函数简介     软件 SPI 16bit 数据读写
   139          // 参数说明     *soft_spi_obj   软件 SPI 指定信息存放结构体的指针
   140          // 参数说明     dat            数据
-  141          // 返回参数     uint16          读取的数�?
+  141          // 返回参数     uint16          读取的数据
   142          // 使用示例     soft_spi_16bit_data_handler(soft_spi_obj, 1);
   143          // 备注信息     内部调用
   144          //-------------------------------------------------------------------------------------------------------
@@ -185,25 +185,25 @@ stmt  level    source
   153   1      //        gpio_low(soft_spi_obj->cs_pin);
   154   1      //    }
   155   1      
-  156   1          if(0 == soft_spi_obj->config.mode || 1 == soft_spi_obj->config.mode)        // CPOL = 0 SCK 空闲�?
+  156   1          if(0 == soft_spi_obj->config.mode || 1 == soft_spi_obj->config.mode)        // CPOL = 0 SCK 空闲低
              -电平
   157   1          {
   158   2              gpio_low(soft_spi_obj->sck_pin);
   159   2          }
-  160   1          else                                                                        // CPOL = 1 SCK 空闲�?
+  160   1          else                                                                        // CPOL = 1 SCK 空闲高
              -电平
   161   1          {
   162   2              gpio_high(soft_spi_obj->sck_pin);
   163   2          }
   164   1      
-  165   1          if(!(soft_spi_obj->config.mode % 2))                                      // CPHA = 0 第一个边�?
+  165   1          if(!(soft_spi_obj->config.mode % 2))                                      // CPHA = 0 第一个边沿
              -采样
   166   1          {
   167   2              for(temp = 16; 0 < temp; temp --)
   168   2              {
   169   3                  if(0x8000 & write_data)
+C251 COMPILER V5.60.0,  zf_driver_soft_spi                                                 24/01/26  19:25:43  PAGE 4   
 
-C251 COMPILER V5.60.0,  zf_driver_soft_spi                                                 24/01/26  11:15:48  PAGE 4   
   170   3                  {
   171   4                      gpio_high(soft_spi_obj->mosi_pin);
   172   4                  }
@@ -223,7 +223,7 @@ stmt  level    source
   186   3                  gpio_toggle_level(soft_spi_obj->sck_pin);
   187   3              }
   188   2          }
-  189   1          else                                                                        // CPHA = 1 第二个边?
+  189   1          else                                                                        // CPHA = 1 第二个边�
              -��采样
   190   1          {
   191   2              for(temp = 16; 0 < temp; temp --)
@@ -258,7 +258,7 @@ stmt  level    source
   220          
   221          //-------------------------------------------------------------------------------------------------------
              -------------
-  222          // 函数简�?    软件 SPI 接口�?8bit 数据
+  222          // 函数简介     软件 SPI 接口写 8bit 数据
   223          // 参数说明     *soft_spi_obj   软件 SPI 指定信息存放结构体的指针
   224          // 参数说明     dat            发送的数据
   225          // 返回参数     void
@@ -270,8 +270,8 @@ stmt  level    source
   230          {
   231   1              zf_assert(soft_spi_obj != NULL);
   232   1              if(soft_spi_obj->config.use_cs)
+C251 COMPILER V5.60.0,  zf_driver_soft_spi                                                 24/01/26  19:25:43  PAGE 5   
 
-C251 COMPILER V5.60.0,  zf_driver_soft_spi                                                 24/01/26  11:15:48  PAGE 5   
   233   1          {
   234   2              gpio_low(soft_spi_obj->cs_pin);
   235   2          }
@@ -286,10 +286,10 @@ stmt  level    source
   244          
   245          //-------------------------------------------------------------------------------------------------------
              -------------
-  246          // 函数简�?    软件 SPI 接口�?8bit 数组
+  246          // 函数简介     软件 SPI 接口写 8bit 数组
   247          // 参数说明     *soft_spi_obj   软件 SPI 指定信息存放结构体的指针
-  248          // 参数说明     *dat           数据存放缓冲�?
-  249          // 参数说明     len             缓冲区长�?
+  248          // 参数说明     *dat           数据存放缓冲区
+  249          // 参数说明     len             缓冲区长度
   250          // 返回参数     void
   251          // 使用示例     soft_spi_write_8bit_array(&soft_spi_obj, buf, 16);
   252          // 备注信息     
@@ -317,7 +317,7 @@ stmt  level    source
   273          
   274          //-------------------------------------------------------------------------------------------------------
              -------------
-  275          // 函数简�?    软件 SPI 接口�?16bit 数据
+  275          // 函数简介     软件 SPI 接口写 16bit 数据
   276          // 参数说明     *soft_spi_obj   软件 SPI 指定信息存放结构体的指针
   277          // 参数说明     dat            发送的数据
   278          // 返回参数     void
@@ -338,17 +338,17 @@ stmt  level    source
   292   1              if(soft_spi_obj->config.use_cs)
   293   1          {
   294   2              gpio_high(soft_spi_obj->cs_pin);
+C251 COMPILER V5.60.0,  zf_driver_soft_spi                                                 24/01/26  19:25:43  PAGE 6   
 
-C251 COMPILER V5.60.0,  zf_driver_soft_spi                                                 24/01/26  11:15:48  PAGE 6   
   295   2          }
   296   1      }
   297          
   298          //-------------------------------------------------------------------------------------------------------
              -------------
-  299          // 函数简�?    软件 SPI 接口�?16bit 数组
+  299          // 函数简介     软件 SPI 接口写 16bit 数组
   300          // 参数说明     *soft_spi_obj   软件 SPI 指定信息存放结构体的指针
-  301          // 参数说明     *dat           数据存放缓冲�?
-  302          // 参数说明     len             缓冲区长�?
+  301          // 参数说明     *dat           数据存放缓冲区
+  302          // 参数说明     len             缓冲区长度
   303          // 返回参数     void
   304          // 使用示例     soft_spi_write_16bit_array(&soft_spi_obj, buf, 16);
   305          // 备注信息     
@@ -376,7 +376,7 @@ stmt  level    source
   326          
   327          //-------------------------------------------------------------------------------------------------------
              -------------
-  328          // 函数简�?    软件 SPI 接口向传感器的寄存器�?8bit 数据
+  328          // 函数简介     软件 SPI 接口向传感器的寄存器写 8bit 数据
   329          // 参数说明     *soft_spi_obj   软件 SPI 指定信息存放结构体的指针
   330          // 参数说明     register_name   寄存器地址
   331          // 参数说明     dat            发送的数据
@@ -405,13 +405,13 @@ stmt  level    source
   352          
   353          //-------------------------------------------------------------------------------------------------------
              -------------
-  354          // 函数简�?    软件 SPI 接口向传感器的寄存器�?8bit 数组
+  354          // 函数简介     软件 SPI 接口向传感器的寄存器写 8bit 数组
+C251 COMPILER V5.60.0,  zf_driver_soft_spi                                                 24/01/26  19:25:43  PAGE 7   
 
-C251 COMPILER V5.60.0,  zf_driver_soft_spi                                                 24/01/26  11:15:48  PAGE 7   
   355          // 参数说明     *soft_spi_obj   软件 SPI 指定信息存放结构体的指针
   356          // 参数说明     register_name   寄存器地址
-  357          // 参数说明     *dat           数据存放缓冲�?
-  358          // 参数说明     len             缓冲区长�?
+  357          // 参数说明     *dat           数据存放缓冲区
+  358          // 参数说明     len             缓冲区长度
   359          // 返回参数     void
   360          // 使用示例     soft_spi_write_8bit_registers(&soft_spi_obj, 1, buf, 16);
   361          //-------------------------------------------------------------------------------------------------------
@@ -440,7 +440,7 @@ stmt  level    source
   382          
   383          //-------------------------------------------------------------------------------------------------------
              -------------
-  384          // 函数简�?    软件 SPI 接口向传感器的寄存器�?16bit 数据
+  384          // 函数简介     软件 SPI 接口向传感器的寄存器写 16bit 数据
   385          // 参数说明     *soft_spi_obj   软件 SPI 指定信息存放结构体的指针
   386          // 参数说明     register_name   寄存器地址
   387          // 参数说明     dat            发送的数据
@@ -469,13 +469,13 @@ stmt  level    source
   408          
   409          //-------------------------------------------------------------------------------------------------------
              -------------
-  410          // 函数简�?    软件 SPI 接口向传感器的寄存器�?16bit 数组
+  410          // 函数简介     软件 SPI 接口向传感器的寄存器写 16bit 数组
   411          // 参数说明     *soft_spi_obj   软件 SPI 指定信息存放结构体的指针
   412          // 参数说明     register_name   寄存器地址
-  413          // 参数说明     *dat           数据存放缓冲�?
-  414          // 参数说明     len             缓冲区长�?
+  413          // 参数说明     *dat           数据存放缓冲区
+  414          // 参数说明     len             缓冲区长度
+C251 COMPILER V5.60.0,  zf_driver_soft_spi                                                 24/01/26  19:25:43  PAGE 8   
 
-C251 COMPILER V5.60.0,  zf_driver_soft_spi                                                 24/01/26  11:15:48  PAGE 8   
   415          // 返回参数     void
   416          // 使用示例     soft_spi_write_16bit_registers(&soft_spi_obj, 1, buf, 16);
   417          // 备注信息     
@@ -505,10 +505,10 @@ stmt  level    source
   439          
   440          //-------------------------------------------------------------------------------------------------------
              -------------
-  441          // 函数简�?    软件 SPI 接口�?8bit 数据
+  441          // 函数简介     软件 SPI 接口读 8bit 数据
   442          // 参数说明     *soft_spi_obj   软件 SPI 指定信息存放结构体的指针
   443          // 参数说明     dat            发送的数据
-  444          // 返回参数     uint8           返回读取�?8bit 数据
+  444          // 返回参数     uint8           返回读取的 8bit 数据
   445          // 使用示例     soft_spi_read_8bit(&soft_spi_obj);
   446          // 备注信息     
   447          //-------------------------------------------------------------------------------------------------------
@@ -533,17 +533,17 @@ stmt  level    source
   465          
   466          //-------------------------------------------------------------------------------------------------------
              -------------
-  467          // 函数简�?    软件 SPI 接口�?8bit 数组
+  467          // 函数简介     软件 SPI 接口读 8bit 数组
   468          // 参数说明     *soft_spi_obj   软件 SPI 指定信息存放结构体的指针
-  469          // 参数说明     *dat           数据存放缓冲�?
-  470          // 参数说明     len             缓冲区长�?
+  469          // 参数说明     *dat           数据存放缓冲区
+  470          // 参数说明     len             缓冲区长度
   471          // 返回参数     void
   472          // 使用示例     soft_spi_read_8bit_array(&soft_spi_obj, buf, 16);
   473          // 备注信息     
   474          //-------------------------------------------------------------------------------------------------------
              -------------
+C251 COMPILER V5.60.0,  zf_driver_soft_spi                                                 24/01/26  19:25:43  PAGE 9   
 
-C251 COMPILER V5.60.0,  zf_driver_soft_spi                                                 24/01/26  11:15:48  PAGE 9   
   475          void soft_spi_read_8bit_array (soft_spi_info_struct *soft_spi_obj, uint8 *dat, uint32 len)
   476          {
   477   1          zf_assert(soft_spi_obj != NULL);
@@ -566,10 +566,10 @@ stmt  level    source
   494          
   495          //-------------------------------------------------------------------------------------------------------
              -------------
-  496          // 函数简�?    软件 SPI 接口�?16bit 数据
+  496          // 函数简介     软件 SPI 接口读 16bit 数据
   497          // 参数说明     *soft_spi_obj   软件 SPI 指定信息存放结构体的指针
   498          // 参数说明     dat            发送的数据
-  499          // 返回参数     uint16          返回读取�?16bit 数据
+  499          // 返回参数     uint16          返回读取的 16bit 数据
   500          // 使用示例     soft_spi_read_16bit(&soft_spi_obj);
   501          // 备注信息     
   502          //-------------------------------------------------------------------------------------------------------
@@ -597,10 +597,10 @@ stmt  level    source
   523          
   524          //-------------------------------------------------------------------------------------------------------
              -------------
-  525          // 函数简�?    软件 SPI 接口�?16bit 数组
+  525          // 函数简介     软件 SPI 接口读 16bit 数组
   526          // 参数说明     *soft_spi_obj   软件 SPI 指定信息存放结构体的指针
-  527          // 参数说明     *dat           数据存放缓冲�?
-  528          // 参数说明     len             缓冲区长�?
+  527          // 参数说明     *dat           数据存放缓冲区
+  528          // 参数说明     len             缓冲区长度
   529          // 返回参数     void
   530          // 使用示例     soft_spi_read_16bit_array(&soft_spi_obj, buf, 16);
   531          // 备注信息     
@@ -610,8 +610,8 @@ stmt  level    source
   534          {
   535   1          zf_assert(soft_spi_obj != NULL);
   536   1          zf_assert(dat != NULL);
+C251 COMPILER V5.60.0,  zf_driver_soft_spi                                                 24/01/26  19:25:43  PAGE 10  
 
-C251 COMPILER V5.60.0,  zf_driver_soft_spi                                                 24/01/26  11:15:48  PAGE 10  
   537   1              if(soft_spi_obj->config.use_cs)
   538   1          {
   539   2              gpio_low(soft_spi_obj->cs_pin);
@@ -630,11 +630,11 @@ stmt  level    source
   552          
   553          //-------------------------------------------------------------------------------------------------------
              -------------
-  554          // 函数简�?    软件 SPI 接口从传感器的寄存器�?8bit 数据
+  554          // 函数简介     软件 SPI 接口从传感器的寄存器读 8bit 数据
   555          // 参数说明     *soft_spi_obj   软件 SPI 指定信息存放结构体的指针
   556          // 参数说明     register_name   寄存器地址
   557          // 参数说明     dat            发送的数据
-  558          // 返回参数     uint8           返回读取�?8bit 数据
+  558          // 返回参数     uint8           返回读取的 8bit 数据
   559          // 使用示例     soft_spi_read_8bit_register(&soft_spi_obj, 0x01, 0x01);
   560          // 备注信息     
   561          //-------------------------------------------------------------------------------------------------------
@@ -660,11 +660,11 @@ stmt  level    source
   580          
   581          //-------------------------------------------------------------------------------------------------------
              -------------
-  582          // 函数简�?    软件 SPI 接口从传感器的寄存器�?8bit 数组
+  582          // 函数简介     软件 SPI 接口从传感器的寄存器读 8bit 数组
   583          // 参数说明     *soft_spi_obj   软件 SPI 指定信息存放结构体的指针
   584          // 参数说明     register_name   寄存器地址
-  585          // 参数说明     *dat           数据存放缓冲�?
-  586          // 参数说明     len             缓冲区长�?
+  585          // 参数说明     *dat           数据存放缓冲区
+  586          // 参数说明     len             缓冲区长度
   587          // 返回参数     void
   588          // 使用示例     soft_spi_read_8bit_registers(&soft_spi_obj, 0x01, buf, 16);
   589          // 备注信息     
@@ -678,8 +678,8 @@ stmt  level    source
   595   1              if(soft_spi_obj->config.use_cs)
   596   1          {
   597   2              gpio_low(soft_spi_obj->cs_pin);
+C251 COMPILER V5.60.0,  zf_driver_soft_spi                                                 24/01/26  19:25:43  PAGE 11  
 
-C251 COMPILER V5.60.0,  zf_driver_soft_spi                                                 24/01/26  11:15:48  PAGE 11  
   598   2          }
   599   1              
   600   1          soft_spi_8bit_data_handler(soft_spi_obj, register_name);
@@ -696,11 +696,11 @@ stmt  level    source
   611          
   612          //-------------------------------------------------------------------------------------------------------
              -------------
-  613          // 函数简�?    软件 SPI 接口从传感器的寄存器�?16bit 数据
+  613          // 函数简介     软件 SPI 接口从传感器的寄存器读 16bit 数据
   614          // 参数说明     *soft_spi_obj   软件 SPI 指定信息存放结构体的指针
   615          // 参数说明     register_name   寄存器地址
   616          // 参数说明     dat            发送的数据
-  617          // 返回参数     uint16          返回读取�?16bit 数据
+  617          // 返回参数     uint16          返回读取的 16bit 数据
   618          // 使用示例     soft_spi_read_16bit_register(&soft_spi_obj, 0x0101);
   619          // 备注信息     
   620          //-------------------------------------------------------------------------------------------------------
@@ -727,11 +727,11 @@ stmt  level    source
   640          
   641          //-------------------------------------------------------------------------------------------------------
              -------------
-  642          // 函数简�?    软件 SPI 接口从传感器的寄存器�?16bit 数组
+  642          // 函数简介     软件 SPI 接口从传感器的寄存器读 16bit 数组
   643          // 参数说明     *soft_spi_obj   软件 SPI 指定信息存放结构体的指针
   644          // 参数说明     register_name   寄存器地址
-  645          // 参数说明     *dat           数据存放缓冲�?
-  646          // 参数说明     len             缓冲区长�?
+  645          // 参数说明     *dat           数据存放缓冲区
+  646          // 参数说明     len             缓冲区长度
   647          // 返回参数     void
   648          // 使用示例     soft_spi_read_16bit_registers(&soft_spi_obj, 0x0101, buf, 16);
   649          // 备注信息     
@@ -746,8 +746,8 @@ stmt  level    source
   656   1          {
   657   2              gpio_low(soft_spi_obj->cs_pin);
   658   2          }
+C251 COMPILER V5.60.0,  zf_driver_soft_spi                                                 24/01/26  19:25:43  PAGE 12  
 
-C251 COMPILER V5.60.0,  zf_driver_soft_spi                                                 24/01/26  11:15:48  PAGE 12  
   659   1          soft_spi_16bit_data_handler(soft_spi_obj, register_name);
   660   1          while(len --)
   661   1          {
@@ -762,12 +762,12 @@ stmt  level    source
   670          
   671          //-------------------------------------------------------------------------------------------------------
              -------------
-  672          // 函数简�?    软件 SPI 8bit 数据传输 发送与接收数据是同时进行的
+  672          // 函数简介     软件 SPI 8bit 数据传输 发送与接收数据是同时进行的
   673          // 参数说明     *soft_spi_obj   软件 SPI 指定信息存放结构体的指针
   674          // 参数说明     write_buffer    发送的数据缓冲区地址
   675          // 参数说明     read_buffer     发送数据时接收到的数据的存储地址(不需要接收则�
-             -?NULL)
-  676          // 参数说明     len             发送的字节�?
+             -� NULL)
+  676          // 参数说明     len             发送的字节数
   677          // 返回参数     void
   678          // 使用示例     soft_spi_transfer_8bit(&soft_spi_obj, buf, buf, 1);
   679          // 备注信息     
@@ -806,16 +806,16 @@ stmt  level    source
   710          
   711          //-------------------------------------------------------------------------------------------------------
              -------------
-  712          // 函数简�?    软件 SPI 16bit 数据传输 发送与接收数据是同时进行的
+  712          // 函数简介     软件 SPI 16bit 数据传输 发送与接收数据是同时进行的
   713          // 参数说明     *soft_spi_obj   软件 SPI 指定信息存放结构体的指针
   714          // 参数说明     write_buffer    发送的数据缓冲区地址
   715          // 参数说明     read_buffer     发送数据时接收到的数据的存储地址(不需要接收则�
-             -?NULL)
-  716          // 参数说明     len             发送的字节�?
+             -� NULL)
+  716          // 参数说明     len             发送的字节数
   717          // 返回参数     void
   718          // 使用示例     soft_spi_transfer_16bit(&soft_spi_obj, buf, buf, 1);
+C251 COMPILER V5.60.0,  zf_driver_soft_spi                                                 24/01/26  19:25:43  PAGE 13  
 
-C251 COMPILER V5.60.0,  zf_driver_soft_spi                                                 24/01/26  11:15:48  PAGE 13  
   719          // 备注信息     
   720          //-------------------------------------------------------------------------------------------------------
              -------------
@@ -852,17 +852,17 @@ stmt  level    source
   750          
   751          //-------------------------------------------------------------------------------------------------------
              -------------
-  752          // 函数简�?    软件 SPI 接口初始�?
+  752          // 函数简介     软件 SPI 接口初始化
   753          // 参数说明     *soft_spi_obj   软件 SPI 指定信息存放结构体的指针
-  754          // 参数说明     mode            SPI 模式 参照 zf_driver_spi.h �?spi_mode_enum 枚举体定�?
-  755          // 参数说明     delay           软件 SPI 延时 就是时钟高电平时�?越短 SPI 速率越高
-  756          // 参数说明     sck_pin         选择 SCK 引脚 参照 zf_driver_gpio.h �?gpio_pin_enum 枚举�?
+  754          // 参数说明     mode            SPI 模式 参照 zf_driver_spi.h 内 spi_mode_enum 枚举体定义
+  755          // 参数说明     delay           软件 SPI 延时 就是时钟高电平时间 越短 SPI 速率越高
+  756          // 参数说明     sck_pin         选择 SCK 引脚 参照 zf_driver_gpio.h 内 gpio_pin_enum 枚举体
              -定义
-  757          // 参数说明     mosi_pin        选择 MOSI 引脚 参照 zf_driver_gpio.h �?gpio_pin_enum 枚举�
-             -�定�?
-  758          // 参数说明     miso_pin        选择 MISO 引脚 如果不需要这个引�?就填 SOFT_SPI_PIN_NU
+  757          // 参数说明     mosi_pin        选择 MOSI 引脚 参照 zf_driver_gpio.h 内 gpio_pin_enum 枚举�
+             -�定义
+  758          // 参数说明     miso_pin        选择 MISO 引脚 如果不需要这个引脚 就填 SOFT_SPI_PIN_NU
              -LL
-  759          // 参数说明     cs_pin          选择 CS 引脚 如果不需要这个引�?就填 SOFT_SPI_PIN_NULL
+  759          // 参数说明     cs_pin          选择 CS 引脚 如果不需要这个引脚 就填 SOFT_SPI_PIN_NULL
   760          // 返回参数     void
   761          // 使用示例     spi_init(SPI_1, 0, 1*1000*1000, A5, A7, A6, A4);
   762          // 备注信息     
@@ -872,23 +872,23 @@ stmt  level    source
              -gpio_pin_enum mosi_pin, uint32 miso_pin, uint32 cs_pin)
   765          {
   766   1          zf_assert(soft_spi_obj != NULL);
-  767   1          zf_assert(sck_pin != mosi_pin);                                             // sck_pin  �?mosi_pin 
+  767   1          zf_assert(sck_pin != mosi_pin);                                             // sck_pin  与 mosi_pin 
              -怎么能填同一个引脚？
-  768   1          zf_assert(sck_pin != miso_pin);                                             // sck_pin  �?miso_pin 
+  768   1          zf_assert(sck_pin != miso_pin);                                             // sck_pin  与 miso_pin 
              -怎么能填同一个引脚？
-  769   1          zf_assert(sck_pin != cs_pin);                                               // sck_pin  �?cs_pin   
+  769   1          zf_assert(sck_pin != cs_pin);                                               // sck_pin  与 cs_pin   
              -怎么能填同一个引脚？
-  770   1          zf_assert(mosi_pin != miso_pin);                                            // mosi_pin �?miso_pin 
+  770   1          zf_assert(mosi_pin != miso_pin);                                            // mosi_pin 与 miso_pin 
              -怎么能填同一个引脚？
-  771   1          zf_assert(mosi_pin != cs_pin);                                              // mosi_pin �?cs_pin   
+  771   1          zf_assert(mosi_pin != cs_pin);                                              // mosi_pin 与 cs_pin   
              -怎么能填同一个引脚？
+C251 COMPILER V5.60.0,  zf_driver_soft_spi                                                 24/01/26  19:25:43  PAGE 14  
 
-C251 COMPILER V5.60.0,  zf_driver_soft_spi                                                 24/01/26  11:15:48  PAGE 14  
-  772   1          zf_assert((miso_pin != cs_pin) || (cs_pin == SOFT_SPI_PIN_NULL));           // miso_pin �?cs_pin   
+  772   1          zf_assert((miso_pin != cs_pin) || (cs_pin == SOFT_SPI_PIN_NULL));           // miso_pin 与 cs_pin   
              -怎么能填同一个引脚？
   773   1      
   774   1          zf_assert(4 > mode);                                                        // 参照 zf_driver_spi.h
-             - �?spi_mode_enum 枚举体定�?
+             - 内 spi_mode_enum 枚举体定义
   775   1      
   776   1          soft_spi_obj->config.mode = mode;
   777   1          soft_spi_obj->delay = delay;
@@ -897,13 +897,13 @@ stmt  level    source
   780   1          soft_spi_obj->mosi_pin = mosi_pin;
   781   1          if(0 == mode || 1 == mode)
   782   1          {
-  783   2              gpio_init(sck_pin, GPO, GPIO_LOW, GPO_PUSH_PULL);                       // IO 初始�?
+  783   2              gpio_init(sck_pin, GPO, GPIO_LOW, GPO_PUSH_PULL);                       // IO 初始化
   784   2          }
   785   1          else
   786   1          {
-  787   2              gpio_init(sck_pin, GPO, GPIO_HIGH, GPO_PUSH_PULL);                      // IO 初始�?
+  787   2              gpio_init(sck_pin, GPO, GPIO_HIGH, GPO_PUSH_PULL);                      // IO 初始化
   788   2          }
-  789   1          gpio_init(mosi_pin, GPO, GPIO_HIGH, GPO_PUSH_PULL);                         // IO 初始�?
+  789   1          gpio_init(mosi_pin, GPO, GPIO_HIGH, GPO_PUSH_PULL);                         // IO 初始化
   790   1      
   791   1          if(SOFT_SPI_PIN_NULL == miso_pin)
   792   1          {
@@ -913,7 +913,7 @@ stmt  level    source
   796   1          {
   797   2              soft_spi_obj->config.use_miso = 1;
   798   2              soft_spi_obj->miso_pin = miso_pin;
-  799   2              gpio_init(soft_spi_obj->miso_pin, GPI, GPIO_HIGH, GPI_PULL_UP);     // IO 初始�?
+  799   2              gpio_init(soft_spi_obj->miso_pin, GPI, GPIO_HIGH, GPI_PULL_UP);     // IO 初始化
   800   2          }
   801   1          if(SOFT_SPI_PIN_NULL == cs_pin)
   802   1          {
@@ -923,7 +923,7 @@ stmt  level    source
   806   1          {
   807   2              soft_spi_obj->config.use_cs = 1;
   808   2              soft_spi_obj->cs_pin = cs_pin;
-  809   2              gpio_init(soft_spi_obj->cs_pin, GPO, GPIO_HIGH, GPO_PUSH_PULL);         // IO 初始�?
+  809   2              gpio_init(soft_spi_obj->cs_pin, GPO, GPIO_HIGH, GPO_PUSH_PULL);         // IO 初始化
   810   2          }
   811   1      }
 
@@ -950,4 +950,3 @@ End of Module Information.
 
 
 C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
-

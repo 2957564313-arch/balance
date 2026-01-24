@@ -1,5 +1,5 @@
+C251 COMPILER V5.60.0,  zf_common_clock                                                    24/01/26  19:25:40  PAGE 1   
 
-C251 COMPILER V5.60.0,  zf_common_clock                                                    24/01/26  11:15:45  PAGE 1   
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE zf_common_clock
 OBJECT MODULE PLACED IN .\out_file\zf_common_clock.obj
@@ -12,41 +12,41 @@ stmt  level    source
 
     1          /********************************************************************************************************
              -*************
-    2          * STC32G Opensourec Library 即（STC32G 开源库）是一个基于官�?SDK 接口的第三方开源�?
-             -?
+    2          * STC32G Opensourec Library 即（STC32G 开源库）是一个基于官方 SDK 接口的第三方开源�
+             -�
     3          * Copyright (c) 2022 SEEKFREE 逐飞科技
     4          *
     5          * 本文件是STC 开源库的一部分
     6          *
-    7          * STC32G 开源库 是免费软�?
-    8          * 您可以根据自由软件基金会发布�?GPL（GNU General Public License，即 GNU通用公共�?
+    7          * STC32G 开源库 是免费软件
+    8          * 您可以根据自由软件基金会发布的 GPL（GNU General Public License，即 GNU通用公共许
              -可证）的条款
-    9          * �?GPL 的第3版（�?GPL3.0）或（您选择的）任何后来的版本，重新发布�?或修�
+    9          * 即 GPL 的第3版（即 GPL3.0）或（您选择的）任何后来的版本，重新发布和/或修�
              -�它
    10          *
    11          * 本开源库的发布是希望它能发挥作用，但并未对其作任何的保证
    12          * 甚至没有隐含的适销性或适合特定用途的保证
-   13          * 更多细节请参�?GPL
+   13          * 更多细节请参见 GPL
    14          *
-   15          * 您应该在收到本开源库的同时收到一�?GPL 的副�?
+   15          * 您应该在收到本开源库的同时收到一份 GPL 的副本
    16          * 如果没有，请参阅<https://www.gnu.org/licenses/>
    17          *
-   18          * 额外注明�?
-   19          * 本开源库使用 GPL3.0 开源许可证协议 以上许可申明为译文版�?
-   20          * 许可申明英文版在 libraries/doc 文件夹下�?GPL3_permission_statement.txt 文件�?
-   21          * 许可证副本在 libraries 文件夹下 即该文件夹下�?LICENSE 文件
+   18          * 额外注明：
+   19          * 本开源库使用 GPL3.0 开源许可证协议 以上许可申明为译文版本
+   20          * 许可申明英文版在 libraries/doc 文件夹下的 GPL3_permission_statement.txt 文件中
+   21          * 许可证副本在 libraries 文件夹下 即该文件夹下的 LICENSE 文件
    22          * 欢迎各位使用并传播本程序 但修改内容时必须保留逐飞科技的版权声明（即本
-             -声明�?
+             -声明）
    23          *
    24          * 文件名称          
    25          * 公司名称          成都逐飞科技有限公司
    26          * 版本信息          查看 libraries/doc 文件夹内 version 文件 版本说明
-   27          * 开发环�?         MDK FOR C251
+   27          * 开发环境          MDK FOR C251
    28          * 适用平台          STC32G
    29          * 店铺链接          https://seekfree.taobao.com/
    30          *
    31          * 修改记录
-   32          * 日期              作�?          备注
+   32          * 日期              作者           备注
    33          * 2024-08-01        大W            first version
    34          *********************************************************************************************************
              -***********/
@@ -66,9 +66,9 @@ stmt  level    source
    48          //-------------------------------------------------------------------------------------------------------
              -------------
    49          //  @brief      STC32G设置系统频率
+C251 COMPILER V5.60.0,  zf_common_clock                                                    24/01/26  19:25:40  PAGE 2   
 
-C251 COMPILER V5.60.0,  zf_common_clock                                                    24/01/26  11:15:45  PAGE 2   
-   50          //  @param      NULL            空�?
+   50          //  @param      NULL            空值
    51          //  @return     void            系统频率
    52          //  Sample usage:               
    53          //-------------------------------------------------------------------------------------------------------
@@ -134,8 +134,8 @@ stmt  level    source
   112   2                              CLKDIV = 0x00;
   113   2                      break;
   114   2                              
+C251 COMPILER V5.60.0,  zf_common_clock                                                    24/01/26  19:25:40  PAGE 3   
 
-C251 COMPILER V5.60.0,  zf_common_clock                                                    24/01/26  11:15:45  PAGE 3   
   115   2                      default:
   116   2                              sys_clk = SYSTEM_CLOCK_30M;
   117   2                              // 选择 30MHz
@@ -153,18 +153,18 @@ stmt  level    source
   129          
   130          
   131          
-  132          void clock_init (uint32 clock)                                              // 核心时钟初始�?
+  132          void clock_init (uint32 clock)                                              // 核心时钟初始化
   133          {
   134   1              EAXFR = 1;                              // 使能访问XFR
   135   1              P_SW2 = 0x80;           // 开启特殊地址访问
-  136   1          CKCON = 0x00;           // 设置外部数据总线为最�?
-  137   1          WTST = 0;               // 设置程序代码等待参数，赋值为0可将CPU执行程序的速度?
-             -��置为最�?
+  136   1          CKCON = 0x00;           // 设置外部数据总线为最快
+  137   1          WTST = 0;               // 设置程序代码等待参数，赋值为0可将CPU执行程序的速度�
+             -��置为最快
   138   1      
   139   1      #if (1 == EXTERNAL_CRYSTA_ENABLE)
                        XOSCCR = 0xc0;                  //启动外部晶振
                        while (!(XOSCCR & 1));  //等待时钟稳定
-                       CLKDIV = 0x00;                  //时钟不分�?
+                       CLKDIV = 0x00;                  //时钟不分频
                        CLKSEL = 0x01;                  //选择外部晶振
                #else
   145   1              //自动设置系统频率
@@ -175,7 +175,7 @@ stmt  level    source
                        #endif
   151   1      #endif
   152   1      
-  153   1              system_delay_init();    // 延时函数初始�?
+  153   1              system_delay_init();    // 延时函数初始化
   154   1      
   155   1       
   156   1              P0M0 = 0x00;
@@ -202,8 +202,8 @@ stmt  level    source
   177   1              S3CON = 0;
   178   1              S4CON = 0;
   179   1              P_SW1 = 0;
+C251 COMPILER V5.60.0,  zf_common_clock                                                    24/01/26  19:25:40  PAGE 4   
 
-C251 COMPILER V5.60.0,  zf_common_clock                                                    24/01/26  11:15:45  PAGE 4   
   180   1              IE2 = 0;
   181   1              TMOD = 0;
   182   1              
@@ -235,4 +235,3 @@ End of Module Information.
 
 
 C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
-
