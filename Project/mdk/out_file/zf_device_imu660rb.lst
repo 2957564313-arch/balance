@@ -1,12 +1,12 @@
-C251 COMPILER V5.60.0,  zf_device_imu660rb                                                 24/01/26  11:15:49  PAGE 1   
 
+C251 COMPILER V5.60.0,  zf_device_imu660rb                                                 24/01/26  11:15:49  PAGE 1   
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE zf_device_imu660rb
 OBJECT MODULE PLACED IN .\out_file\zf_device_imu660rb.obj
-COMPILER INVOKED BY: D:\keil_5\C251\BIN\C251.EXE ..\..\libraries\zf_device\zf_device_imu660rb.c LARGE NOALIAS WARNINGLEV
-                    -EL(3) OPTIMIZE(0,SIZE) BROWSE INCDIR(..\..\libraries\zf_common;..\..\libraries\zf_components;..\..\libraries\zf_device;.
-                    -.\..\libraries\zf_driver;..\user;..\code) DEBUG PRINT(.\out_file\zf_device_imu660rb.lst) OBJECT(.\out_file\zf_device_imu
-                    -660rb.obj) 
+COMPILER INVOKED BY: C:\Keil_v5\C251\BIN\C251.EXE ..\..\libraries\zf_device\zf_device_imu660rb.c LARGE NOALIAS WARNINGLE
+                    -VEL(3) OPTIMIZE(0,SIZE) BROWSE INCDIR(..\..\libraries\zf_common;..\..\libraries\zf_components;..\..\libraries\zf_device;
+                    -..\..\libraries\zf_driver;..\user;..\code) DEBUG PRINT(.\out_file\zf_device_imu660rb.lst) OBJECT(.\out_file\zf_device_im
+                    -u660rb.obj) 
 
 stmt  level    source
 
@@ -66,8 +66,8 @@ stmt  level    source
    51          *                   VCC               3.3VµçÔ´
    52          *                   GND               µçÔ´µØ
    53          *                   ÆäÓàÒı½ÅĞü¿Õ
-C251 COMPILER V5.60.0,  zf_device_imu660rb                                                 24/01/26  11:15:49  PAGE 2   
 
+C251 COMPILER V5.60.0,  zf_device_imu660rb                                                 24/01/26  11:15:49  PAGE 2   
    54          *                   ------------------------------------
    55          *********************************************************************************************************
              -***********/
@@ -134,8 +134,8 @@ stmt  level    source
                        // Ê¹ÓÃÊ¾Àı     imu660rb_read_register(IMU660RB_CHIP_ID);
                        // ±¸×¢ĞÅÏ¢     ÄÚ²¿µ÷ÓÃ
                        //------------------------------------------------------------------------------------------------------
-C251 COMPILER V5.60.0,  zf_device_imu660rb                                                 24/01/26  11:15:49  PAGE 3   
 
+C251 COMPILER V5.60.0,  zf_device_imu660rb                                                 24/01/26  11:15:49  PAGE 3   
              --------------
                        static uint8 imu660rb_read_register(uint8 reg)
                        {
@@ -202,8 +202,8 @@ stmt  level    source
   168                  //  @brief      ½«valĞ´Èëcmd¶ÔÓ¦µÄ¼Ä´æÆ÷µØÖ·,Í¬Ê±·µ»Østatus×Ö½Ú
   169                  //  @param      cmd         ÃüÁî×Ö
   170                  //  @param      val         ´ıĞ´Èë¼Ä´æÆ÷µÄÊıÖµ
-C251 COMPILER V5.60.0,  zf_device_imu660rb                                                 24/01/26  11:15:49  PAGE 4   
 
+C251 COMPILER V5.60.0,  zf_device_imu660rb                                                 24/01/26  11:15:49  PAGE 4   
   171                  //  @since      v1.0
   172                  //  Sample usage:
   173                  //------------------------------------------------------------------------------------------------------
@@ -270,8 +270,8 @@ stmt  level    source
   227   1                      while(num--)
   228   1                      {
   229   2                              *val++ = imu660rb_simspi_wr_byte(0);
-C251 COMPILER V5.60.0,  zf_device_imu660rb                                                 24/01/26  11:15:49  PAGE 5   
 
+C251 COMPILER V5.60.0,  zf_device_imu660rb                                                 24/01/26  11:15:49  PAGE 5   
   230   2                      }
   231   1              }
   232                  
@@ -338,8 +338,8 @@ stmt  level    source
              -eg), (dat)))
                        #define imu660rb_write_registers(reg, dat, len)  (soft_iic_write_8bit_registers(&imu660rb_iic_struct, (r
              -eg), (dat), (len)))
-C251 COMPILER V5.60.0,  zf_device_imu660rb                                                 24/01/26  11:15:49  PAGE 6   
 
+C251 COMPILER V5.60.0,  zf_device_imu660rb                                                 24/01/26  11:15:49  PAGE 6   
                        #define imu660rb_read_register(reg)               (soft_iic_read_8bit_register  (&imu660rb_iic_struct, (
              -reg)))
                        #define imu660rb_read_registers(reg, dat, len)   (soft_iic_read_8bit_registers (&imu660rb_iic_struct, (r
@@ -406,8 +406,8 @@ stmt  level    source
   340          //             Ê¹ÓÃ IIC µÄ²É¼¯Ê±¼äÎª126us
   341          //-------------------------------------------------------------------------------------------------------
              -------------
-C251 COMPILER V5.60.0,  zf_device_imu660rb                                                 24/01/26  11:15:49  PAGE 7   
 
+C251 COMPILER V5.60.0,  zf_device_imu660rb                                                 24/01/26  11:15:49  PAGE 7   
   342          void imu660rb_get_gyro (void)
   343          {
   344   1          uint8 dat[6];
@@ -474,8 +474,8 @@ stmt  level    source
   391   2              default: break;
   392   2          }
   393   1          return gyro_data;
-C251 COMPILER V5.60.0,  zf_device_imu660rb                                                 24/01/26  11:15:49  PAGE 8   
 
+C251 COMPILER V5.60.0,  zf_device_imu660rb                                                 24/01/26  11:15:49  PAGE 8   
   394   1      }
   395          
   396          //-------------------------------------------------------------------------------------------------------
@@ -498,7 +498,7 @@ stmt  level    source
              -O_PIN, SPI_CS_NULL);   // ÅäÖÃ IMU660RB µÄ SPI ¶Ë¿Ú
                    gpio_init(IMU660RB_CS_PIN, GPO, GPIO_HIGH, GPO_PUSH_PULL);                  // ÅäÖÃ IMU660RB µÄ CS ¶Ë
              -¿Ú
-               //    imu660rb_read_register(IMU660RB_CHIP_ID);                                   // ¶ÁÈ¡Ò»ÏÂÉè±¸ID ½«Éè±
+               //    imu660rb_read_register(IMU660RB_CHIP_ID);                                   // ¶ÁÈ¡Ò»ÏÂÉè±¸ID ½«Éè?
              -¸ÉèÖÃÎªSPIÄ£Ê½
                        
                #elif (IMU660RB_USE_INTERFACE==SOFT_SPI)
@@ -526,37 +526,37 @@ stmt  level    source
   434   3                  break;
   435   3              }
   436   2      
-  437   2              imu660rb_write_register(IMU660RB_INT1_CTRL, 0x03);                      // ¿ªÆôÍÓÂİÒÇ ¼ÓËÙ¶ÈÊı¾İ¾
-             -ÍĞ÷ÖĞ¶Ï
+  437   2              imu660rb_write_register(IMU660RB_INT1_CTRL, 0x03);                      // ¿ªÆôÍÓÂİÒÇ ¼ÓËÙ¶ÈÊı¾İ?
+             -ÍĞ÷ÖĞ¶?
   438   2              imu660rb_write_register(IMU660RB_CTRL1_XL, IMU660RB_ACC_SAMPLE);        // ÉèÖÃ¼ÓËÙ¶È¼ÆÁ¿³Ì ¡À8G 
              -ÒÔ¼°Êı¾İÊä³öËÙÂÊ 52hz ÒÔ¼°¼ÓËÙ¶ÈĞÅÏ¢´ÓµÚÒ»¼¶ÂË²¨Æ÷Êä³ö
   439   2              // IMU660RB_CTRL1_XL ¼Ä´æÆ÷
-  440   2              // ÉèÖÃÎª:0x30 ¼ÓËÙ¶ÈÁ¿³ÌÎª:¡À2G      »ñÈ¡µ½µÄ¼ÓËÙ¶È¼ÆÊı¾İ ³ıÒÔ16393£¬¿ÉÒÔ×ª»¯Îª´øÎïÀíµ¥Î»µÄÊı¾İ£
+  440   2              // ÉèÖÃÎª:0x30 ¼ÓËÙ¶ÈÁ¿³ÌÎª:¡À2G      »ñÈ¡µ½µÄ¼ÓËÙ¶È¼ÆÊı¾İ ³ıÒÔ16393£¬¿ÉÒÔ×ª»¯Îª´øÎïÀíµ¥Î»µÄÊı¾İ?
              -¬µ¥Î»£ºg(m/s^2)
-  441   2              // ÉèÖÃÎª:0x38 ¼ÓËÙ¶ÈÁ¿³ÌÎª:¡À4G      »ñÈ¡µ½µÄ¼ÓËÙ¶È¼ÆÊı¾İ ³ıÒÔ8197£¬ ¿ÉÒÔ×ª»¯Îª´øÎïÀíµ¥Î»µÄÊı¾İ£
+  441   2              // ÉèÖÃÎª:0x38 ¼ÓËÙ¶ÈÁ¿³ÌÎª:¡À4G      »ñÈ¡µ½µÄ¼ÓËÙ¶È¼ÆÊı¾İ ³ıÒÔ8197£¬ ¿ÉÒÔ×ª»¯Îª´øÎïÀíµ¥Î»µÄÊı¾İ?
              -¬µ¥Î»£ºg(m/s^2)
-  442   2              // ÉèÖÃÎª:0x3C ¼ÓËÙ¶ÈÁ¿³ÌÎª:¡À8G      »ñÈ¡µ½µÄ¼ÓËÙ¶È¼ÆÊı¾İ ³ıÒÔ4098£¬ ¿ÉÒÔ×ª»¯Îª´øÎïÀíµ¥Î»µÄÊı¾İ£
+  442   2              // ÉèÖÃÎª:0x3C ¼ÓËÙ¶ÈÁ¿³ÌÎª:¡À8G      »ñÈ¡µ½µÄ¼ÓËÙ¶È¼ÆÊı¾İ ³ıÒÔ4098£¬ ¿ÉÒÔ×ª»¯Îª´øÎïÀíµ¥Î»µÄÊı¾İ?
              -¬µ¥Î»£ºg(m/s^2)
-  443   2              // ÉèÖÃÎª:0x34 ¼ÓËÙ¶ÈÁ¿³ÌÎª:¡À16G     »ñÈ¡µ½µÄ¼ÓËÙ¶È¼ÆÊı¾İ ³ıÒÔ2049£¬ ¿ÉÒÔ×ª»¯Îª´øÎïÀíµ¥Î»µÄÊı¾İ£
+  443   2              // ÉèÖÃÎª:0x34 ¼ÓËÙ¶ÈÁ¿³ÌÎª:¡À16G     »ñÈ¡µ½µÄ¼ÓËÙ¶È¼ÆÊı¾İ ³ıÒÔ2049£¬ ¿ÉÒÔ×ª»¯Îª´øÎïÀíµ¥Î»µÄÊı¾İ?
              -¬µ¥Î»£ºg(m/s^2)
   444   2      
   445   2              imu660rb_write_register(IMU660RB_CTRL2_G, IMU660RB_GYR_SAMPLE);         // ÉèÖÃÍÓÂİÒÇ¼ÆÁ¿³Ì ¡À200
              -0dps ÒÔ¼°Êı¾İÊä³öËÙÂÊ 208hz
-C251 COMPILER V5.60.0,  zf_device_imu660rb                                                 24/01/26  11:15:49  PAGE 9   
 
+C251 COMPILER V5.60.0,  zf_device_imu660rb                                                 24/01/26  11:15:49  PAGE 9   
   446   2              // IMU660RB_CTRL2_G ¼Ä´æÆ÷
-  447   2              // ÉèÖÃÎª:0x52 ÍÓÂİÒÇÁ¿³ÌÎª:¡À125dps  »ñÈ¡µ½µÄÍÓÂİÒÇÊı¾İ³ıÒÔ228.6£¬   ¿ÉÒÔ×ª»¯Îª´øÎïÀíµ¥Î»µÄÊı¾İ£
-             -¬µ¥Î»Îª£º¡ã/s
-  448   2              // ÉèÖÃÎª:0x50 ÍÓÂİÒÇÁ¿³ÌÎª:¡À250dps  »ñÈ¡µ½µÄÍÓÂİÒÇÊı¾İ³ıÒÔ114.3£¬   ¿ÉÒÔ×ª»¯Îª´øÎïÀíµ¥Î»µÄÊı¾İ£
-             -¬µ¥Î»Îª£º¡ã/s
-  449   2              // ÉèÖÃÎª:0x54 ÍÓÂİÒÇÁ¿³ÌÎª:¡À500dps  »ñÈ¡µ½µÄÍÓÂİÒÇÊı¾İ³ıÒÔ57.1£¬    ¿ÉÒÔ×ª»¯Îª´øÎïÀíµ¥Î»µÄÊı¾İ£
-             -¬µ¥Î»Îª£º¡ã/s
-  450   2              // ÉèÖÃÎª:0x58 ÍÓÂİÒÇÁ¿³ÌÎª:¡À1000dps »ñÈ¡µ½µÄÍÓÂİÒÇÊı¾İ³ıÒÔ28.6£¬    ¿ÉÒÔ×ª»¯Îª´øÎïÀíµ¥Î»µÄÊı¾İ£
-             -¬µ¥Î»Îª£º¡ã/s
-  451   2              // ÉèÖÃÎª:0x5C ÍÓÂİÒÇÁ¿³ÌÎª:¡À2000dps »ñÈ¡µ½µÄÍÓÂİÒÇÊı¾İ³ıÒÔ14.3£¬    ¿ÉÒÔ×ª»¯Îª´øÎïÀíµ¥Î»µÄÊı¾İ£
-             -¬µ¥Î»Îª£º¡ã/s
-  452   2              // ÉèÖÃÎª:0x51 ÍÓÂİÒÇÁ¿³ÌÎª:¡À4000dps »ñÈ¡µ½µÄÍÓÂİÒÇÊı¾İ³ıÒÔ7.1£¬     ¿ÉÒÔ×ª»¯Îª´øÎïÀíµ¥Î»µÄÊı¾İ£
-             -¬µ¥Î»Îª£º¡ã/s
+  447   2              // ÉèÖÃÎª:0x52 ÍÓÂİÒÇÁ¿³ÌÎª:¡À125dps  »ñÈ¡µ½µÄÍÓÂİÒÇÊı¾İ³ıÒÔ228.6£¬   ¿ÉÒÔ×ª»¯Îª´øÎïÀíµ¥Î»µÄÊı¾İ?
+             -¬µ¥Î»Îª£º¡?s
+  448   2              // ÉèÖÃÎª:0x50 ÍÓÂİÒÇÁ¿³ÌÎª:¡À250dps  »ñÈ¡µ½µÄÍÓÂİÒÇÊı¾İ³ıÒÔ114.3£¬   ¿ÉÒÔ×ª»¯Îª´øÎïÀíµ¥Î»µÄÊı¾İ?
+             -¬µ¥Î»Îª£º¡?s
+  449   2              // ÉèÖÃÎª:0x54 ÍÓÂİÒÇÁ¿³ÌÎª:¡À500dps  »ñÈ¡µ½µÄÍÓÂİÒÇÊı¾İ³ıÒÔ57.1£¬    ¿ÉÒÔ×ª»¯Îª´øÎïÀíµ¥Î»µÄÊı¾İ?
+             -¬µ¥Î»Îª£º¡?s
+  450   2              // ÉèÖÃÎª:0x58 ÍÓÂİÒÇÁ¿³ÌÎª:¡À1000dps »ñÈ¡µ½µÄÍÓÂİÒÇÊı¾İ³ıÒÔ28.6£¬    ¿ÉÒÔ×ª»¯Îª´øÎïÀíµ¥Î»µÄÊı¾İ?
+             -¬µ¥Î»Îª£º¡?s
+  451   2              // ÉèÖÃÎª:0x5C ÍÓÂİÒÇÁ¿³ÌÎª:¡À2000dps »ñÈ¡µ½µÄÍÓÂİÒÇÊı¾İ³ıÒÔ14.3£¬    ¿ÉÒÔ×ª»¯Îª´øÎïÀíµ¥Î»µÄÊı¾İ?
+             -¬µ¥Î»Îª£º¡?s
+  452   2              // ÉèÖÃÎª:0x51 ÍÓÂİÒÇÁ¿³ÌÎª:¡À4000dps »ñÈ¡µ½µÄÍÓÂİÒÇÊı¾İ³ıÒÔ7.1£¬     ¿ÉÒÔ×ª»¯Îª´øÎïÀíµ¥Î»µÄÊı¾İ?
+             -¬µ¥Î»Îª£º¡?s
   453   2      
   454   2              imu660rb_write_register(IMU660RB_CTRL3_C, 0x44);                        // Ê¹ÄÜÍÓÂİÒÇÊı×ÖµÍÍ¨ÂË²¨
              -Æ÷
@@ -565,8 +565,8 @@ stmt  level    source
              -Èë
   457   2              imu660rb_write_register(IMU660RB_CTRL6_C, 0x00);                        // ¿ªÆô¼ÓËÙ¶È¼Æ¸ßĞÔÄÜÄ£Ê½
              - ÍÓÂİÒÇµÍÍ¨ÂË²¨ 133hz
-  458   2              imu660rb_write_register(IMU660RB_CTRL7_G, 0x00);                        // ¿ªÆôÍÓÂİÒÇ¸ßĞÔÄÜÄ£Ê½ ¹
-             -Ø±Õ¸ßÍ¨ÂË²¨
+  458   2              imu660rb_write_register(IMU660RB_CTRL7_G, 0x00);                        // ¿ªÆôÍÓÂİÒÇ¸ßĞÔÄÜÄ£Ê½ ?
+             -Ø±Õ¸ßÍ¨ÂË²?
   459   2              imu660rb_write_register(IMU660RB_CTRL9_XL, 0x01);                       // ¹Ø±ÕI3C½Ó¿Ú
   460   2      
   461   2          }while(0);
@@ -598,3 +598,4 @@ End of Module Information.
 
 
 C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
+

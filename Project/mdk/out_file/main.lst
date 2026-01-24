@@ -1,13 +1,14 @@
-C251 COMPILER V5.60.0,  main                                                               24/01/26  18:25:12  PAGE 1   
 
+C251 COMPILER V5.60.0,  main                                                               24/01/26  18:25:12  PAGE 1   
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE main
 OBJECT MODULE PLACED IN .\out_file\main.obj
-COMPILER INVOKED BY: D:\keil_5\C251\BIN\C251.EXE ..\user\main.c LARGE NOALIAS WARNINGLEVEL(3) OPTIMIZE(0,SIZE) BROWSE IN
-                    -CDIR(..\..\libraries\zf_common;..\..\libraries\zf_components;..\..\libraries\zf_device;..\..\libraries\zf_driver;..\user
-                    -;..\code) DEBUG PRINT(.\out_file\main.lst) OBJECT(.\out_file\main.obj) 
+COMPILER INVOKED BY: C:\Keil_v5\C251\BIN\C251.EXE ..\user\main.c LARGE NOALIAS WARNINGLEVEL(3) OPTIMIZE(0,SIZE) BROWSE I
+                    -NCDIR(..\..\libraries\zf_common;..\..\libraries\zf_components;..\..\libraries\zf_device;..\..\libraries\zf_driver;..\use
+                    -r;..\code) DEBUG PRINT(.\out_file\main.lst) OBJECT(.\out_file\main.obj) 
 
 stmt  level    source
+
 
     1          #include "zf_common_headfile.h"
     2          #include "zf_device_oled.h"
@@ -31,13 +32,12 @@ stmt  level    source
    20   1          {
    21   2              system_delay_ms(100);
    22   2          }
-   23   1      }
-
+   23   1      }
 
 Module Information          Static   Overlayable
 ------------------------------------------------
-  code size            =       145     ------
-  ecode size           =    ------     ------
+
+  code size            =       145     ------  ecode size           =    ------     ------
   data size            =    ------     ------
   idata size           =    ------     ------
   pdata size           =    ------     ------
@@ -56,3 +56,4 @@ End of Module Information.
 
 
 C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
+

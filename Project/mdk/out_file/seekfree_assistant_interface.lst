@@ -1,12 +1,12 @@
-C251 COMPILER V5.60.0,  seekfree_assistant_interface                                       24/01/26  18:25:11  PAGE 1   
 
+C251 COMPILER V5.60.0,  seekfree_assistant_interface                                       24/01/26  18:25:11  PAGE 1   
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE seekfree_assistant_interface
 OBJECT MODULE PLACED IN .\out_file\seekfree_assistant_interface.obj
-COMPILER INVOKED BY: D:\keil_5\C251\BIN\C251.EXE ..\..\libraries\zf_components\seekfree_assistant_interface.c LARGE NOAL
-                    -IAS WARNINGLEVEL(3) OPTIMIZE(0,SIZE) BROWSE INCDIR(..\..\libraries\zf_common;..\..\libraries\zf_components;..\..\librari
-                    -es\zf_device;..\..\libraries\zf_driver;..\user;..\code) DEBUG PRINT(.\out_file\seekfree_assistant_interface.lst) OBJECT(
-                    -.\out_file\seekfree_assistant_interface.obj) 
+COMPILER INVOKED BY: C:\Keil_v5\C251\BIN\C251.EXE ..\..\libraries\zf_components\seekfree_assistant_interface.c LARGE NOA
+                    -LIAS WARNINGLEVEL(3) OPTIMIZE(0,SIZE) BROWSE INCDIR(..\..\libraries\zf_common;..\..\libraries\zf_components;..\..\librar
+                    -ies\zf_device;..\..\libraries\zf_driver;..\user;..\code) DEBUG PRINT(.\out_file\seekfree_assistant_interface.lst) OBJECT
+                    -(.\out_file\seekfree_assistant_interface.obj) 
 
 stmt  level    source
 
@@ -66,8 +66,8 @@ stmt  level    source
    49          // º¯Êı¼ò½é     Öğ·ÉÖúÊÖ½ÓÊÕÊı¾İº¯Êı
    50          // ²ÎÊıËµÃ÷     *buff           ĞèÒª½ÓÊÕµÄÊı¾İµØÖ·
    51          // ²ÎÊıËµÃ÷     length          Òª½ÓÊÕµÄÊı¾İ×î´ó³¤¶È
-C251 COMPILER V5.60.0,  seekfree_assistant_interface                                       24/01/26  18:25:11  PAGE 2   
 
+C251 COMPILER V5.60.0,  seekfree_assistant_interface                                       24/01/26  18:25:11  PAGE 2   
    52          // ·µ»Ø²ÎÊı     uint32          ½ÓÊÕµ½µÄÊı¾İ³¤¶È
    53          // Ê¹ÓÃÊ¾Àı
    54          //-------------------------------------------------------------------------------------------------------
@@ -80,9 +80,9 @@ stmt  level    source
    59          // º¯Êı¼ò½é     Öğ·ÉÖúÊÖ½Ó¿Ú ³õÊ¼»¯
    60          // ²ÎÊıËµÃ÷
    61          // ·µ»Ø²ÎÊı     void
-   62          // Ê¹ÓÃÊ¾Àı     seekfree_assistant_interface_init(SEEKFREE_ASSISTANT_WIFI_SPI); Ê¹ÓÃ¸ßËÙWIFI SPIÄ£¿é½øĞĞÊ
-             -ı¾İÊÕ·¢
-   63          // ±¸×¢         ĞèÒª×ÔĞĞµ÷ÓÃÉè±¸µÄ³õÊ¼»¯£¬ÀıÈçÊ¹ÓÃÎŞÏß×ª´®¿Ú½øĞĞÊı¾İµÄÊÕ·¢£¬ÔòĞèÒª×ÔĞĞµ÷ÓÃÎŞÏß×ª´®¿ÚµÄ³õÊ
+   62          // Ê¹ÓÃÊ¾Àı     seekfree_assistant_interface_init(SEEKFREE_ASSISTANT_WIFI_SPI); Ê¹ÓÃ¸ßËÙWIFI SPIÄ£¿é½øĞĞ?
+             -ı¾İÊÕ·?
+   63          // ±¸×¢         ĞèÒª×ÔĞĞµ÷ÓÃÉè±¸µÄ³õÊ¼»¯£¬ÀıÈçÊ¹ÓÃÎŞÏß×ª´®¿Ú½øĞĞÊı¾İµÄÊÕ·¢£¬ÔòĞèÒª×ÔĞĞµ÷ÓÃÎŞÏß×ª´®¿ÚµÄ³õ?
              -¼»¯£¬È»ºóÔÙµ÷ÓÃseekfree_assistant_interface_initÍê³ÉÖğ·ÉÖúÊÖµÄ½Ó¿Ú³õÊ¼»¯
    64          //-------------------------------------------------------------------------------------------------------
              -------------
@@ -135,8 +135,8 @@ Module Information          Static   Overlayable
   ebit size            =    ------     ------
   bitaddressable size  =    ------     ------
   ebitaddressable size =    ------     ------
-C251 COMPILER V5.60.0,  seekfree_assistant_interface                                       24/01/26  18:25:11  PAGE 3   
 
+C251 COMPILER V5.60.0,  seekfree_assistant_interface                                       24/01/26  18:25:11  PAGE 3   
   far data size        =    ------     ------
   huge data size       =    ------     ------
   const size           =    ------     ------
@@ -145,3 +145,4 @@ End of Module Information.
 
 
 C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
+

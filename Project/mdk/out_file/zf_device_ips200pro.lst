@@ -1,73 +1,73 @@
-C251 COMPILER V5.60.0,  zf_device_ips200pro                                                24/01/26  11:15:50  PAGE 1   
 
+C251 COMPILER V5.60.0,  zf_device_ips200pro                                                24/01/26  11:15:50  PAGE 1   
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE zf_device_ips200pro
 OBJECT MODULE PLACED IN .\out_file\zf_device_ips200pro.obj
-COMPILER INVOKED BY: D:\keil_5\C251\BIN\C251.EXE ..\..\Libraries\zf_device\zf_device_ips200pro.c LARGE NOALIAS WARNINGLE
-                    -VEL(3) OPTIMIZE(0,SIZE) BROWSE INCDIR(..\..\libraries\zf_common;..\..\libraries\zf_components;..\..\libraries\zf_device;
-                    -..\..\libraries\zf_driver;..\user;..\code) DEBUG PRINT(.\out_file\zf_device_ips200pro.lst) OBJECT(.\out_file\zf_device_i
-                    -ps200pro.obj) 
+COMPILER INVOKED BY: C:\Keil_v5\C251\BIN\C251.EXE ..\..\Libraries\zf_device\zf_device_ips200pro.c LARGE NOALIAS WARNINGL
+                    -EVEL(3) OPTIMIZE(0,SIZE) BROWSE INCDIR(..\..\libraries\zf_common;..\..\libraries\zf_components;..\..\libraries\zf_device
+                    -;..\..\libraries\zf_driver;..\user;..\code) DEBUG PRINT(.\out_file\zf_device_ips200pro.lst) OBJECT(.\out_file\zf_device_
+                    -ips200pro.obj) 
 
 stmt  level    source
 
     1          /********************************************************************************************************
              -*************
-    2          * STC32G Opensourec Library 即（STC32G 开源库）是一个基于官方 SDK 接口的第三方开源�
-             -�
+    2          * STC32G Opensourec Library 即（STC32G 开源库）是一个基于官�?SDK 接口的第三方开源�?
+             -?
     3          * Copyright (c) 2022 SEEKFREE 逐飞科技
     4          *
     5          * 本文件是STC 开源库的一部分
     6          *
-    7          * STC32G 开源库 是免费软件
-    8          * 您可以根据自由软件基金会发布的 GPL（GNU General Public License，即 GNU通用公共许
+    7          * STC32G 开源库 是免费软�?
+    8          * 您可以根据自由软件基金会发布�?GPL（GNU General Public License，即 GNU通用公共�?
              -可证）的条款
-    9          * 即 GPL 的第3版（即 GPL3.0）或（您选择的）任何后来的版本，重新发布和/或修�
+    9          * �?GPL 的第3版（�?GPL3.0）或（您选择的）任何后来的版本，重新发布�?或修�
              -�它
    10          *
    11          * 本开源库的发布是希望它能发挥作用，但并未对其作任何的保证
    12          * 甚至没有隐含的适销性或适合特定用途的保证
-   13          * 更多细节请参见 GPL
+   13          * 更多细节请参�?GPL
    14          *
-   15          * 您应该在收到本开源库的同时收到一份 GPL 的副本
+   15          * 您应该在收到本开源库的同时收到一�?GPL 的副�?
    16          * 如果没有，请参阅<https://www.gnu.org/licenses/>
    17          *
-   18          * 额外注明：
-   19          * 本开源库使用 GPL3.0 开源许可证协议 以上许可申明为译文版本
-   20          * 许可申明英文版在 libraries/doc 文件夹下的 GPL3_permission_statement.txt 文件中
-   21          * 许可证副本在 libraries 文件夹下 即该文件夹下的 LICENSE 文件
+   18          * 额外注明�?
+   19          * 本开源库使用 GPL3.0 开源许可证协议 以上许可申明为译文版�?
+   20          * 许可申明英文版在 libraries/doc 文件夹下�?GPL3_permission_statement.txt 文件�?
+   21          * 许可证副本在 libraries 文件夹下 即该文件夹下�?LICENSE 文件
    22          * 欢迎各位使用并传播本程序 但修改内容时必须保留逐飞科技的版权声明（即本
-             -声明）
+             -声明�?
    23          *
    24          * 文件名称          
    25          * 公司名称          成都逐飞科技有限公司
    26          * 版本信息          查看 libraries/doc 文件夹内 version 文件 版本说明
-   27          * 开发环境          MDK FOR C251
+   27          * 开发环�?         MDK FOR C251
    28          * 适用平台          STC32G
    29          * 店铺链接          https://seekfree.taobao.com/
    30          *
    31          * 修改记录
-   32          * 日期              作者           备注
+   32          * 日期              作�?          备注
    33          * 2024-08-01        大W            first version
    34          *********************************************************************************************************
              -***********/
    35          /********************************************************************************************************
              -*************
-   36          * 接线定义：
+   36          * 接线定义�?
    37          *                   ------------------------------------
-   38          *                               模块管脚            单片机管脚
-   39          *                               CLK                 查看 zf_device_ips200pro.h 中 IPS200PRO_CLK_PIN  宏定义
-   40          *                               MOSI                查看 zf_device_ips200pro.h 中 IPS200PRO_MOSI_PIN 宏定义
-   41          *                               MISO                查看 zf_device_ips200pro.h 中 IPS200PRO_MISO_PIN 宏定义
-   42          *                               RST                 查看 zf_device_ips200pro.h 中 IPS200PRO_RST_PIN  宏定义
-   43          *                               INT                 查看 zf_device_ips200pro.h 中 IPS200PRO_INT_PIN  宏定义
-   44          *                               CS                  查看 zf_device_ips200pro.h 中 IPS200PRO_CS_PIN   宏定义
+   38          *                               模块管脚            单片机管�?
+   39          *                               CLK                 查看 zf_device_ips200pro.h �?IPS200PRO_CLK_PIN  宏定�?
+   40          *                               MOSI                查看 zf_device_ips200pro.h �?IPS200PRO_MOSI_PIN 宏定�?
+   41          *                               MISO                查看 zf_device_ips200pro.h �?IPS200PRO_MISO_PIN 宏定�?
+   42          *                               RST                 查看 zf_device_ips200pro.h �?IPS200PRO_RST_PIN  宏定�?
+   43          *                               INT                 查看 zf_device_ips200pro.h �?IPS200PRO_INT_PIN  宏定�?
+   44          *                               CS                  查看 zf_device_ips200pro.h �?IPS200PRO_CS_PIN   宏定�?
    45          *                               GND                 核心板电源地 GND
-   46          *                               3V3                 核心板 3V3 电源
+   46          *                               3V3                 核心�?3V3 电源
    47          *                   最大分辨率160*128
    48          *                   ------------------------------------
    49          *********************************************************************************************************
-C251 COMPILER V5.60.0,  zf_device_ips200pro                                                24/01/26  11:15:50  PAGE 2   
 
+C251 COMPILER V5.60.0,  zf_device_ips200pro                                                24/01/26  11:15:50  PAGE 2   
              -***********/
    50          
    51          #include "zf_common_debug.h"
@@ -80,7 +80,7 @@ stmt  level    source
    58          #pragma warning disable = 177
    59          #pragma warning disable = 183
    60          
-   61          #define IPS200PRO_SPI_LENGTH    ( 4096 )    // 每次SPI通讯最大长度 不可修改
+   61          #define IPS200PRO_SPI_LENGTH    ( 4096 )    // 每次SPI通讯最大长�?不可修改
    62          
    63          // 不可修改
    64          #define MAX_ID_PAGE             ( 30 )
@@ -108,7 +108,7 @@ stmt  level    source
    86              IPS200PRO_WIDGETS_TABLE,                // 表格组件
    87              IPS200PRO_WIDGETS_METER,                // 仪表组件
    88              IPS200PRO_WIDGETS_CLOCK,                // 时钟组件
-   89              IPS200PRO_WIDGETS_BAR,                  // 进度条组件
+   89              IPS200PRO_WIDGETS_BAR,                  // 进度条组�?
    90              IPS200PRO_WIDGETS_CALENDAR,             // 日历组件
    91              IPS200PRO_WIDGETS_WAVEFORM,             // 波形组件
    92              IPS200PRO_WIDGETS_IMAGE,                // 图像组件
@@ -116,28 +116,28 @@ stmt  level    source
    94              IPS200PRO_WIDGETS_MAX,                  // 占位使用
    95          }ips200pro_command1_enum;
    96          
-   97          // 系统参数的子命令与屏幕组件的子命令
+   97          // 系统参数的子命令与屏幕组件的子命�?
    98          typedef enum
    99          {
-  100              // 可读可写的参数
+  100              // 可读可写的参�?
   101              IPS200PRO_SYSTEM_DATE            = 0x01,// 系统日期
   102              IPS200PRO_SYSTEM_TIME,                      // 系统时间
-  103              IPS200PRO_SYSTEM_PARENT,                    // 父对象
+  103              IPS200PRO_SYSTEM_PARENT,                    // 父对�?
   104              IPS200PRO_SYSTEM_CODED_FORMAT,              // 编码格式
   105              IPS200PRO_SYSTEM_BACKLIGHT,                 // 背光亮度
   106              IPS200PRO_SYSTEM_DIRECTION,                 // 屏幕显示方向
-  107              IPS200PRO_SYSTEM_CRC_STATE,                 // CRC使能状态
+  107              IPS200PRO_SYSTEM_CRC_STATE,                 // CRC使能状�?
   108              IPS200PRO_SYSTEM_FONT_SIZE,                 // 全局字体
-  109              SCREEN_SYSTEM_OPTIMIZE,                 // 优化 目前仅针对图像进行优化(默认优化开�
-             -�)
+  109              SCREEN_SYSTEM_OPTIMIZE,                 // 优化 目前仅针对图像进行优�?默认优化开�
+             -?
   110              IPS200PRO_SYSTEM_THEME,                     // 系统主题
   111              IPS200PRO_SYSTEM_SET_MAX,                   // 占位使用
   112          
   113              // 仅可读的参数
-C251 COMPILER V5.60.0,  zf_device_ips200pro                                                24/01/26  11:15:50  PAGE 3   
 
-  114              IPS200PRO_SYSTEM_INFORMATION        = 0x10, // 屏幕ID编号、分辨率、固件版本
-  115              IPS200PRO_SYSTEM_FREE_STACK,                // 系统空闲栈大小
+C251 COMPILER V5.60.0,  zf_device_ips200pro                                                24/01/26  11:15:50  PAGE 3   
+  114              IPS200PRO_SYSTEM_INFORMATION        = 0x10, // 屏幕ID编号、分辨率、固件版�?
+  115              IPS200PRO_SYSTEM_FREE_STACK,                // 系统空闲栈大�?
   116              IPS200PRO_SYSTEM_GET_MAX,                   // 占位使用
   117          
   118              // 通用操作命令
@@ -145,30 +145,30 @@ stmt  level    source
   120              IPS200PRO_COMMON_DELETE,                    // 组件删除
   121              IPS200PRO_COMMON_FONT_SIZE,                 // 组件字体大小
   122              IPS200PRO_COMMON_COLOR,                     // 组件颜色
-  123              IPS200PRO_COMMON_VALUE,                     // 组件数值 不同组件数据类型不同
+  123              IPS200PRO_COMMON_VALUE,                     // 组件数�?不同组件数据类型不同
   124              IPS200PRO_COMMON_POSITION,                  // 组件位置
   125              IPS200PRO_COMMON_HIDDEN,                    // 组件隐藏
   126              IPS200PRO_COMMON_MAX,                       // 占位
   127          
   128              // PAGE组件专用命令
   129              IPS200PRO_PAGE_SWITCH               = 0x10, // 切换页面
-  130              IPS200PRO_PAGE_TITLE,                       // 设置页面标题显示位置与宽度
+  130              IPS200PRO_PAGE_TITLE,                       // 设置页面标题显示位置与宽�?
   131              IPS200PRO_PAGE_MAX,
   132          
   133              // LABEL组件专用命令
-  134              IPS200PRO_LABEL_LONG_MODE           = 0x10, // 长文本模式
+  134              IPS200PRO_LABEL_LONG_MODE           = 0x10, // 长文本模�?
   135              IPS200PRO_LABEL_MAX,
   136          
   137              // TABLE组件专用命令
-  138              IPS200PRO_TABLE_COL_WIDTH           = 0x10, // 表格列宽度设置  行高由屏幕自动调整，无�
-             -�设置
+  138              IPS200PRO_TABLE_COL_WIDTH           = 0x10, // 表格列宽度设�? 行高由屏幕自动调整，无�?
+             -�设�?
   139              IPS200PRO_TABLE_SELECT,                     // 表格中单元格选中
   140              IPS200PRO_TABLE_MAX,
   141          
   142              // WAVEFORM组件专用命令
   143              IPS200PRO_WAVEFORM_LINE_STATE       = 0x10, // 隐藏指定线条
   144              IPS200PRO_WAVEFORM_LINE_TYPE,               // 设置组件中线条的类型
-  145              IPS200PRO_WAVEFORM_CLEAR,                   // 将所有数据清空
+  145              IPS200PRO_WAVEFORM_CLEAR,                   // 将所有数据清�?
   146              IPS200PRO_WAVEFORM_MAX,
   147          
   148              // IMAGE组件专用命令
@@ -178,32 +178,32 @@ stmt  level    source
   152          }ips200pro_command2_enum;
   153          
   154          
-  155          // 这里使用宏定义的方式，目的是为了避免使用匿名结构体，导致部分IDE无法在
-             -线调试的时候查看匿名结构体的数据
+  155          // 这里使用宏定义的方式，目的是为了避免使用匿名结构体，导致部分IDE无法�?
+             -线调试的时候查看匿名结构体的数�?
   156          #define IPS200PRO_HEADER   \
   157              uint8   command1;                           /* 命令1     */ \
   158              uint8   command2;                           /* 命令2     */ \
   159              uint8   check_crc8;                         /* CRC校验、默认未启用   */ \
   160              uint8   widgets_id;                         /* ID编号    */ \
-  161              uint32  length                              /* 数据包长度 */ \
+  161              uint32  length                              /* 数据包长�?*/ \
   162          
   163          typedef struct
   164          {
   165              IPS200PRO_HEADER;
   166          }ips200pro_header_struct;
   167          
-  168          //// 数据拆分联合体
+  168          //// 数据拆分联合�?
   169          //typedef union
   170          //{
-  171          //    int8    int8_data[2];                     // 有符号字节数据
-  172          //    uint8   uint8_data[2];                    // 无符号字节数据
-  173          //    int16   int16_data;                       // 有符号半字数据
-  174          //    uint16  uint16_data;                      // 无符号半字数据
+  171          //    int8    int8_data[2];                     // 有符号字节数�?
+  172          //    uint8   uint8_data[2];                    // 无符号字节数�?
+  173          //    int16   int16_data;                       // 有符号半字数�?
+  174          //    uint16  uint16_data;                      // 无符号半字数�?
   175          //}data_split_union;
   176          
-  177          // 通用结构体
-C251 COMPILER V5.60.0,  zf_device_ips200pro                                                24/01/26  11:15:50  PAGE 4   
+  177          // 通用结构�?
 
+C251 COMPILER V5.60.0,  zf_device_ips200pro                                                24/01/26  11:15:50  PAGE 4   
   178          #define IPS200PRO_COMMON_STRUCT(nam, num) \
   179              struct common_packet\
   180              {\
@@ -217,9 +217,9 @@ stmt  level    source
              -NDEX, (tx_data), (rx_data), (len)))
   187          //-------------------------------------------------------------------------------------------------------
              -------------
-  188          // 函数简介     屏幕等待函数
+  188          // 函数简�?    屏幕等待函数
   189          // 参数说明     wait_time       等待时间
-  190          // 返回参数     uint8           1：超时退出 0：未超时
+  190          // 返回参数     uint8           1：超时退�?0：未超时
   191          // 使用示例
   192          // 备注信息     内部使用，用户无需关心
   193          //-------------------------------------------------------------------------------------------------------
@@ -256,9 +256,9 @@ stmt  level    source
   223          {
   224   1          uint8 return_state = 1;
   225   1      
-  226   1          if(     ((0 == time_out) || (0 == ips200pro_wait_idle(time_out)))   // 等待未超时
+  226   1          if(     ((0 == time_out) || (0 == ips200pro_wait_idle(time_out)))   // 等待未超�?
   227   1              &&  (IPS200PRO_SPI_LENGTH >= length)                            // 数据量未超过限制
-  228   1              &&  (NULL != buffer))                                           // 指针不为空
+  228   1              &&  (NULL != buffer))                                           // 指针不为�?
   229   1          {
   230   2              IPS200PRO_CS(0);
   231   2              ips200pro_write_8bit_data_spi_array((const uint8 *)buffer, length);
@@ -270,17 +270,17 @@ stmt  level    source
   237   2          }
   238   1          return return_state;
   239   1      }
-C251 COMPILER V5.60.0,  zf_device_ips200pro                                                24/01/26  11:15:50  PAGE 5   
 
+C251 COMPILER V5.60.0,  zf_device_ips200pro                                                24/01/26  11:15:50  PAGE 5   
   240          
   241          
   242          uint8 ips200pro_receive_buffer(void *buffer, uint32 length, uint32 time_out)
   243          {
   244   1          uint8 return_state = 1;
   245   1      
-  246   1          if(     ((0 == time_out) || (0 == ips200pro_wait_idle(time_out)))   // 等待未超时
+  246   1          if(     ((0 == time_out) || (0 == ips200pro_wait_idle(time_out)))   // 等待未超�?
   247   1              &&  (IPS200PRO_SPI_LENGTH >= length)                            // 数据量未超过限制
-  248   1              &&  (NULL != buffer))                                           // 指针不为空
+  248   1              &&  (NULL != buffer))                                           // 指针不为�?
   249   1          {
   250   2              IPS200PRO_CS(0);
   251   2              ips200pro_transfer_8bit_data_spi_array((const uint8 *)buffer, (uint8 *)buffer, length);
@@ -310,13 +310,13 @@ stmt  level    source
                #endif
   275   1      
   276   1      
-  277   1              // 四位uint32长度进行大小端交换
+  277   1              // 四位uint32长度进行大小端交�?
   278   1          temp->length = ((temp->length & 0x000000FF) << 24) |
   279   1                         ((temp->length & 0x0000FF00) << 8)  |
   280   1                         ((temp->length & 0x00FF0000) >> 8)  |
   281   1                         ((temp->length & 0xFF000000) >> 24);
   282   1      
-  283   1              // 两位uint16数据进行大小端交换
+  283   1              // 两位uint16数据进行大小端交�?
   284   1              for(i = struct_len; i < length; i += 2)
   285   1              {
   286   2                      tmp = p[i];
@@ -338,15 +338,15 @@ stmt  level    source
   302          
   303          uint8 ips200pro_read_parameter(ips200pro_command2_enum command2, ips200pro_header_struct *temp, uint8 len
              -gth)
-C251 COMPILER V5.60.0,  zf_device_ips200pro                                                24/01/26  11:15:50  PAGE 6   
 
+C251 COMPILER V5.60.0,  zf_device_ips200pro                                                24/01/26  11:15:50  PAGE 6   
   304          {
   305   1          uint8 return_state;
   306   1      
   307   1          temp->command1   = IPS200PRO_PARAMETER_GET;
   308   1          temp->command2   = command2;
   309   1          temp->length     = length;
-  310   1          // 发送命令
+  310   1          // 发送命�?
   311   1          return_state    = ips200pro_send_buffer(temp, length, IPS200PRO_WAIT_TIME, 1);
   312   1          // 读取数据
   313   1          temp->command1  = 0x00;
@@ -406,8 +406,8 @@ stmt  level    source
   364   1          return_state = ips200pro_write_packet(IPS200PRO_PARAMETER_SET, IPS200PRO_SYSTEM_CODED_FORMAT, 0, (ips
              -200pro_header_struct *)&temp, sizeof(temp), NULL, 0);
   365   1          return return_state;
-C251 COMPILER V5.60.0,  zf_device_ips200pro                                                24/01/26  11:15:50  PAGE 7   
 
+C251 COMPILER V5.60.0,  zf_device_ips200pro                                                24/01/26  11:15:50  PAGE 7   
   366   1      }
   367          
   368          uint8 ips200pro_set_backlight(uint8 backlight)
@@ -474,8 +474,8 @@ stmt  level    source
   424          {
   425   1          uint8 return_state;
   426   1          IPS200PRO_COMMON_STRUCT(temp, 2);
-C251 COMPILER V5.60.0,  zf_device_ips200pro                                                24/01/26  11:15:50  PAGE 8   
 
+C251 COMPILER V5.60.0,  zf_device_ips200pro                                                24/01/26  11:15:50  PAGE 8   
   427   1      
   428   1          return_state = ips200pro_read_parameter(IPS200PRO_SYSTEM_DATE, (ips200pro_header_struct *)&temp, size
              -of(temp));
@@ -509,7 +509,7 @@ stmt  level    source
              -p, sizeof(temp));
   455   1          if(0 == return_state)
   456   1          {
-  457   2              information->version_major  = temp.widgets_id;              // 主版本
+  457   2              information->version_major  = temp.widgets_id;              // 主版�?
   458   2              memcpy(&information->id, &(temp.dat[0]), 8);
   459   2          }
   460   1          return return_state;
@@ -542,8 +542,8 @@ stmt  level    source
   486   1          if(ips200pro_page_num || (IPS200PRO_WIDGETS_PAGE == (widgets_id >> 8)))
   487   1          {
   488   2              // 只有在页面已经创建后，才允许创建其他组件
-C251 COMPILER V5.60.0,  zf_device_ips200pro                                                24/01/26  11:15:50  PAGE 9   
 
+C251 COMPILER V5.60.0,  zf_device_ips200pro                                                24/01/26  11:15:50  PAGE 9   
   489   2              return_state = ips200pro_write_packet(widgets_id >> 8, IPS200PRO_COMMON_CREATE, (uint8)widgets_id
              -, (ips200pro_header_struct *)&temp, sizeof(temp), NULL, 0);
   490   2          }
@@ -610,8 +610,8 @@ stmt  level    source
   546          
   547          uint16 ips200pro_page_create(char *str)
   548          {
-C251 COMPILER V5.60.0,  zf_device_ips200pro                                                24/01/26  11:15:50  PAGE 10  
 
+C251 COMPILER V5.60.0,  zf_device_ips200pro                                                24/01/26  11:15:50  PAGE 10  
   549   1          uint8 return_state = 1;
   550   1      
   551   1          if(MAX_ID_PAGE > ips200pro_page_num)
@@ -678,8 +678,8 @@ stmt  level    source
   607          uint16 ips200pro_label_create(int16 x, int16 y, uint16 width, uint16 height)
   608          {
   609   1          uint8 return_state = 1;
-C251 COMPILER V5.60.0,  zf_device_ips200pro                                                24/01/26  11:15:50  PAGE 11  
 
+C251 COMPILER V5.60.0,  zf_device_ips200pro                                                24/01/26  11:15:50  PAGE 11  
   610   1          static uint8 lebel_num = 0;
   611   1      
   612   1          if(MAX_ID_LABEL > lebel_num)
@@ -746,8 +746,8 @@ stmt  level    source
   669   1          if(MAX_ID_TABLE > table_num)
   670   1          {
   671   2              return_state = ips200pro_create_widgets(++table_num | (IPS200PRO_WIDGETS_TABLE << 8), x, y, row_n
-C251 COMPILER V5.60.0,  zf_device_ips200pro                                                24/01/26  11:15:50  PAGE 12  
 
+C251 COMPILER V5.60.0,  zf_device_ips200pro                                                24/01/26  11:15:50  PAGE 12  
              -um, col_num);
   672   2              if(1 == return_state)
   673   2              {
@@ -814,8 +814,8 @@ stmt  level    source
   731   2              return_state = ips200pro_create_widgets(++meter_num | (IPS200PRO_WIDGETS_METER << 8), x, y, siz, 
              -style);
   732   2              if(1 == return_state)
-C251 COMPILER V5.60.0,  zf_device_ips200pro                                                24/01/26  11:15:50  PAGE 13  
 
+C251 COMPILER V5.60.0,  zf_device_ips200pro                                                24/01/26  11:15:50  PAGE 13  
   733   2              {
   734   3                  meter_num--;
   735   3              }
@@ -882,9 +882,9 @@ stmt  level    source
   792          uint16 ips200pro_calendar_create(int16 x, int16 y, uint16 width, uint16 height)
   793          {
   794   1          uint8 return_state;
-C251 COMPILER V5.60.0,  zf_device_ips200pro                                                24/01/26  11:15:50  PAGE 14  
 
-  795   1          // 只能创建一个日历控件
+C251 COMPILER V5.60.0,  zf_device_ips200pro                                                24/01/26  11:15:50  PAGE 14  
+  795   1          // 只能创建一个日历控�?
   796   1          return_state = ips200pro_create_widgets(1 | (IPS200PRO_WIDGETS_CALENDAR << 8), x, y, width, height);
   797   1          return return_state == 1 ? 0 : (1 | (IPS200PRO_WIDGETS_CALENDAR << 8));
   798   1      }
@@ -930,7 +930,7 @@ stmt  level    source
   835   1          temp.dat[0] = line_id;
   836   1          temp.dat[1] = color;
   837   1              
-  838   1              // 两位uint16数据进行大小端交换
+  838   1              // 两位uint16数据进行大小端交�?
   839   1              for(i = 0; i < length; i++)
   840   1              {
   841   2                      dat[i] = ((dat[i] & 0xFF) << 8) | ((dat[i] & 0xFF00) >> 8);
@@ -950,8 +950,8 @@ stmt  level    source
   854   1          temp.dat[1] = line_state;
   855   1          return_state = ips200pro_write_packet(IPS200PRO_WIDGETS_WAVEFORM, IPS200PRO_WAVEFORM_LINE_STATE, (uin
              -t8)waveform_id, (ips200pro_header_struct *)&temp, sizeof(temp), NULL, 0);
-C251 COMPILER V5.60.0,  zf_device_ips200pro                                                24/01/26  11:15:50  PAGE 15  
 
+C251 COMPILER V5.60.0,  zf_device_ips200pro                                                24/01/26  11:15:50  PAGE 15  
   856   1          return return_state;
   857   1      }
   858          
@@ -1003,7 +1003,7 @@ stmt  level    source
   900   1      
   901   1          image_data = (uint8 *)image;
   902   1          image_size = width * height * (IMAGE_RGB565 == image_type ? 2 : 1);
-  903   1          // 任意条件满足，则表示不需要发送图像数据，仅通知屏幕更新边线或矩形
+  903   1          // 任意条件满足，则表示不需要发送图像数据，仅通知屏幕更新边线或矩�?
   904   1          if((NULL == image) || (!width) || (!height) || (IMAGE_NULL == image_type))
   905   1          {
   906   2                      temp.dat[0]  = 0;
@@ -1018,12 +1018,12 @@ stmt  level    source
   915   2          }
   916   1          temp.dat[2] = 1;            // 图像开始传输标志位
   917   1          temp.dat[3] = threshold;
-C251 COMPILER V5.60.0,  zf_device_ips200pro                                                24/01/26  11:15:50  PAGE 16  
 
+C251 COMPILER V5.60.0,  zf_device_ips200pro                                                24/01/26  11:15:50  PAGE 16  
   918   1      
   919   1          do
   920   1          {
-  921   2              // 计算本次传输字节数
+  921   2              // 计算本次传输字节�?
   922   2              send_length = image_size > (IPS200PRO_SPI_LENGTH - sizeof(temp)) ? (IPS200PRO_SPI_LENGTH - sizeof
              -(temp)) : (uint16)image_size;
   923   2              return_state += ips200pro_write_packet(IPS200PRO_WIDGETS_IMAGE, IPS200PRO_COMMON_VALUE, (uint8)im
@@ -1086,8 +1086,8 @@ stmt  level    source
   974   3              }
   975   2          }
   976   1          return return_state == 1 ? 0 : (container_num | (IPS200PRO_WIDGETS_CONTAINER << 8));
-C251 COMPILER V5.60.0,  zf_device_ips200pro                                                24/01/26  11:15:50  PAGE 17  
 
+C251 COMPILER V5.60.0,  zf_device_ips200pro                                                24/01/26  11:15:50  PAGE 17  
   977   1      }
   978          
   979          uint8 ips200pro_container_radius(uint16 container_id, uint16 border_width, uint16 radius)
@@ -1110,7 +1110,7 @@ stmt  level    source
   994   1          gpio_init(IPS200PRO_RST_PIN, GPO, GPIO_HIGH, GPO_PUSH_PULL);
   995   1          gpio_init(IPS200PRO_CS_PIN, GPO, GPIO_HIGH, GPO_PUSH_PULL);
   996   1          // 将屏幕应答引脚修改为上拉，这样即使屏幕在使用过程中被拔掉也不会导�
-             -�程序卡主
+             -�程序卡�?
   997   1          gpio_init(IPS200PRO_INT_PIN, GPI, GPIO_HIGH, GPI_PULL_UP);
   998   1      
   999   1          gpio_set_level(IPS200PRO_RST_PIN, 0);
@@ -1120,18 +1120,18 @@ stmt  level    source
  1003   1      
  1004   1      
  1005   1      
- 1006   1          // 某一些主板屏幕接口由于没有MISO引脚，所以无法读取屏幕信息
+ 1006   1          // 某一些主板屏幕接口由于没有MISO引脚，所以无法读取屏幕信�?
  1007   1          // ips200pro_get_information(&ips200pro_information);
  1008   1          // ips200pro_get_time(&ips200pro_time);
  1009   1      
  1010   1          // 设置时间会立即生效，因此并不建议在初始化中调用时间设置函数，如果�
-             -�初始化中调用就会导致每次上电之后时间都会还原
+             -�初始化中调用就会导致每次上电之后时间都会还�?
  1011   1          // ips200pro_set_time(15, 54, 30);
  1012   1      
- 1013   1          // 特别注意、特别注意、特别注意
+ 1013   1          // 特别注意、特别注意、特别注�?
  1014   1          // 设置页面标题显示位置以及标题宽度，需要注意仅在创建页面之前调用才�
-             -�生效
- 1015   1          // 特别注意、特别注意、特别注意
+             -�生�?
+ 1015   1          // 特别注意、特别注意、特别注�?
  1016   1      
  1017   1      
  1018   1          ips200pro_page_set_title_position_width(title_position, title_size);
@@ -1142,20 +1142,20 @@ stmt  level    source
  1023   1      
  1024   1      
  1025   1      
- 1026   1          // 设置默认参数并创建一个页面
+ 1026   1          // 设置默认参数并创建一个页�?
  1027   1          if(NULL != str)
  1028   1          {
- 1029   2              page_id = ips200pro_page_create(str); // 创建一个页面
+ 1029   2              page_id = ips200pro_page_create(str); // 创建一个页�?
  1030   2          }
  1031   1      
  1032   1      #if(1 == IPS200PRO_CRC_ENABLE)
-                   ips200pro_set_crc_state(1);  // 使能CRC模式增强抗干扰能力，但是需要消耗主控一部
+                   ips200pro_set_crc_state(1);  // 使能CRC模式增强抗干扰能力，但是需要消耗主控一�?
              -分算力做CRC计算
                #endif
  1035   1      
  1036   1          return page_id;
-C251 COMPILER V5.60.0,  zf_device_ips200pro                                                24/01/26  11:15:50  PAGE 18  
 
+C251 COMPILER V5.60.0,  zf_device_ips200pro                                                24/01/26  11:15:50  PAGE 18  
  1037   1      }
 
 
@@ -1181,3 +1181,4 @@ End of Module Information.
 
 
 C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
+

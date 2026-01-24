@@ -1,11 +1,11 @@
-C251 COMPILER V5.60.0,  zf_driver_adc                                                      24/01/26  11:15:46  PAGE 1   
 
+C251 COMPILER V5.60.0,  zf_driver_adc                                                      24/01/26  11:15:46  PAGE 1   
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE zf_driver_adc
 OBJECT MODULE PLACED IN .\out_file\zf_driver_adc.obj
-COMPILER INVOKED BY: D:\keil_5\C251\BIN\C251.EXE ..\..\libraries\zf_driver\zf_driver_adc.c LARGE NOALIAS WARNINGLEVEL(3)
-                    - OPTIMIZE(0,SIZE) BROWSE INCDIR(..\..\libraries\zf_common;..\..\libraries\zf_components;..\..\libraries\zf_device;..\..\
-                    -libraries\zf_driver;..\user;..\code) DEBUG PRINT(.\out_file\zf_driver_adc.lst) OBJECT(.\out_file\zf_driver_adc.obj) 
+COMPILER INVOKED BY: C:\Keil_v5\C251\BIN\C251.EXE ..\..\libraries\zf_driver\zf_driver_adc.c LARGE NOALIAS WARNINGLEVEL(3
+                    -) OPTIMIZE(0,SIZE) BROWSE INCDIR(..\..\libraries\zf_common;..\..\libraries\zf_components;..\..\libraries\zf_device;..\..
+                    -\libraries\zf_driver;..\user;..\code) DEBUG PRINT(.\out_file\zf_driver_adc.lst) OBJECT(.\out_file\zf_driver_adc.obj) 
 
 stmt  level    source
 
@@ -66,8 +66,8 @@ stmt  level    source
              -------------
    51          uint16 adc_mean_filter_convert (adc_channel_enum ch, const uint8 count)
    52          {
-C251 COMPILER V5.60.0,  zf_driver_adc                                                      24/01/26  11:15:46  PAGE 2   
 
+C251 COMPILER V5.60.0,  zf_driver_adc                                                      24/01/26  11:15:46  PAGE 2   
    53   1          uint8 i;
    54   1          uint32 sum;
    55   1      
@@ -134,8 +134,8 @@ stmt  level    source
   112   1          ADC_CONTR &= (0xF0);                        //清除ADC_CHS[3:0] ： ADC 模拟通道选择位
   113   1          ADC_CONTR |= ch;
   114   1          
-C251 COMPILER V5.60.0,  zf_driver_adc                                                      24/01/26  11:15:46  PAGE 3   
 
+C251 COMPILER V5.60.0,  zf_driver_adc                                                      24/01/26  11:15:46  PAGE 3   
   115   1          if((ch >> 3) == 1) //P0.0
   116   1          {
   117   2              //IO口需要设置为高阻输入
@@ -179,3 +179,4 @@ End of Module Information.
 
 
 C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
+
