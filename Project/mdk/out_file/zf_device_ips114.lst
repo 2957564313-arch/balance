@@ -1,12 +1,12 @@
-C251 COMPILER V5.60.0,  zf_device_ips114                                                   23/01/26  08:25:34  PAGE 1   
+C251 COMPILER V5.60.0,  zf_device_ips114                                                   24/01/26  13:58:51  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE zf_device_ips114
 OBJECT MODULE PLACED IN .\out_file\zf_device_ips114.obj
-COMPILER INVOKED BY: D:\keil_5\C251\BIN\C251.EXE ..\..\libraries\zf_device\zf_device_ips114.c LARGE NOALIAS WARNINGLEVEL
-                    -(3) OPTIMIZE(0,SIZE) BROWSE INCDIR(..\..\libraries\zf_common;..\..\libraries\zf_components;..\..\libraries\zf_device;..\
-                    -..\libraries\zf_driver;..\user;..\code) DEBUG PRINT(.\out_file\zf_device_ips114.lst) OBJECT(.\out_file\zf_device_ips114.
-                    -obj) 
+COMPILER INVOKED BY: C:\Keil_v5\C251\BIN\C251.EXE ..\..\libraries\zf_device\zf_device_ips114.c LARGE NOALIAS WARNINGLEVE
+                    -L(3) OPTIMIZE(0,SIZE) BROWSE INCDIR(..\..\libraries\zf_common;..\..\libraries\zf_components;..\..\libraries\zf_device;..
+                    -\..\libraries\zf_driver;..\user;..\code) DEBUG PRINT(.\out_file\zf_device_ips114.lst) OBJECT(.\out_file\zf_device_ips114
+                    -.obj) 
 
 stmt  level    source
 
@@ -66,7 +66,7 @@ stmt  level    source
    47          *                   最大分辨率 135 * 240
    48          *                   ------------------------------------
    49          *********************************************************************************************************
-C251 COMPILER V5.60.0,  zf_device_ips114                                                   23/01/26  08:25:34  PAGE 2   
+C251 COMPILER V5.60.0,  zf_device_ips114                                                   24/01/26  13:58:51  PAGE 2   
 
              -***********/
    50          
@@ -134,7 +134,7 @@ stmt  level    source
   108   1          zf_assert(y2 < ips114_y_max);
   109   1      
   110   1          if(ips114_display_dir==IPS114_PORTAIT)
-C251 COMPILER V5.60.0,  zf_device_ips114                                                   23/01/26  08:25:34  PAGE 3   
+C251 COMPILER V5.60.0,  zf_device_ips114                                                   24/01/26  13:58:51  PAGE 3   
 
   111   1          {
   112   2              ips114_write_index(0x2a);                                               // 列地址设置
@@ -202,7 +202,7 @@ stmt  level    source
   171          
   172          //-------------------------------------------------------------------------------------------------------
              -------------
-C251 COMPILER V5.60.0,  zf_device_ips114                                                   23/01/26  08:25:34  PAGE 4   
+C251 COMPILER V5.60.0,  zf_device_ips114                                                   24/01/26  13:58:51  PAGE 4   
 
   173          // 函数简介       设置显示方向 这个函数只有在初始化屏幕之前调用才生效
   174          // 参数说明       dir             显示方向  参照 zf_device_ips114.h 内 ips114_dir_enum 枚举�
@@ -270,7 +270,7 @@ stmt  level    source
   226          // 参数说明       y               坐标y方向的起点 参数范围 [0, ips114_y_max-1]
   227          // 参数说明       dat             需要显示的字符
   228          // 返回参数      void
-C251 COMPILER V5.60.0,  zf_device_ips114                                                   23/01/26  08:25:34  PAGE 5   
+C251 COMPILER V5.60.0,  zf_device_ips114                                                   24/01/26  13:58:51  PAGE 5   
 
   229          // 使用示例                ips114_show_char(0,0,'x');                      // 坐标 0,0 写一个字
              -符 x
@@ -338,7 +338,7 @@ stmt  level    source
   285          {
   286   1              uint8 a[3];
   287   1          uint8 i;
-C251 COMPILER V5.60.0,  zf_device_ips114                                                   23/01/26  08:25:34  PAGE 6   
+C251 COMPILER V5.60.0,  zf_device_ips114                                                   24/01/26  13:58:51  PAGE 6   
 
   288   1              
   289   1          zf_assert(x < ips114_x_max);
@@ -406,7 +406,7 @@ stmt  level    source
   347          void ips114_show_int16(uint16 x,uint16 y,int16 dat)
   348          {
   349   1          uint8 a[5];
-C251 COMPILER V5.60.0,  zf_device_ips114                                                   23/01/26  08:25:34  PAGE 7   
+C251 COMPILER V5.60.0,  zf_device_ips114                                                   24/01/26  13:58:51  PAGE 7   
 
   350   1          uint8 i;
   351   1              
@@ -474,7 +474,7 @@ stmt  level    source
   410          // 参数说明       dat             需要显示的变量，数据类型uint32
   411          // 参数说明       num             需要显示的位数 最高10位  不包含正负号
   412          // 返回参数      void
-C251 COMPILER V5.60.0,  zf_device_ips114                                                   23/01/26  08:25:34  PAGE 8   
+C251 COMPILER V5.60.0,  zf_device_ips114                                                   24/01/26  13:58:51  PAGE 8   
 
   413          // 使用示例                ips114_show_int32(0,0,x,3);                     // x 可以为 int32 uint1
              -6 int16 uint8 int8 类型
@@ -542,7 +542,7 @@ stmt  level    source
   468   1          if(6<pointnum)  pointnum = 6;
   469   1          if(10<num)      num = 10;
   470   1              
-C251 COMPILER V5.60.0,  zf_device_ips114                                                   23/01/26  08:25:34  PAGE 9   
+C251 COMPILER V5.60.0,  zf_device_ips114                                                   24/01/26  13:58:51  PAGE 9   
 
   471   1          if(0>dat)   length = zf_sprintf( &buff[0],(const int8 *)"%f",dat);        // 负数
   472   1          else
@@ -610,7 +610,7 @@ stmt  level    source
   529   2              ips114_draw_point(i+x, (dis_value_max-1)-value_max_index+y, ips114_pencolor);
   530   2          }
   531   1      }
-C251 COMPILER V5.60.0,  zf_device_ips114                                                   23/01/26  08:25:34  PAGE 10  
+C251 COMPILER V5.60.0,  zf_device_ips114                                                   24/01/26  13:58:51  PAGE 10  
 
   532          
   533          //-------------------------------------------------------------------------------------------------------
@@ -678,7 +678,7 @@ stmt  level    source
                    soft_spi_init(&ips114_spi, SPI_MODE0, IPS114_SOFT_SPI_DELAY, IPS114_SCL_PIN, IPS114_SDA_PIN, SOFT_SPI
              -_PIN_NULL, SOFT_SPI_PIN_NULL);
                #elif (IPS114_USE_INTERFACE==HARDWARE_SPI)
-C251 COMPILER V5.60.0,  zf_device_ips114                                                   23/01/26  08:25:34  PAGE 11  
+C251 COMPILER V5.60.0,  zf_device_ips114                                                   24/01/26  13:58:51  PAGE 11  
 
   590   1          zf_assert(IPS114_SPI != (IPS114_SCL_PIN&0xF000>>12));
   591   1          zf_assert(IPS114_SPI != (IPS114_SDA_PIN&0xF000>>12));
@@ -746,7 +746,7 @@ stmt  level    source
   652   1          ips114_write_8bit_data(0xD0);
   653   1          ips114_write_8bit_data(0x04);
   654   1          ips114_write_8bit_data(0x0D);
-C251 COMPILER V5.60.0,  zf_device_ips114                                                   23/01/26  08:25:34  PAGE 12  
+C251 COMPILER V5.60.0,  zf_device_ips114                                                   24/01/26  13:58:51  PAGE 12  
 
   655   1          ips114_write_8bit_data(0x11);
   656   1          ips114_write_8bit_data(0x13);

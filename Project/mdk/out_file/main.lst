@@ -1,11 +1,11 @@
-C251 COMPILER V5.60.0,  main                                                               23/01/26  08:25:35  PAGE 1   
+C251 COMPILER V5.60.0,  main                                                               24/01/26  14:30:17  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE main
 OBJECT MODULE PLACED IN .\out_file\main.obj
-COMPILER INVOKED BY: D:\keil_5\C251\BIN\C251.EXE ..\user\main.c LARGE NOALIAS WARNINGLEVEL(3) OPTIMIZE(0,SIZE) BROWSE IN
-                    -CDIR(..\..\libraries\zf_common;..\..\libraries\zf_components;..\..\libraries\zf_device;..\..\libraries\zf_driver;..\user
-                    -;..\code) DEBUG PRINT(.\out_file\main.lst) OBJECT(.\out_file\main.obj) 
+COMPILER INVOKED BY: C:\Keil_v5\C251\BIN\C251.EXE ..\user\main.c LARGE NOALIAS WARNINGLEVEL(3) OPTIMIZE(0,SIZE) BROWSE I
+                    -NCDIR(..\..\libraries\zf_common;..\..\libraries\zf_components;..\..\libraries\zf_device;..\..\libraries\zf_driver;..\use
+                    -r;..\code) DEBUG PRINT(.\out_file\main.lst) OBJECT(.\out_file\main.obj) 
 
 stmt  level    source
 
@@ -51,28 +51,47 @@ stmt  level    source
              -***********/
    35          
    36          #include "zf_common_headfile.h"
-   37          
-   38          void main()
-   39          {
-   40   1          clock_init(SYSTEM_CLOCK_30M);
-   41   1              debug_init();
-   42   1              
-   43   1              // 此处编写用户代码 例如外设初始化代码等
+   37          #include "Key.h"
+   38          
+   39          void main()
+   40          {
+   41   1          clock_init(SYSTEM_CLOCK_30M);
+   42   1              debug_init();
+   43   1              Key_Init();
    44   1              
-   45   1          while(1)
-   46   1          {
-   47   2                      
-   48   2              // 此处编写需要循环执行的代码
+   45   1              // 此处编写用户代码 例如外设初始化代码等
+   46   1              
+   47   1          while(1)
+   48   1          {
    49   2                      
-   50   2          }
-   51   1      }
-C251 COMPILER V5.60.0,  main                                                               23/01/26  08:25:35  PAGE 2   
+   50   2              // 此处编写需要循环执行的代码
+   51   2                      
+C251 COMPILER V5.60.0,  main                                                               24/01/26  14:30:17  PAGE 2   
 
+   52   2                      Key_Tick();
+   53   2                      if (Key_Check(0,KEY_SINGLE))
+   54   2                      {
+   55   3                              printf("0");
+   56   3                      }
+   57   2                      else if (Key_Check(1,KEY_SINGLE))
+   58   2                      {
+   59   3                              printf("1");
+   60   3                      }
+   61   2                      else if (Key_Check(2,KEY_SINGLE))
+   62   2                      {
+   63   3                              printf("2");
+   64   3                      }
+   65   2                      else if (Key_Check(3,KEY_SINGLE))
+   66   2                      {
+   67   3                              printf("3");
+   68   3                      }
+   69   2          }
+   70   1      }
 
 
 Module Information          Static   Overlayable
 ------------------------------------------------
-  code size            =        61     ------
+  code size            =       168     ------
   ecode size           =    ------     ------
   data size            =    ------     ------
   idata size           =    ------     ------
@@ -87,7 +106,7 @@ Module Information          Static   Overlayable
   far data size        =    ------     ------
   huge data size       =    ------     ------
   const size           =    ------     ------
-  hconst size          =         2     ------
+  hconst size          =         8     ------
 End of Module Information.
 
 

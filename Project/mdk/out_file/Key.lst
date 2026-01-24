@@ -1,0 +1,252 @@
+C251 COMPILER V5.60.0,  Key                                                                24/01/26  14:43:44  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE Key
+OBJECT MODULE PLACED IN .\out_file\Key.obj
+COMPILER INVOKED BY: C:\Keil_v5\C251\BIN\C251.EXE ..\code\Key.c LARGE NOALIAS WARNINGLEVEL(3) OPTIMIZE(0,SIZE) BROWSE IN
+                    -CDIR(..\..\libraries\zf_common;..\..\libraries\zf_components;..\..\libraries\zf_device;..\..\libraries\zf_driver;..\user
+                    -;..\code) DEBUG PRINT(.\out_file\Key.lst) OBJECT(.\out_file\Key.obj) 
+
+stmt  level    source
+
+    1          #include "zf_common_headfile.h"                  // Device header
+    2          
+    3          #include "Key.h"                //使用了位于Key.h的宏定义
+    4          
+    5          //用宏定义替换1/0，便于理解Key_GetState（）
+    6          #define KEY_PRESSED                     1
+    7          #define KEY_UNPRESSED                   0
+    8          
+    9          //宏定义替换时间阈值
+   10          /*
+   11          说明：由于按键检测和状态机代码每隔20ms才会执行一次
+   12          所以此处的各个时间阈值最好都设置为20ms的倍数
+   13          所以即使设定时间为50ms，但实际却会是60ms
+   14          */
+   15          #define KEY_Time_DOUBLE                 0
+   16          #define KEY_Time_LONG                   2000
+   17          #define KEY_Time_REPEAT                 100
+   18          
+   19          uint8 Key_Flag[KEY_COUNT];//不同的位表示不同的事件标志位
+   20          
+   21          // 定义按键引脚
+   22          #define KEY1_PIN    IO_P70
+   23          #define KEY2_PIN    IO_P71
+   24          #define KEY3_PIN    IO_P72
+   25          #define KEY4_PIN    IO_P73
+   26          
+   27          void Key_Init(void)
+   28          {
+   29   1              gpio_init(KEY1_PIN, GPI, 1, GPI_PULL_UP);
+   30   1              gpio_init(KEY2_PIN, GPI, 1, GPI_PULL_UP);
+   31   1              gpio_init(KEY3_PIN, GPI, 1, GPI_PULL_UP);
+   32   1              gpio_init(KEY4_PIN, GPI, 1, GPI_PULL_UP);
+   33   1      }
+   34          
+   35          //形参指定按键；返回当前按键按下状态/未按下状态
+   36          uint8 Key_GetState(uint8 n)
+   37          {
+   38   1              if (n == 0)
+   39   1              {
+   40   2                      if (gpio_get_level(KEY1_PIN) == 0)//按下
+   41   2                      {
+   42   3                      return KEY_PRESSED;//返回按下
+   43   3                      }
+   44   2                      return KEY_UNPRESSED;//返回未按下
+   45   2              }
+   46   1              else if (n == 1)
+   47   1              {
+   48   2                      if (gpio_get_level(KEY2_PIN) == 0)//按下
+   49   2                      {
+   50   3                      return KEY_PRESSED;
+   51   3                      }
+   52   2                      return KEY_UNPRESSED;
+   53   2          }
+   54   1              else if (n == 2)
+   55   1              {
+   56   2                      if (gpio_get_level(KEY3_PIN) == 0)//按下
+   57   2                      {
+C251 COMPILER V5.60.0,  Key                                                                24/01/26  14:43:44  PAGE 2   
+
+   58   3                      return KEY_PRESSED;
+   59   3                      }
+   60   2                      return KEY_UNPRESSED;
+   61   2              }
+   62   1          else if (n == 3)
+   63   1              {
+   64   2                      if (gpio_get_level(KEY4_PIN) == 0)//按下
+   65   2                      {
+   66   3                      return KEY_PRESSED;
+   67   3                      }
+   68   2                      return KEY_UNPRESSED;
+   69   2              }
+   70   1              else
+   71   1              {
+   72   2                      return 0;
+   73   2              }
+   74   1      }
+   75          
+   76          //第一个参数指定按钮
+   77          //第二个参数指定标志位;格式：0xXX
+   78          uint8 Key_Check(uint8 n, uint8 Flag)
+   79          {
+   80   1              //一个变量&位掩码
+   81   1              //例如：变量&0x01，如果最低位是1，则结果为0x01
+   82   1              //                                 如果最低位是0，则结果为0x00
+   83   1              //              变量&0x02，如果次低位是1，则结果为0x02
+   84   1              //                                 如果次低位是0，则结果为0x00
+   85   1              //注意，指定位为1时，结果是位掩码本身(非0)，而不一定是0x01
+   86   1              if (Key_Flag[n] & Flag)
+   87   1              {
+   88   2                      if (Flag != KEY_HOLD)//检测指定位是否为KEY_HOLD
+   89   2                      {
+   90   3                              //清零KEY_HOLD；其他标志位在主程序读后清零
+   91   3                              Key_Flag[n] &= ~Flag;
+   92   3                      }
+   93   2                      return 1;//指定标志位是1
+   94   2              }
+   95   1              return 0;//指定标志位是0
+   96   1      }
+   97          
+   98          void Key_Tick(void)//利用定时中断调用，获取通用的时间基准
+   99          {
+  100   1              static uint8 Count;//定义静态变量
+  101   1              static uint8 i;//用于遍历,按键少时可以这么干
+  102   1              static uint8 CurrState[KEY_COUNT],PrevState[KEY_COUNT];//Current,Previous
+  103   1              static uint8 S[KEY_COUNT];//状态变量，同江协状态转移图
+  104   1              static uint16 Time[KEY_COUNT];//长按/双击 计时器（此处递减计时）
+  105   1              //静态变量默认值为0，函数退出后值不会丢失
+  106   1              
+  107   1              for (i = 0;i < KEY_COUNT; i ++)
+  108   1              {
+  109   2                      if  (Time[i] > 0)
+  110   2                      {
+  111   3                              Time[i] --;
+  112   3                      }
+  113   2              }
+  114   1              Count++;//计数分频
+  115   1              if (Count >= 20)//可过滤按键抖动，按需调整
+  116   1              {
+  117   2                      Count = 0 ;
+  118   2                      
+  119   2                      for (i = 0;i < KEY_COUNT; i ++)
+  120   2                      {
+  121   3                              PrevState[i] = CurrState[i];//上次状态
+  122   3                              CurrState[i] = Key_GetState(i);//本次状态
+  123   3                              
+C251 COMPILER V5.60.0,  Key                                                                24/01/26  14:43:44  PAGE 3   
+
+  124   3                              //置标志位
+  125   3                              //Key_Flag |= 0x01;     
+  126   3                              //只把最低位置一，而不影响其他位
+  127   3                              //Key_Flag &= 0xFE;  或者  Key_Flag &= ~0x01;
+  128   3                              //只把最低位清零，而不影响其他位
+  129   3                              //使用宏定义转换0xXX,增加可读性
+  130   3                              
+  131   3                              if (CurrState[i] == KEY_PRESSED)
+  132   3                              {
+  133   4                                      Key_Flag[i] |= KEY_HOLD;//HOLD = 1
+  134   4                              }
+  135   3                              else
+  136   3                              {
+  137   4                                      Key_Flag[i] &= ~KEY_HOLD;//HOLD = 0
+  138   4                              }
+  139   3                              
+  140   3                              if (CurrState[i] == KEY_PRESSED && PrevState[i] == KEY_UNPRESSED)
+  141   3                              {
+  142   4                                      Key_Flag[i] |= KEY_DOWN;//DOWM = 1
+  143   4                                      //按下瞬间
+  144   4                                      //(中断程序只需置一，由主程序置零)
+  145   4                              }
+  146   3                              
+  147   3                              if (CurrState[i] == KEY_UNPRESSED && PrevState[i] == KEY_PRESSED)
+  148   3                              {
+  149   4                                      Key_Flag[i] |= KEY_UP;//UP = 1
+  150   4                                      //松开瞬间
+  151   4                              }
+  152   3                              
+  153   3                              if (S[i] == 0)//状态：空闲
+  154   3                              {
+  155   4                                      if (CurrState[i] == KEY_PRESSED)//按键按下
+  156   4                                      {
+  157   5                                              Time[i] = KEY_Time_LONG;//设定长按时间
+  158   5                                              S[i] = 1;
+  159   5                                      }
+  160   4                              }
+  161   3                              else if (S[i] == 1)//状态：按键已按下
+  162   3                              {
+  163   4                                      if (CurrState[i] == KEY_UNPRESSED)
+  164   4                                      {
+  165   5                                              Time[i] = KEY_Time_DOUBLE;//设定双击时间（到此分支，长按时间已无效）
+  166   5                                              S[i] = 2;
+  167   5                                      }
+  168   4                                      else if (Time[i] == 0)//长按时间到（超时）
+  169   4                                      {
+  170   5                                              Time[i] = KEY_Time_REPEAT;//设定重复时间
+  171   5                                              Key_Flag[i] |= KEY_LONG;//LONG=1
+  172   5                                              S[i] = 4;
+  173   5                                      }
+  174   4                              }
+  175   3                              else if (S[i] == 2)//状态：按键已松开
+  176   3                              {
+  177   4                                      if (CurrState[i] == KEY_PRESSED)
+  178   4                                      {
+  179   5                                              Key_Flag[i] |= KEY_DOUBLE;//DOUBLE = 1
+  180   5                                              S[i] = 3;
+  181   5                                      }
+  182   4                                      else if (Time[i] == 0)//双击时间到（超时）
+  183   4                                      {
+  184   5                                              Key_Flag[i] |= KEY_SINGLE;//SINGLE = 1
+  185   5                                              S[i] = 0;
+  186   5                                      }
+  187   4                              }
+  188   3                              else if (S[i] == 3)//状态：按键已双击
+  189   3                              {
+C251 COMPILER V5.60.0,  Key                                                                24/01/26  14:43:44  PAGE 4   
+
+  190   4                                      if (CurrState[i] == KEY_UNPRESSED)
+  191   4                                      {
+  192   5                                              S[i] = 0;
+  193   5                                      }
+  194   4                              }
+  195   3                              else if (S[i] == 4)//状态：按键已长按
+  196   3                              {
+  197   4                                      if (CurrState[i] == KEY_UNPRESSED)
+  198   4                                      {
+  199   5                                              S[i] = 0;
+  200   5                                      }
+  201   4                                      else if (Time[i] == 0)
+  202   4                                      {
+  203   5                                              Time[i] = KEY_Time_REPEAT;
+  204   5                                              Key_Flag[i] |= KEY_REPEAT;//REPEAT = 1
+  205   5                                              S[i] = 4;
+  206   5                                      }
+  207   4                              }
+  208   3                      }
+  209   2                      
+  210   2              }
+  211   1      }
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =      1559     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =        29     ------
+  xdata-const size     =    ------     ------
+  edata size           =    ------     ------
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =    ------     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
