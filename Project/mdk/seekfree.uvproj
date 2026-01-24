@@ -764,6 +764,26 @@
               <FileType>5</FileType>
               <FilePath>..\code\Key.h</FilePath>
             </File>
+            <File>
+              <FileName>OLED.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\code\OLED.c</FilePath>
+            </File>
+            <File>
+              <FileName>OLED.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\code\OLED.h</FilePath>
+            </File>
+            <File>
+              <FileName>OLEDFONT.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\code\OLEDFONT.c</FilePath>
+            </File>
+            <File>
+              <FileName>OLEDFONT.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\code\OLEDFONT.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -783,26 +803,6 @@
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\user\main.c</FilePath>
-            </File>
-            <File>
-              <FileName>OLED.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\user\OLED.c</FilePath>
-            </File>
-            <File>
-              <FileName>OLED.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\user\OLED.h</FilePath>
-            </File>
-            <File>
-              <FileName>OLEDFONT.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\user\OLEDFONT.h</FilePath>
-            </File>
-            <File>
-              <FileName>OLEDFONT.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\user\OLEDFONT.c</FilePath>
             </File>
           </Files>
         </Group>

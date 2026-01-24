@@ -1,5 +1,5 @@
 #include "zf_common_headfile.h"
-#include "zf_device_oled.h"
+#include "oled.h"
 
 // =========================================================
 // 内部：I2C(推挽) + SSD1306
