@@ -62,8 +62,10 @@
 
 //加了什么文件就把h文件写这里
 #include "OLED.h"
+#include "LED.h"
 #include "Key.h"
 #include "Menu.h"
+#include "Buzzer.h"
 #include "imu_mpu6050.h"
 #include "filter.h"
 #include "attitude.h"
