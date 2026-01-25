@@ -1,8 +1,6 @@
 #include "zf_common_headfile.h"
-
-#include "Key.h"
-#include "Menu.h"
-
+	imu_data_t imu;
+	mahony_t   mahony;
 void main(void)
 {
     clock_init(SYSTEM_CLOCK_30M);
@@ -18,9 +16,20 @@ void main(void)
     OLED_ShowFloat(4, 1, 3.1415f, 1, 3);
 
     OLED_Update();   
+	
+	
 
-    while(1)
-    {
-        system_delay_ms(100);
-    }
+	imu_mpu6050_init();
+	imu_mpu6050_gyro_calibrate(200);
+	mahony_init(&mahony, 100.0f, 5.0f, 0.05f);
+
+	while(1)
+{
+		imu_mpu6050_read(&imu);
+
+		mahony_update(&mahony,
+                  imu.gx, imu.gy, imu.gz,
+                  imu.ax, imu.ay, imu.az);
+		system_delay_ms(100);
+	}
 }
