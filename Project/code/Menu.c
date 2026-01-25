@@ -8,17 +8,17 @@
 //菜单选项数目
 #define NUM_SELECTION		5
 
-uint8 Act_Menu = 0;
 #define Main_Menu			0
 #define Mode_1_Menu			1
 #define Mode_2_Menu			2
 #define Mode_3_Menu			3
 #define Mode_4_Menu			4
 #define Mode_5_Menu			5
+uint8 Act_Menu = Main_Menu;
 
-uint8 Act_Mode = 0;
 #define Browse_Mode			0
 #define Edit_Mode			1
+uint8 Act_Mode = Browse_Mode;
 
 uint8 Cursor_Pos = 1;
 
