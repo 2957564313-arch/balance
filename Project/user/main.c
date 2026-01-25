@@ -35,36 +35,28 @@
 
 #include "zf_common_headfile.h"
 #include "Key.h"
-
+#include "PWM.h"
+#include "serial.h"
 void main()
 {
     clock_init(SYSTEM_CLOCK_30M);
 	debug_init();
 	Key_Init();
-	
+	PWM1_Init();
+	serial_Init();
 	// 此处编写用户代码 例如外设初始化代码等
-	
+
     while(1)
     {
-		
+		serial_Receive();
         // 此处编写需要循环执行的代码
+
+		PWM1_Set(50);
+//		P64=1;
+//		P62=1;
+//		P60=0;
+//		P66=0;
+
 		
-		Key_Tick();
-		if (Key_Check(0,KEY_SINGLE))
-		{
-			printf("0");
-		}
-		else if (Key_Check(1,KEY_SINGLE))
-		{
-			printf("1");
-		}
-		else if (Key_Check(2,KEY_SINGLE))
-		{
-			printf("2");
-		}
-		else if (Key_Check(3,KEY_SINGLE))
-		{
-			printf("3");
-		}
     }
 }
