@@ -1,19 +1,21 @@
 #ifndef __SERIAL_H
 #define __SERIAL_H
-#define UART_INDEX              (DEBUG_UART_INDEX   )         // Ä¬ÈÏ UART_1
-#define UART_BAUDRATE           (DEBUG_UART_BAUDRATE)       // Ä¬ÈÏ 115200
-#define UART_TX_PIN             (DEBUG_UART_TX_PIN  )       // Ä¬ÈÏ UART1_TX_P31
-#define UART_RX_PIN             (DEBUG_UART_RX_PIN  )       // Ä¬ÈÏ UART1_RX_P30
+
+#define UART_INDEX              (DEBUG_UART_INDEX   )         // Ä¬ï¿½ï¿½ UART_1
+#define UART_BAUDRATE           (DEBUG_UART_BAUDRATE)       // Ä¬ï¿½ï¿½ 115200
+#define UART_TX_PIN             (DEBUG_UART_TX_PIN  )       // Ä¬ï¿½ï¿½ UART1_TX_P31
+#define UART_RX_PIN             (DEBUG_UART_RX_PIN  )       // Ä¬ï¿½ï¿½ UART1_RX_P30
+
 void uart_rx_interrupt_handler (uint8 dat);
 void serial_Init(void);
-extern uint8       uart_get_data[64]  ;                // ´®¿Ú½ÓÊÕÊý¾Ý»º³åÇø
 
-extern uint8       fifo_get_data[64]   ;         // fifo Êä³ö¶Á³ö»º³åÇø
+extern uint8       uart_get_data[64]  ;                // ï¿½ï¿½ï¿½Ú½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý»ï¿½ï¿½ï¿½ï¿½ï¿½
+
+extern uint8       fifo_get_data[64]   ;         // fifo ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 extern uint32      fifo_data_count; 
 extern fifo_struct uart_data_fifo;
+
 void serial_Receive(void);
-
-
 
 #endif

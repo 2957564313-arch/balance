@@ -1,24 +1,29 @@
 #include "zf_common_headfile.h"
-#include "serial.h"
-uint8       uart_get_data[64] = {0};                   // ´®¿Ú½ÓÊÕÊý¾Ý»º³åÇø
 
-uint8       fifo_get_data[64] = {0};                 // fifo Êä³ö¶Á³ö»º³åÇø
+#include "serial.h"
+
+uint8       uart_get_data[64] = {0};                   // ï¿½ï¿½ï¿½Ú½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý»ï¿½ï¿½ï¿½ï¿½ï¿½
+
+uint8       fifo_get_data[64] = {0};                 // fifo ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 uint32      fifo_data_count = 0;  
 fifo_struct uart_data_fifo = {0};
+
 void uart_rx_interrupt_handler (uint8 dat)
 {
-//    get_data = uart_read_byte(UART_INDEX);                                      // ½ÓÊÕÊý¾Ý while µÈ´ýÊ½ ²»½¨ÒéÔÚÖÐ¶ÏÊ¹ÓÃ
-    uart_query_byte(UART_INDEX, &dat);                                     // ½ÓÊÕÊý¾Ý ²éÑ¯Ê½ ÓÐÊý¾Ý»á·µ»Ø TRUE Ã»ÓÐÊý¾Ý»á·µ»Ø FALSE
-    fifo_write_buffer(&uart_data_fifo, &dat, 1);                           // ½«Êý¾ÝÐ´Èë fifo ÖÐ
+//    get_data = uart_read_byte(UART_INDEX);                                      // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ while ï¿½È´ï¿½Ê½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½Ê¹ï¿½ï¿½
+    uart_query_byte(UART_INDEX, &dat);                                     // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ñ¯Ê½ ï¿½ï¿½ï¿½ï¿½ï¿½Ý»á·µï¿½ï¿½ TRUE Ã»ï¿½ï¿½ï¿½ï¿½ï¿½Ý»á·µï¿½ï¿½ FALSE
+    fifo_write_buffer(&uart_data_fifo, &dat, 1);                           // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð´ï¿½ï¿½ fifo ï¿½ï¿½
 }  
+
 void serial_Init(void)
 {
-    fifo_init(&uart_data_fifo, FIFO_DATA_8BIT, uart_get_data, 64);              // ³õÊ¼»¯ fifo ¹ÒÔØ»º³åÇø
+    fifo_init(&uart_data_fifo, FIFO_DATA_8BIT, uart_get_data, 64);              // ï¿½ï¿½Ê¼ï¿½ï¿½ fifo ï¿½ï¿½ï¿½Ø»ï¿½ï¿½ï¿½ï¿½ï¿½
     uart_init(UART_INDEX, UART_BAUDRATE, UART_TX_PIN, UART_RX_PIN);
 	uart_rx_interrupt(UART_INDEX, ZF_ENABLE);   	
 	uart1_irq_handler = uart_rx_interrupt_handler;	
 }
+
 void serial_Receive(void)
 {
 	fifo_data_count = fifo_used(&uart_data_fifo);    
