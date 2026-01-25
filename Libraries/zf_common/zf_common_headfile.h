@@ -1,38 +1,3 @@
-/*********************************************************************************************************************
-* STC32G Opensourec Library ¼´£¨STC32G ¿ªÔ´¿â£©ÊÇÒ»¸ö»ùÓÚ¹Ù·½ SDK ½Ó¿ÚµÄµÚÈı·½¿ªÔ´¿â
-* Copyright (c) 2022 SEEKFREE Öğ·É¿Æ¼¼
-*
-* ±¾ÎÄ¼şÊÇSTC ¿ªÔ´¿âµÄÒ»²¿·Ö
-*
-* STC32G ¿ªÔ´¿â ÊÇÃâ·ÑÈí¼ş
-* Äú¿ÉÒÔ¸ù¾İ×ÔÓÉÈí¼ş»ù½ğ»á·¢²¼µÄ GPL£¨GNU General Public License£¬¼´ GNUÍ¨ÓÃ¹«¹²Ğí¿ÉÖ¤£©µÄÌõ¿î
-* ¼´ GPL µÄµÚ3°æ£¨¼´ GPL3.0£©»ò£¨ÄúÑ¡ÔñµÄ£©ÈÎºÎºóÀ´µÄ°æ±¾£¬ÖØĞÂ·¢²¼ºÍ/»òĞŞ¸ÄËü
-*
-* ±¾¿ªÔ´¿âµÄ·¢²¼ÊÇÏ£ÍûËüÄÜ·¢»Ó×÷ÓÃ£¬µ«²¢Î´¶ÔÆä×÷ÈÎºÎµÄ±£Ö¤
-* ÉõÖÁÃ»ÓĞÒşº¬µÄÊÊÏúĞÔ»òÊÊºÏÌØ¶¨ÓÃÍ¾µÄ±£Ö¤
-* ¸ü¶àÏ¸½ÚÇë²Î¼û GPL
-*
-* ÄúÓ¦¸ÃÔÚÊÕµ½±¾¿ªÔ´¿âµÄÍ¬Ê±ÊÕµ½Ò»·İ GPL µÄ¸±±¾
-* Èç¹ûÃ»ÓĞ£¬Çë²ÎÔÄ<https://www.gnu.org/licenses/>
-*
-* ¶îÍâ×¢Ã÷£º
-* ±¾¿ªÔ´¿âÊ¹ÓÃ GPL3.0 ¿ªÔ´Ğí¿ÉÖ¤Ğ­Òé ÒÔÉÏĞí¿ÉÉêÃ÷ÎªÒëÎÄ°æ±¾
-* Ğí¿ÉÉêÃ÷Ó¢ÎÄ°æÔÚ libraries/doc ÎÄ¼ş¼ĞÏÂµÄ GPL3_permission_statement.txt ÎÄ¼şÖĞ
-* Ğí¿ÉÖ¤¸±±¾ÔÚ libraries ÎÄ¼ş¼ĞÏÂ ¼´¸ÃÎÄ¼ş¼ĞÏÂµÄ LICENSE ÎÄ¼ş
-* »¶Ó­¸÷Î»Ê¹ÓÃ²¢´«²¥±¾³ÌĞò µ«ĞŞ¸ÄÄÚÈİÊ±±ØĞë±£ÁôÖğ·É¿Æ¼¼µÄ°æÈ¨ÉùÃ÷£¨¼´±¾ÉùÃ÷£©
-*
-* ÎÄ¼şÃû³Æ          
-* ¹«Ë¾Ãû³Æ          ³É¶¼Öğ·É¿Æ¼¼ÓĞÏŞ¹«Ë¾
-* °æ±¾ĞÅÏ¢          ²é¿´ libraries/doc ÎÄ¼ş¼ĞÄÚ version ÎÄ¼ş °æ±¾ËµÃ÷
-* ¿ª·¢»·¾³          MDK FOR C251
-* ÊÊÓÃÆ½Ì¨          STC32G
-* µêÆÌÁ´½Ó          https://seekfree.taobao.com/
-*
-* ĞŞ¸Ä¼ÇÂ¼
-* ÈÕÆÚ              ×÷Õß           ±¸×¢
-* 2024-08-01        ´óW            first version
-********************************************************************************************************************/
-
 #ifndef __HEADFILE_H_
 #define __HEADFILE_H_
 
@@ -46,7 +11,6 @@
 #include "intrins.h"
 #include "isr.h"
 
-//------STC32G SDKµÈ
 #include "STC32Gxx.h"
 #include "zf_common_typedef.h"
 #include "zf_common_clock.h"
@@ -56,7 +20,6 @@
 #include "zf_common_font.h"
 #include "zf_common_function.h"
 
-//------Öğ·É¿Æ¼¼µ¥Æ¬»úÍâÉèÇı¶¯Í·ÎÄ¼ş
 #include "zf_driver_uart.h"
 #include "zf_driver_gpio.h"
 #include "zf_driver_adc.h"
@@ -70,7 +33,6 @@
 #include "zf_driver_pit.h"
 #include "zf_driver_encoder.h"
 
-//------Öğ·É¿Æ¼¼²úÆ·Çı¶¯Í·ÎÄ¼ş
 #include "zf_device_config.h"
 #include "zf_device_type.h"
 
@@ -79,7 +41,6 @@
 #include "zf_device_imu660rb.h"
 #include "zf_device_imu963ra.h"
 
-//#include "zf_device_oled.h"
 #include "zf_device_tft180.h"
 #include "zf_device_ips114.h"
 #include "zf_device_ips200.h"
@@ -91,13 +52,22 @@
 #include "zf_device_ble6a20.h"
 #include "zf_device_tsl1401.h"
 #include "zf_device_wireless_uart.h"
-//#include "zf_device_gnss.h"
+
 #include "zf_device_gps_tau1201.h"
 
-//------Öğ·É¿Æ¼¼²úÆ·×é¼ş²ãÎÄ¼ş
+
 #include "seekfree_assistant.h"
 
 #include "seekfree_assistant_interface.h"
 
+//åŠ äº†ä»€ä¹ˆæ–‡ä»¶å°±æŠŠhæ–‡ä»¶å†™è¿™é‡Œ
+#include "OLED.h"
+#include "LED.h"
+#include "Key.h"
+#include "Menu.h"
+#include "Buzzer.h"
+#include "imu_mpu6050.h"
+#include "filter.h"
+#include "attitude.h"
 
 #endif
