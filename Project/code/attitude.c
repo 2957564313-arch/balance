@@ -92,4 +92,6 @@ void mahony_update(mahony_t *m,
     m->pitch = (float)asin(2.0 * (m->q0 * m->q2 - m->q1 * m->q3)) * 57.3f;
     m->roll  = (float)atan2(2.0 * (m->q0 * m->q1 + m->q2 * m->q3),
                       1.0 - 2.0 * (m->q1 * m->q1 + m->q2 * m->q2)) * 57.3f;
+    m->yaw   = (float)atan2(2.0 * (m->q0 * m->q3 + m->q1 * m->q2),
+                      1.0 - 2.0 * (m->q2 * m->q2 + m->q3 * m->q3)) * 57.3f;
 }
