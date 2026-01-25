@@ -795,14 +795,14 @@
               <FilePath>..\code\OLEDFONT.h</FilePath>
             </File>
             <File>
-              <FileName>filter.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\code\filter.h</FilePath>
-            </File>
-            <File>
               <FileName>filter.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\code\filter.c</FilePath>
+            </File>
+            <File>
+              <FileName>filter.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\code\filter.h</FilePath>
             </File>
             <File>
               <FileName>attitude.c</FileName>
@@ -893,6 +893,16 @@
               <FileName>imu_mpu6050.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\code\imu_mpu6050.h</FilePath>
+            </File>
+            <File>
+              <FileName>LED.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\code\LED.c</FilePath>
+            </File>
+            <File>
+              <FileName>LED.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\code\LED.h</FilePath>
             </File>
           </Files>
         </Group>
