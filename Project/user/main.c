@@ -1,62 +1,106 @@
-/*********************************************************************************************************************
-* STC32G Opensourec Library 即（STC32G 开源库）是一个基于官方 SDK 接口的第三方开源库
-* Copyright (c) 2022 SEEKFREE 逐飞科技
-*
-* 本文件是STC 开源库的一部分
-*
-* STC32G 开源库 是免费软件
-* 您可以根据自由软件基金会发布的 GPL（GNU General Public License，即 GNU通用公共许可证）的条款
-* 即 GPL 的第3版（即 GPL3.0）或（您选择的）任何后来的版本，重新发布和/或修改它
-*
-* 本开源库的发布是希望它能发挥作用，但并未对其作任何的保证
-* 甚至没有隐含的适销性或适合特定用途的保证
-* 更多细节请参见 GPL
-*
-* 您应该在收到本开源库的同时收到一份 GPL 的副本
-* 如果没有，请参阅<https://www.gnu.org/licenses/>
-*
-* 额外注明：
-* 本开源库使用 GPL3.0 开源许可证协议 以上许可申明为译文版本
-* 许可申明英文版在 libraries/doc 文件夹下的 GPL3_permission_statement.txt 文件中
-* 许可证副本在 libraries 文件夹下 即该文件夹下的 LICENSE 文件
-* 欢迎各位使用并传播本程序 但修改内容时必须保留逐飞科技的版权声明（即本声明）
-*
-* 文件名称          
-* 公司名称          成都逐飞科技有限公司
-* 版本信息          查看 libraries/doc 文件夹内 version 文件 版本说明
-* 开发环境          MDK FOR C251
-* 适用平台          STC32G
-* 店铺链接          https://seekfree.taobao.com/
-*
-* 修改记录
-* 日期              作者           备注
-* 2024-08-01        大W            first version
-********************************************************************************************************************/
-
 #include "zf_common_headfile.h"
-#include "Key.h"
-#include "PWM.h"
-#include "serial.h"
-void main()
+
+/* 采样频率与周期 */
+#define IMU_HZ          (100.0f)
+#define IMU_PERIOD_MS   (10)
+
+/* 滤波参数：alpha 越大越平滑(越慢)，越小越跟手(越快) */
+#define ACC_LPF_ALPHA   (0.70f)
+#define GYRO_LPF_ALPHA  (0.85f)
+
+/* 角度换算 */
+#define DEG2RAD         (0.01745329252f)
+
+static imu_data_t imu_raw;
+static imu_data_t imu_flt;
+static mahony_t   mahony;
+
+/* 一阶低通滤波器 */
+static lpf1_t lpf_ax, lpf_ay, lpf_az;
+static lpf1_t lpf_gx, lpf_gy, lpf_gz;
+
+static void imu_filter_init(void)
+{
+    lpf1_init(&lpf_ax, ACC_LPF_ALPHA, 0.0f);
+    lpf1_init(&lpf_ay, ACC_LPF_ALPHA, 0.0f);
+    lpf1_init(&lpf_az, ACC_LPF_ALPHA, 0.0f);
+
+    lpf1_init(&lpf_gx, GYRO_LPF_ALPHA, 0.0f);
+    lpf1_init(&lpf_gy, GYRO_LPF_ALPHA, 0.0f);
+    lpf1_init(&lpf_gz, GYRO_LPF_ALPHA, 0.0f);
+}
+
+static void imu_filter_update(const imu_data_t *in, imu_data_t *out)
+{
+    out->ax = lpf1_update(&lpf_ax, in->ax);
+    out->ay = lpf1_update(&lpf_ay, in->ay);
+    out->az = lpf1_update(&lpf_az, in->az);
+
+    out->gx = lpf1_update(&lpf_gx, in->gx);
+    out->gy = lpf1_update(&lpf_gy, in->gy);
+    out->gz = lpf1_update(&lpf_gz, in->gz);
+}
+
+static void oled_show_attitude(const mahony_t *m)
+{
+    OLED_ShowString(1, 1, "P:");
+    OLED_ShowFloat(1, 3, m->pitch, 3, 2);
+
+    OLED_ShowString(2, 1, "R:");
+    OLED_ShowFloat(2, 3, m->roll, 3, 2);
+
+    OLED_ShowString(3, 1, "Y:");
+    OLED_ShowFloat(3, 3, m->yaw, 3, 2);
+
+    OLED_Update();
+}
+
+void main(void)
 {
     clock_init(SYSTEM_CLOCK_30M);
-	debug_init();
-	Key_Init();
-	PWM1_Init();
-	serial_Init();
-	// 此处编写用户代码 例如外设初始化代码等
+    debug_init();
 
-    while(1)
+    OLED_Init();
+    OLED_Clear();
+    OLED_ShowString(1, 1, "IMU INIT...");
+    OLED_Update();
+
+    /* MPU6050 初始化与陀螺零偏标定(上电静止) */
+    imu_mpu6050_init();
+    system_delay_ms(200);
+    imu_mpu6050_gyro_calibrate(300);
+
+    /* 滤波器与 Mahony 初始化*/
+    imu_filter_init();
+    mahony_init(&mahony, IMU_HZ, 5.0f, 0.05f);
+
+    OLED_Clear();
+    OLED_ShowString(1, 1, "P:");
+    OLED_ShowString(2, 1, "R:");
+    OLED_ShowString(3, 1, "Y:");
+    OLED_Update();
+
+    while (1)
     {
-		serial_Receive();
-        // 此处编写需要循环执行的代码
-
-		PWM1_Set(50);
-//		P64=1;
-//		P62=1;
-//		P60=0;
-//		P66=0;
-
+        /* 1) 读取 MPU6050（加速度单位:g，陀螺单位:deg/s） */
+        imu_mpu6050_read(&imu_raw);
 		
+        /* 2) 一阶低通滤波 */
+        imu_filter_update(&imu_raw, &imu_flt);
+
+        /* 3) Mahony 姿态解算：陀螺输入必须是 rad/s */
+        mahony_update(&mahony,
+                      imu_flt.gx * DEG2RAD,
+                      imu_flt.gy * DEG2RAD,
+                      imu_flt.gz * DEG2RAD,
+                      imu_flt.ax,
+                      imu_flt.ay,
+                      imu_flt.az);
+
+        /* 4) OLED 显示三轴角度 */
+        oled_show_attitude(&mahony);
+
+        /* 5) 保证采样周期 */
+        system_delay_ms(IMU_PERIOD_MS);
     }
 }
