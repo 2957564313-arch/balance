@@ -1,8 +1,6 @@
 #include "zf_common_headfile.h"
 
-#include "PWM.h"
-
-//P11 P12����PWM1����    P13 P14����PWM2����
+#include "PWM.h"//P11 P12����PWM1����    P13 P14����PWM2����
 void PWM1_Init(void)
 {
 	pwm_init(PWM_CH1,17000,0);
