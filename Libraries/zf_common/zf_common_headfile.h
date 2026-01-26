@@ -68,6 +68,7 @@
 #include "Menu.h"
 #include "serial.h"
 #include "Buzzer.h"
+#include "bluetooth.h"
 #include "imu_mpu6050.h"
 #include "filter.h"
 #include "attitude.h"
