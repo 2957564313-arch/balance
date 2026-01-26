@@ -1,10 +1,4 @@
 #include "zf_common_headfile.h"                 // Device header
-
-#include "OLED.h"
-
-#include "Menu.h"
-#include "Key.h"
-
 //菜单选项数目
 #define NUM_SELECTION		5
 
