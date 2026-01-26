@@ -1,7 +1,7 @@
 #ifndef __MOTER_H
 #define __MOTER_H
 
-void PWM1_Init(void);
+void Motor_Init(void);
 void PWM1_Set(int16 speed);
 void PWM2_Set(int16 speed);
 

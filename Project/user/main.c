@@ -1,14 +1,12 @@
 #include "zf_common_headfile.h"
-#include "Key.h"
-#include "motor.h"
-#include "bluetooth.h"
+
 //#include "serial.h"
 void main()
 {
     clock_init(SYSTEM_CLOCK_30M);
 	debug_init();
 	Key_Init();
-	PWM1_Init();
+	Motor_Init();
 //	serial1_Init();
 	serial_Init();
 	// 此处编写用户代码 例如外设初始化代码等

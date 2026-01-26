@@ -1,7 +1,7 @@
 #include "zf_common_headfile.h"
 
 #include "motor.h"
-void PWM1_Init(void)
+void Motor_Init(void)
 {
 	pwm_init(PWM_CH1,17000,0);
 	pwm_init(PWM_CH2,17000,0);
