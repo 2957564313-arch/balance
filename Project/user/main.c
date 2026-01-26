@@ -1,6 +1,7 @@
 #include "zf_common_headfile.h"
 #include "Key.h"
 #include "motor.h"
+#include "bluetooth.h"
 //#include "serial.h"
 void main()
 {
@@ -9,14 +10,15 @@ void main()
 	Key_Init();
 	PWM1_Init();
 //	serial1_Init();
+	serial_Init();
 	// 此处编写用户代码 例如外设初始化代码等
 
     while(1)
     {
 //		serial1_Receive();
         // 此处编写需要循环执行的代码
-
-		PWM1_Set(100);
+		serial_Receive();
+//		PWM1_Set(100);
 //		P64=1;
 //		P64=1;
 //		P62=1;
