@@ -61,15 +61,20 @@
 #include "seekfree_assistant_interface.h"
 
 //加了什么文件就把h文件写这里
-#include "OLED.h"
-#include "LED.h"
 #include "Key.h"
-#include "PWM.h"
+#include "OLED.h"
 #include "Menu.h"
-#include "serial.h"
-#include "Buzzer.h"
 #include "imu_mpu6050.h"
 #include "filter.h"
 #include "attitude.h"
+#include "param.h"
+#include "motor.h"
+#include "pid.h"
+#include "balance.h"
+#include "line.h"
+#include "mode.h"
+#include "bluetooth.h"
+#include "LED.h"
+#include "Buzzer.h"
 
 #endif
