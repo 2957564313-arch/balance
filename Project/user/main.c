@@ -1,16 +1,4 @@
 #include "zf_common_headfile.h"
-#include "motor.h"
-#include "balance.h"
-#include "bluetooth.h"
-#include "param.h"
-#include "attitude.h"
-#include "Key.h"
-#include "mode.h"   // 引用 Mode_Init
-#include "LED.h"    // 引用 LED
-#include "Buzzer.h" // 引用 蜂鸣器
-
-// 如果你后面写好了菜单，取消注释
-// #include "Menu.h"
 
 // =================================================================
 // 寄存器直接配置定时器 (适配 STC32G @ 35MHz)

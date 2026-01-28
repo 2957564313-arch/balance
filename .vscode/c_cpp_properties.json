@@ -2,22 +2,14 @@
   "version": 4,
   "configurations": [
     {
-      "name": "c251",
+      "name": "windows-gcc-x64",
       "intelliSenseMode": "windows-gcc-x64",
       "compilerPath": "C:/Users/29575/Desktop/Dev-Cpp/MinGW64/bin/gcc.exe",
-      "cStandard": "c89",
-      "cppStandard": "c++14",
-
+      "cStandard": "${default}",
+      "cppStandard": "${default}",
       "includePath": [
-        "${workspaceFolder}/Project/code",
-        "${workspaceFolder}/Project/user",
-        "${workspaceFolder}/Libraries/zf_common",
-        "${workspaceFolder}/Libraries/zf_driver",
-        "${workspaceFolder}/Libraries/zf_device",
-        "${workspaceFolder}/Libraries/zf_components",
-        "${workspaceFolder}/.vscode/keil_stub"
+        "${workspaceFolder}/**"
       ],
-
       "defines": [
         "__C251__",
         "__STC__",
@@ -31,7 +23,6 @@
         "interrupt=",
         "using="
       ],
-
       "browse": {
         "path": [
           "${workspaceFolder}/Project/code",
