@@ -728,28 +728,6 @@
         </Group>
         <Group>
           <GroupName>zf_components</GroupName>
-          <Files>
-            <File>
-              <FileName>seekfree_assistant.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\libraries\zf_components\seekfree_assistant.c</FilePath>
-            </File>
-            <File>
-              <FileName>seekfree_assistant.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\libraries\zf_components\seekfree_assistant.h</FilePath>
-            </File>
-            <File>
-              <FileName>seekfree_assistant_interface.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\libraries\zf_components\seekfree_assistant_interface.c</FilePath>
-            </File>
-            <File>
-              <FileName>seekfree_assistant_interface.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\libraries\zf_components\seekfree_assistant_interface.h</FilePath>
-            </File>
-          </Files>
         </Group>
         <Group>
           <GroupName>code</GroupName>
@@ -763,26 +741,6 @@
               <FileName>Key.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\code\Key.h</FilePath>
-            </File>
-            <File>
-              <FileName>PWM.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\code\PWM.c</FilePath>
-            </File>
-            <File>
-              <FileName>PWM.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\code\PWM.h</FilePath>
-            </File>
-            <File>
-              <FileName>serial.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\code\serial.c</FilePath>
-            </File>
-            <File>
-              <FileName>serial.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\code\serial.h</FilePath>
             </File>
             <File>
               <FileName>attitude.c</FileName>
