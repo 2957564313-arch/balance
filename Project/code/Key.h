@@ -4,10 +4,10 @@
 #include "zf_common_headfile.h"
 
 // =================================================================
-// 硬件配置 (根据原理图修改)
+// 硬件配置 
 // =================================================================
-#define KEY1_PIN    IO_P70  // 常用作 Mode 切换 / 录制
-#define KEY2_PIN    IO_P71  // 常用作 播放 / 确认
+#define KEY1_PIN    IO_P70  
+#define KEY2_PIN    IO_P71  
 #define KEY3_PIN    IO_P72
 #define KEY4_PIN    IO_P73
 
@@ -23,11 +23,11 @@
 #define KEY_REPEAT  0x40    // 长按连发
 
 // 按键索引
-#define KEY_NAME_UP         0
-#define KEY_NAME_DOWN       1
-#define KEY_NAME_CONFIRM    2
-#define KEY_NAME_BACK       3
-#define KEY_COUNT           4
+#define KEY_NAME_UP         0	// 上键
+#define KEY_NAME_DOWN       1	// 下键
+#define KEY_NAME_CONFIRM    2	// 确认
+#define KEY_NAME_BACK       3	// 返回
+#define KEY_COUNT           4	
 
 // =================================================================
 // 函数声明
