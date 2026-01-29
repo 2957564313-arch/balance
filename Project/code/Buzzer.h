@@ -3,11 +3,11 @@
 
 #include "zf_common_headfile.h"
 
-// ¶¨Òå·äÃùÆ÷Òı½Å P6.7
+// å®šä¹‰èœ‚é¸£å™¨å¼•è„š (è¯·ç¡®ä¿åŸç†å›¾æ˜¯ P6.7)
 #define BEEP_PIN IO_P67 
 
-void Buzzer_Init(void);		 // ³õÊ¼»¯GPIO
-void Buzzer_Beep(uint16 ms); // ¿ªÆô·äÃùÆ÷£¬²¢Éè¶¨ÏìÉùÊ±³¤(ºÁÃë)
-void Buzzer_Task(void);      // ·ÅÔÚ 5ms ¶¨Ê±Æ÷ÖĞµ÷ÓÃ£¬ÓÃÀ´¼ÆÊ±£¬²¢ÔÚµ½µãºó¹Ø·äÃùÆ÷
+void Buzzer_Init(void);
+void Buzzer_Beep(uint16 ms); // è®¾å®šå“å£°æ—¶é•¿(æ¯«ç§’)
+void Buzzer_Task(void);      // æ”¾åœ¨ 5ms å®šæ—¶å™¨é‡Œ
 
 #endif

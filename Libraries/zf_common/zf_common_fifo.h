@@ -1,71 +1,71 @@
-#ifndef _zf_common_fifo_h_
-#define _zf_common_fifo_h_
-
-#include "zf_common_typedef.h"
-
-typedef enum
-{
-    FIFO_SUCCESS,                                                               // FIFO ²Ù×÷³É¹¦
-
-    FIFO_RESET_UNDO,                                                            // FIFO ÖØÖÃ²Ù×÷Î´Ö´ĞĞ
-    FIFO_CLEAR_UNDO,                                                            // FIFO Çå¿Õ²Ù×÷Î´Ö´ĞĞ
-    FIFO_BUFFER_NULL,                                                           // FIFO ÓÃ»§»º³åÇøÒì³£
-    FIFO_WRITE_UNDO,                                                            // FIFO Ğ´Èë²Ù×÷Î´Ö´ĞĞ
-    FIFO_SPACE_NO_ENOUGH,                                                       // FIFO Ğ´Èë²Ù×÷ »º³åÇø¿Õ¼ä²»×ã
-    FIFO_READ_UNDO,                                                             // FIFO ¶ÁÈ¡²Ù×÷Î´Ö´ĞĞ
-    FIFO_DATA_NO_ENOUGH,                                                        // FIFO ¶ÁÈ¡²Ù×÷ Êı¾İ³¤¶È²»×ã
-}fifo_state_enum;                                                               // FIFO ²Ù×÷½á¹û
-
-// ²Ù×÷Âß¼­
-// ÕûÌåÖØÖÃ²Ù×÷   ½«»áÇ¿ÖÆÇå¿Õ FIFO ½÷É÷Ê¹ÓÃ
-// Êı¾İĞ´Èë²Ù×÷   ²»ÄÜÔÚÖØÖÃÒÔ¼°Ğ´Èë²Ù×÷Ê±½øĞĞ
-// Ë³Ğò¶ÁÈ¡²Ù×÷   ²»ÄÜÔÚÇå¿ÕºÍÖØÖÃ²Ù×÷Ê±½øĞĞ
-// Î²²¿¶ÁÈ¡²Ù×÷   ²»ÄÜÔÚÇå¿ÕºÍÖØÖÃÒÔ¼°Ğ´Èë²Ù×÷Ê±½øĞĞ
-// ¶ÁÈ¡Çå¿Õ²Ù×÷   ²»ÄÜÔÚÇå¿ÕºÍÖØÖÃÒÔ¼°¶ÁÈ¡²Ù×÷Ê±½øĞĞ
-// ÕâÊÇÎªÁË·ÀÖ¹ÖĞ¶ÏÇ¶Ì×µ¼ÖÂÊı¾İ»ìÂÒ
-typedef enum
-{
-    FIFO_IDLE       = 0x00,                                                     // ¿ÕÏĞ×´Ì¬
-
-    FIFO_RESET      = 0x01,                                                     // ÕıÔÚÖ´ĞĞÖØÖÃ»º³åÇø
-    FIFO_CLEAR      = 0x02,                                                     // ÕıÔÚÖ´ĞĞÇå¿Õ»º³åÇø
-    FIFO_WRITE      = 0x04,                                                     // ÕıÔÚÖ´ĞĞĞ´Èë»º³åÇø
-    FIFO_READ       = 0x08,                                                     // ÕıÔÚÖ´ĞĞ¶ÁÈ¡»º³åÇø
-}fifo_execution_enum;                                                           // FIFO ²Ù×÷×´Ì¬ ÎªÇ¶Ì×Ê¹ÓÃÔ¤Áô ÎŞ·¨ÍêÈ«±ÜÃâÎó²Ù×÷
-
-typedef enum
-{
-    FIFO_READ_AND_CLEAN,                                                        // FIFO ¶Á²Ù×÷Ä£Ê½ ¶ÁÈ¡ºóÇå¿ÕÊÍ·Å¶ÔÓ¦»º³åÇø
-    FIFO_READ_ONLY,                                                             // FIFO ¶Á²Ù×÷Ä£Ê½ ½ö¶ÁÈ¡
-}fifo_operation_enum;
-
-typedef enum
-{
-    FIFO_DATA_8BIT,                                                             // FIFO Êı¾İÎ»¿í 8bit
-    FIFO_DATA_16BIT,                                                            // FIFO Êı¾İÎ»¿í 16bit
-    FIFO_DATA_32BIT,                                                            // FIFO Êı¾İÎ»¿í 32bit
-}fifo_data_type_enum;
-
-typedef struct 
-{
-    uint8               execution;                                              // Ö´ĞĞ²½Öè
-    fifo_data_type_enum type;                                                   // Êı¾İÀàĞÍ
-    void                *buffer;                                                // »º´æÖ¸Õë
-    uint32              head;                                                   // »º´æÍ·Ö¸Õë ×ÜÊÇÖ¸Ïò¿ÕµÄ»º´æ
-    uint32              end;                                                    // »º´æÎ²Ö¸Õë ×ÜÊÇÖ¸Ïò·Ç¿Õ»º´æ£¨»º´æÈ«¿Õ³ıÍâ£©
-    uint32              siz;                                                   // »º´æÊ£Óà´óĞ¡
-    uint32              max;                                                    // »º´æ×Ü´óĞ¡
-}fifo_struct;
-
-fifo_state_enum fifo_clear              (fifo_struct *fifo);
-uint32          fifo_used               (fifo_struct *fifo);
-
-//fifo_state_enum fifo_write_element      (fifo_struct *fifo, uint32 dat);
-fifo_state_enum fifo_write_buffer       (fifo_struct *fifo, void *dat, uint32 length);
-//fifo_state_enum fifo_read_element       (fifo_struct *fifo, void *dat, fifo_operation_enum flag);
-fifo_state_enum fifo_read_buffer        (fifo_struct *fifo, void *dat, uint32 *length, fifo_operation_enum flag);
-//fifo_state_enum fifo_read_tail_buffer   (fifo_struct *fifo, void *dat, uint32 *length, fifo_operation_enum flag);
-
-fifo_state_enum fifo_init               (fifo_struct *fifo, fifo_data_type_enum type, void *buffer_addr, uint32 siz);
-
-#endif
+#ifndef _zf_common_fifo_h_
+#define _zf_common_fifo_h_
+
+#include "zf_common_typedef.h"
+
+typedef enum
+{
+    FIFO_SUCCESS,                                                               // FIFO æ“ä½œæˆåŠŸ
+
+    FIFO_RESET_UNDO,                                                            // FIFO é‡ç½®æ“ä½œæœªæ‰§è¡Œ
+    FIFO_CLEAR_UNDO,                                                            // FIFO æ¸…ç©ºæ“ä½œæœªæ‰§è¡Œ
+    FIFO_BUFFER_NULL,                                                           // FIFO ç”¨æˆ·ç¼“å†²åŒºå¼‚å¸¸
+    FIFO_WRITE_UNDO,                                                            // FIFO å†™å…¥æ“ä½œæœªæ‰§è¡Œ
+    FIFO_SPACE_NO_ENOUGH,                                                       // FIFO å†™å…¥æ“ä½œ ç¼“å†²åŒºç©ºé—´ä¸è¶³
+    FIFO_READ_UNDO,                                                             // FIFO è¯»å–æ“ä½œæœªæ‰§è¡Œ
+    FIFO_DATA_NO_ENOUGH,                                                        // FIFO è¯»å–æ“ä½œ æ•°æ®é•¿åº¦ä¸è¶³
+}fifo_state_enum;                                                               // FIFO æ“ä½œç»“æœ
+
+// æ“ä½œé€»è¾‘
+// æ•´ä½“é‡ç½®æ“ä½œ   å°†ä¼šå¼ºåˆ¶æ¸…ç©º FIFO è°¨æ…ä½¿ç”¨
+// æ•°æ®å†™å…¥æ“ä½œ   ä¸èƒ½åœ¨é‡ç½®ä»¥åŠå†™å…¥æ“ä½œæ—¶è¿›è¡Œ
+// é¡ºåºè¯»å–æ“ä½œ   ä¸èƒ½åœ¨æ¸…ç©ºå’Œé‡ç½®æ“ä½œæ—¶è¿›è¡Œ
+// å°¾éƒ¨è¯»å–æ“ä½œ   ä¸èƒ½åœ¨æ¸…ç©ºå’Œé‡ç½®ä»¥åŠå†™å…¥æ“ä½œæ—¶è¿›è¡Œ
+// è¯»å–æ¸…ç©ºæ“ä½œ   ä¸èƒ½åœ¨æ¸…ç©ºå’Œé‡ç½®ä»¥åŠè¯»å–æ“ä½œæ—¶è¿›è¡Œ
+// è¿™æ˜¯ä¸ºäº†é˜²æ­¢ä¸­æ–­åµŒå¥—å¯¼è‡´æ•°æ®æ··ä¹±
+typedef enum
+{
+    FIFO_IDLE       = 0x00,                                                     // ç©ºé—²çŠ¶æ€
+
+    FIFO_RESET      = 0x01,                                                     // æ­£åœ¨æ‰§è¡Œé‡ç½®ç¼“å†²åŒº
+    FIFO_CLEAR      = 0x02,                                                     // æ­£åœ¨æ‰§è¡Œæ¸…ç©ºç¼“å†²åŒº
+    FIFO_WRITE      = 0x04,                                                     // æ­£åœ¨æ‰§è¡Œå†™å…¥ç¼“å†²åŒº
+    FIFO_READ       = 0x08,                                                     // æ­£åœ¨æ‰§è¡Œè¯»å–ç¼“å†²åŒº
+}fifo_execution_enum;                                                           // FIFO æ“ä½œçŠ¶æ€ ä¸ºåµŒå¥—ä½¿ç”¨é¢„ç•™ æ— æ³•å®Œå…¨é¿å…è¯¯æ“ä½œ
+
+typedef enum
+{
+    FIFO_READ_AND_CLEAN,                                                        // FIFO è¯»æ“ä½œæ¨¡å¼ è¯»å–åæ¸…ç©ºé‡Šæ”¾å¯¹åº”ç¼“å†²åŒº
+    FIFO_READ_ONLY,                                                             // FIFO è¯»æ“ä½œæ¨¡å¼ ä»…è¯»å–
+}fifo_operation_enum;
+
+typedef enum
+{
+    FIFO_DATA_8BIT,                                                             // FIFO æ•°æ®ä½å®½ 8bit
+    FIFO_DATA_16BIT,                                                            // FIFO æ•°æ®ä½å®½ 16bit
+    FIFO_DATA_32BIT,                                                            // FIFO æ•°æ®ä½å®½ 32bit
+}fifo_data_type_enum;
+
+typedef struct 
+{
+    uint8               execution;                                              // æ‰§è¡Œæ­¥éª¤
+    fifo_data_type_enum type;                                                   // æ•°æ®ç±»å‹
+    void                *buffer;                                                // ç¼“å­˜æŒ‡é’ˆ
+    uint32              head;                                                   // ç¼“å­˜å¤´æŒ‡é’ˆ æ€»æ˜¯æŒ‡å‘ç©ºçš„ç¼“å­˜
+    uint32              end;                                                    // ç¼“å­˜å°¾æŒ‡é’ˆ æ€»æ˜¯æŒ‡å‘éç©ºç¼“å­˜ï¼ˆç¼“å­˜å…¨ç©ºé™¤å¤–ï¼‰
+    uint32              siz;                                                   // ç¼“å­˜å‰©ä½™å¤§å°
+    uint32              max;                                                    // ç¼“å­˜æ€»å¤§å°
+}fifo_struct;
+
+fifo_state_enum fifo_clear              (fifo_struct *fifo);
+uint32          fifo_used               (fifo_struct *fifo);
+
+//fifo_state_enum fifo_write_element      (fifo_struct *fifo, uint32 dat);
+fifo_state_enum fifo_write_buffer       (fifo_struct *fifo, void *dat, uint32 length);
+//fifo_state_enum fifo_read_element       (fifo_struct *fifo, void *dat, fifo_operation_enum flag);
+fifo_state_enum fifo_read_buffer        (fifo_struct *fifo, void *dat, uint32 *length, fifo_operation_enum flag);
+//fifo_state_enum fifo_read_tail_buffer   (fifo_struct *fifo, void *dat, uint32 *length, fifo_operation_enum flag);
+
+fifo_state_enum fifo_init               (fifo_struct *fifo, fifo_data_type_enum type, void *buffer_addr, uint32 siz);
+
+#endif

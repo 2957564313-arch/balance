@@ -3,31 +3,31 @@
 
 #include "zf_common_headfile.h"
 
-// PWM ²ÎÊý
-// ÆµÂÊ 17kHz (ÈË¶úÌý²»µ½µÄ³¬Éù²¨Æµ¶Î£¬µç»ú¸ü¾²Òô)
+// PWM å‚æ•°
+// é¢‘çŽ‡ 17kHz (äººè€³å¬ä¸åˆ°çš„è¶…å£°æ³¢é¢‘æ®µï¼Œç”µæœºæ›´é™éŸ³)
 #define PWM_FREQ            17000
-// ×î´óÕ¼¿Õ±È (Öð·É¿âÍ¨³£ÊÇ 0-10000 »ò 0-100)
-// ÕâÀï¼ÙÉè¿âÊ¹ÓÃµÄÊÇ 0-10000 µÄ·Ö±æÂÊ
+// æœ€å¤§å ç©ºæ¯” (é€é£žåº“é€šå¸¸æ˜¯ 0-10000 æˆ– 0-100)
+// è¿™é‡Œå‡è®¾åº“ä½¿ç”¨çš„æ˜¯ 0-10000 çš„åˆ†è¾¨çŽ‡
 #define MOTOR_MAX_DUTY      10000
 
-// ×óµç»ú PWM (P6.0 / P6.4)
+// å·¦ç”µæœº PWM (P6.0 / P6.4)
 #define MOTOR_L_IN1_PWM     PWMA_CH1P_P60
 #define MOTOR_L_IN2_PWM     PWMA_CH3P_P64
 
-// ÓÒµç»ú PWM (P6.2 / P6.6)
+// å³ç”µæœº PWM (P6.2 / P6.6)
 #define MOTOR_R_IN1_PWM     PWMA_CH2P_P62
 #define MOTOR_R_IN2_PWM     PWMA_CH4P_P66
 
-// ×ó±àÂëÆ÷ (Ó²¼þ Timer1: P3.4 / P3.5)
+// å·¦ç¼–ç å™¨ (ç¡¬ä»¶ Timer1: P3.4 / P3.5)
 #define ENCODER_L_TIM       TIM_1
 #define ENCODER_L_A         IO_P34 
 #define ENCODER_L_B         IO_P35
 
-// ÓÒ±àÂëÆ÷ (Èí¼þÄ£Äâ: P0.4 / P5.3)
+// å³ç¼–ç å™¨ (è½¯ä»¶æ¨¡æ‹Ÿ: P0.4 / P5.3)
 #define ENCODER_R_A_PIN     IO_P04
 #define ENCODER_R_B_PIN     IO_P53
 
-// API º¯ÊýÉùÃ÷
+// API å‡½æ•°å£°æ˜Ž
 void Motor_Init(void);
 void Motor_Set_L(int16 duty);
 void Motor_Set_R(int16 duty);

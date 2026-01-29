@@ -1,55 +1,55 @@
-/*********************************************************************************************************************
-* STC32G Opensourec Library ¼´£¨STC32G ¿ªÔ´¿â£©ÊÇÒ»¸ö»ùÓÚ¹Ù·½ SDK ½Ó¿ÚµÄµÚÈı·½¿ªÔ´¿â
-* Copyright (c) 2022 SEEKFREE Öğ·É¿Æ¼¼
-*
-* ±¾ÎÄ¼şÊÇSTC ¿ªÔ´¿âµÄÒ»²¿·Ö
-*
-* STC32G ¿ªÔ´¿â ÊÇÃâ·ÑÈí¼ş
-* Äú¿ÉÒÔ¸ù¾İ×ÔÓÉÈí¼ş»ù½ğ»á·¢²¼µÄ GPL£¨GNU General Public License£¬¼´ GNUÍ¨ÓÃ¹«¹²Ğí¿ÉÖ¤£©µÄÌõ¿î
-* ¼´ GPL µÄµÚ3°æ£¨¼´ GPL3.0£©»ò£¨ÄúÑ¡ÔñµÄ£©ÈÎºÎºóÀ´µÄ°æ±¾£¬ÖØĞÂ·¢²¼ºÍ/»òĞŞ¸ÄËü
-*
-* ±¾¿ªÔ´¿âµÄ·¢²¼ÊÇÏ£ÍûËüÄÜ·¢»Ó×÷ÓÃ£¬µ«²¢Î´¶ÔÆä×÷ÈÎºÎµÄ±£Ö¤
-* ÉõÖÁÃ»ÓĞÒşº¬µÄÊÊÏúĞÔ»òÊÊºÏÌØ¶¨ÓÃÍ¾µÄ±£Ö¤
-* ¸ü¶àÏ¸½ÚÇë²Î¼û GPL
-*
-* ÄúÓ¦¸ÃÔÚÊÕµ½±¾¿ªÔ´¿âµÄÍ¬Ê±ÊÕµ½Ò»·İ GPL µÄ¸±±¾
-* Èç¹ûÃ»ÓĞ£¬Çë²ÎÔÄ<https://www.gnu.org/licenses/>
-*
-* ¶îÍâ×¢Ã÷£º
-* ±¾¿ªÔ´¿âÊ¹ÓÃ GPL3.0 ¿ªÔ´Ğí¿ÉÖ¤Ğ­Òé ÒÔÉÏĞí¿ÉÉêÃ÷ÎªÒëÎÄ°æ±¾
-* Ğí¿ÉÉêÃ÷Ó¢ÎÄ°æÔÚ libraries/doc ÎÄ¼ş¼ĞÏÂµÄ GPL3_permission_statement.txt ÎÄ¼şÖĞ
-* Ğí¿ÉÖ¤¸±±¾ÔÚ libraries ÎÄ¼ş¼ĞÏÂ ¼´¸ÃÎÄ¼ş¼ĞÏÂµÄ LICENSE ÎÄ¼ş
-* »¶Ó­¸÷Î»Ê¹ÓÃ²¢´«²¥±¾³ÌĞò µ«ĞŞ¸ÄÄÚÈİÊ±±ØĞë±£ÁôÖğ·É¿Æ¼¼µÄ°æÈ¨ÉùÃ÷£¨¼´±¾ÉùÃ÷£©
-*
-* ÎÄ¼şÃû³Æ          
-* ¹«Ë¾Ãû³Æ          ³É¶¼Öğ·É¿Æ¼¼ÓĞÏŞ¹«Ë¾
-* °æ±¾ĞÅÏ¢          ²é¿´ libraries/doc ÎÄ¼ş¼ĞÄÚ version ÎÄ¼ş °æ±¾ËµÃ÷
-* ¿ª·¢»·¾³          MDK FOR C251
-* ÊÊÓÃÆ½Ì¨          STC32G
-* µêÆÌÁ´½Ó          https://seekfree.taobao.com/
-*
-* ĞŞ¸Ä¼ÇÂ¼
-* ÈÕÆÚ              ×÷Õß           ±¸×¢
-* 2024-08-01        ´óW            first version
-********************************************************************************************************************/
-
-#ifndef _seekfree_assistant_interface_h_
-#define _seekfree_assistant_interface_h_
-
-
-
-// Êı¾İ·¢ËÍÉè±¸Ã¶¾Ù
-typedef enum
-{
-    SEEKFREE_ASSISTANT_DEBUG_UART,      // µ÷ÊÔ´®¿Ú    Ê¹ÓÃµÄ´®¿ÚÓÉDEBUG_UART_INDEXºê¶¨ÒåÖ¸¶¨
-    SEEKFREE_ASSISTANT_WIRELESS_UART,   // ÎŞÏß×ª´®¿Ú
-    SEEKFREE_ASSISTANT_BLE6A20,         // BLE6A20À¶ÑÀÍ¸´«Ä£¿é
-    SEEKFREE_ASSISTANT_CUSTOM,          // ×Ô¶¨ÒåÍ¨Ñ¶·½Ê½ ĞèÒª×ÔĞĞseekfree_assistant_transferÓëseekfree_assistant_receive_callbackº¯Êı
-}seekfree_assistant_transfer_device_enum;
-
-
-extern void    	seekfree_assistant_interface_init   	(seekfree_assistant_transfer_device_enum transfer_device);
-extern uint32 	(*seekfree_assistant_transfer_callback)   		(const uint8 *buff, uint32 length);
-extern uint32 	(*seekfree_assistant_receive_callback)    		(uint8 *buff, uint32 length);
-
-#endif
+/*********************************************************************************************************************
+* STC32G Opensourec Library å³ï¼ˆSTC32G å¼€æºåº“ï¼‰æ˜¯ä¸€ä¸ªåŸºäºå®˜æ–¹ SDK æ¥å£çš„ç¬¬ä¸‰æ–¹å¼€æºåº“
+* Copyright (c) 2022 SEEKFREE é€é£ç§‘æŠ€
+*
+* æœ¬æ–‡ä»¶æ˜¯STC å¼€æºåº“çš„ä¸€éƒ¨åˆ†
+*
+* STC32G å¼€æºåº“ æ˜¯å…è´¹è½¯ä»¶
+* æ‚¨å¯ä»¥æ ¹æ®è‡ªç”±è½¯ä»¶åŸºé‡‘ä¼šå‘å¸ƒçš„ GPLï¼ˆGNU General Public Licenseï¼Œå³ GNUé€šç”¨å…¬å…±è®¸å¯è¯ï¼‰çš„æ¡æ¬¾
+* å³ GPL çš„ç¬¬3ç‰ˆï¼ˆå³ GPL3.0ï¼‰æˆ–ï¼ˆæ‚¨é€‰æ‹©çš„ï¼‰ä»»ä½•åæ¥çš„ç‰ˆæœ¬ï¼Œé‡æ–°å‘å¸ƒå’Œ/æˆ–ä¿®æ”¹å®ƒ
+*
+* æœ¬å¼€æºåº“çš„å‘å¸ƒæ˜¯å¸Œæœ›å®ƒèƒ½å‘æŒ¥ä½œç”¨ï¼Œä½†å¹¶æœªå¯¹å…¶ä½œä»»ä½•çš„ä¿è¯
+* ç”šè‡³æ²¡æœ‰éšå«çš„é€‚é”€æ€§æˆ–é€‚åˆç‰¹å®šç”¨é€”çš„ä¿è¯
+* æ›´å¤šç»†èŠ‚è¯·å‚è§ GPL
+*
+* æ‚¨åº”è¯¥åœ¨æ”¶åˆ°æœ¬å¼€æºåº“çš„åŒæ—¶æ”¶åˆ°ä¸€ä»½ GPL çš„å‰¯æœ¬
+* å¦‚æœæ²¡æœ‰ï¼Œè¯·å‚é˜…<https://www.gnu.org/licenses/>
+*
+* é¢å¤–æ³¨æ˜ï¼š
+* æœ¬å¼€æºåº“ä½¿ç”¨ GPL3.0 å¼€æºè®¸å¯è¯åè®® ä»¥ä¸Šè®¸å¯ç”³æ˜ä¸ºè¯‘æ–‡ç‰ˆæœ¬
+* è®¸å¯ç”³æ˜è‹±æ–‡ç‰ˆåœ¨ libraries/doc æ–‡ä»¶å¤¹ä¸‹çš„ GPL3_permission_statement.txt æ–‡ä»¶ä¸­
+* è®¸å¯è¯å‰¯æœ¬åœ¨ libraries æ–‡ä»¶å¤¹ä¸‹ å³è¯¥æ–‡ä»¶å¤¹ä¸‹çš„ LICENSE æ–‡ä»¶
+* æ¬¢è¿å„ä½ä½¿ç”¨å¹¶ä¼ æ’­æœ¬ç¨‹åº ä½†ä¿®æ”¹å†…å®¹æ—¶å¿…é¡»ä¿ç•™é€é£ç§‘æŠ€çš„ç‰ˆæƒå£°æ˜ï¼ˆå³æœ¬å£°æ˜ï¼‰
+*
+* æ–‡ä»¶åç§°          
+* å…¬å¸åç§°          æˆéƒ½é€é£ç§‘æŠ€æœ‰é™å…¬å¸
+* ç‰ˆæœ¬ä¿¡æ¯          æŸ¥çœ‹ libraries/doc æ–‡ä»¶å¤¹å†… version æ–‡ä»¶ ç‰ˆæœ¬è¯´æ˜
+* å¼€å‘ç¯å¢ƒ          MDK FOR C251
+* é€‚ç”¨å¹³å°          STC32G
+* åº—é“ºé“¾æ¥          https://seekfree.taobao.com/
+*
+* ä¿®æ”¹è®°å½•
+* æ—¥æœŸ              ä½œè€…           å¤‡æ³¨
+* 2024-08-01        å¤§W            first version
+********************************************************************************************************************/
+
+#ifndef _seekfree_assistant_interface_h_
+#define _seekfree_assistant_interface_h_
+
+
+
+// æ•°æ®å‘é€è®¾å¤‡æšä¸¾
+typedef enum
+{
+    SEEKFREE_ASSISTANT_DEBUG_UART,      // è°ƒè¯•ä¸²å£    ä½¿ç”¨çš„ä¸²å£ç”±DEBUG_UART_INDEXå®å®šä¹‰æŒ‡å®š
+    SEEKFREE_ASSISTANT_WIRELESS_UART,   // æ— çº¿è½¬ä¸²å£
+    SEEKFREE_ASSISTANT_BLE6A20,         // BLE6A20è“ç‰™é€ä¼ æ¨¡å—
+    SEEKFREE_ASSISTANT_CUSTOM,          // è‡ªå®šä¹‰é€šè®¯æ–¹å¼ éœ€è¦è‡ªè¡Œseekfree_assistant_transferä¸seekfree_assistant_receive_callbackå‡½æ•°
+}seekfree_assistant_transfer_device_enum;
+
+
+extern void    	seekfree_assistant_interface_init   	(seekfree_assistant_transfer_device_enum transfer_device);
+extern uint32 	(*seekfree_assistant_transfer_callback)   		(const uint8 *buff, uint32 length);
+extern uint32 	(*seekfree_assistant_receive_callback)    		(uint8 *buff, uint32 length);
+
+#endif
