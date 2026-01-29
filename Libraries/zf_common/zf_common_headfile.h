@@ -60,7 +60,7 @@
 
 #include "seekfree_assistant_interface.h"
 
-//加了什么文件就把h文件写这里
+//加了什么文件就把h文件写这�?
 #include "Key.h"
 #include "OLED.h"
 #include "Menu.h"
