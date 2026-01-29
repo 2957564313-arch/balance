@@ -1,27 +1,74 @@
-#ifndef __BLUETOOTH_H
-#define __BLUETOOTH_H
+#ifndef __ZF_BLUETOOTH_H
+#define __ZF_BLUETOOTH_H
 
+// 引入逐飞库核心头文件（C251兼容）
 #include "zf_common_headfile.h"
 
-// ========== 蓝牙模块串口配置（可单独定义，区分电脑调试串口） ==========
-#define UART_INDEX              (DEBUG_UART_INDEX   )         // 蓝牙模块串口（若和电脑共用UART1则不变）
-#define UART_BAUDRATE           (DEBUG_UART_BAUDRATE)       // 蓝牙模块波特率（通常9600/115200）
-#define UART_TX_PIN             (DEBUG_UART_TX_PIN  )       // 蓝牙TX引脚
-#define UART_RX_PIN             (DEBUG_UART_RX_PIN  )       // 蓝牙RX引脚
+// 全局变量声明（逐飞库风格）
+extern char    Serial_RxPacket[100];
+extern uint8   Serial_RxFlag;
 
-// ========== 函数声明 ==========
-void uart_rx_interrupt_handler (uint8 dat);        // 中断回调函数
-void serial_Init(void);                           // 串口初始化
-void serial_Receive(void);                        // 接收数据并转发给蓝牙
-void Serial_SendToBluetooth(uint8 dat);            // 向蓝牙发送单个字节
-void Serial_SendStringToBluetooth(uint8 *str);     // 向蓝牙发送字符串
+//-------------------------------------------------------------------------------------------------------------------
+// 函数声明（逐飞库风格，C251兼容）
+//-------------------------------------------------------------------------------------------------------------------
+/**
+ * @brief 蓝牙串口初始化（HC-04，UART4，P02/P03，9600波特率）
+ * @param 无
+ * @return 无
+ */
+void bluetooth_init(void);
 
-// ========== 全局变量声明 ==========
-extern uint8       uart_get_data[64];              // FIFO接收缓冲区
-extern uint8       fifo_get_data[64];              // FIFO读取缓冲区
-extern uint8       Serial_RxPacket[64];            // [xxx]数据包缓冲区
-extern uint32      fifo_data_count;                // FIFO数据计数
-extern fifo_struct uart_data_fifo;                 // FIFO结构体
-extern uint8       Serial_RxFlag;                  // 数据包接收完成标志
+/**
+ * @brief 发送单个字节
+ * @param dat 要发送的字节
+ * @return 无
+ */
+void bluetooth_send_byte(uint8 dat);
 
-#endif
+/**
+ * @brief 发送指定长度数组
+ * @param buff 数组首地址
+ * @param len  数组长度
+ * @return 无
+ */
+void bluetooth_send_array(uint8 *buff, uint16 len);
+
+/**
+ * @brief 发送字符串
+ * @param str 字符串首地址
+ * @return 无
+ */
+void bluetooth_send_string(char *str);
+
+/**
+ * @brief 幂运算（用于数字转字符串）
+ * @param X 底数
+ * @param Y 指数
+ * @return 运算结果
+ */
+uint32 bluetooth_pow(uint32 X, uint8 Y);
+
+/**
+ * @brief 发送数字（指定位数）
+ * @param num 要发送的数字
+ * @param len 数字位数
+ * @return 无
+ */
+void bluetooth_send_number(uint32 num, uint8 len);
+
+/**
+ * @brief 格式化打印函数（支持printf风格）
+ * @param format 格式化字符串
+ * @param ...    可变参数
+ * @return 无
+ */
+void bluetooth_printf(char *format, ...);
+
+/**
+ * @brief UART4中断处理函数（解析[数据包]）
+ * @param 无
+ * @return 无
+ */
+void uart4_isr_handler(void);
+
+#endif // __ZF_BLUETOOTH_H

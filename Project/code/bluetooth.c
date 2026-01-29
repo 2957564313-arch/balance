@@ -1,118 +1,173 @@
-#include "zf_common_headfile.h"
-#include "bluetooth.h"
+#include "zf_bluetooth.h"
 
-// ========== 全局变量定义 ==========
-uint8       uart_get_data[64] = {0};                   // FIFO接收缓冲区（蓝牙模块串口）
-uint8       fifo_get_data[64] = {0};                   // FIFO读取缓冲区
-uint8       Serial_RxPacket[64] = {0};                 // [xxx]数据包解析缓冲区
-uint32      fifo_data_count = 0;  
-fifo_struct uart_data_fifo = {0};
+// 全局变量（逐飞库风格，C251兼容）
+char    Serial_RxPacket[100] = {0};
+uint8   Serial_RxFlag = 0;
 
-// ========== 数据包解析专用变量 ==========
-static uint8 RxState = 0;        // 解析状态：0-等待起始符，1-接收数据
-static uint8 pRxPacket = 0;      // 数据包缓冲区指针
-uint8       Serial_RxFlag = 0;   // 数据包接收完成标志
+// 静态变量（中断接收状态机）
+static uint8   RxState = 0;
+static uint8   pRxPacket = 0;
 
-/**
- * @brief 向蓝牙模块发送单个字节（ZF库API）
- * @param dat 要发送给蓝牙的字节
- */
-void Serial_SendToBluetooth(uint8 dat)
+//-------------------------------------------------------------------------------------------------------------------
+// 函数简介     蓝牙串口初始化（HC-04，UART4，P02/P03，9600波特率）
+// 参数说明     void
+// 返回参数     void
+// 使用示例     bluetooth_init();
+// 备注信息     适配C251编译器，逐飞库原生接口
+//-------------------------------------------------------------------------------------------------------------------
+void bluetooth_init(void)
 {
-    // 用ZF库的uart_write_byte发送数据到蓝牙串口（UART_INDEX=蓝牙模块对应的串口）
-    uart_write_byte(UART_INDEX, dat);
-}
-
-/**
- * @brief 向蓝牙模块发送字符串（ZF库API）
- * @param str 要发送给蓝牙的字符串
- */
-void Serial_SendStringToBluetooth(uint8 *str)
-{
-    uint8 i = 0;
-    while(str[i] != '\0')
-    {
-        Serial_SendToBluetooth(str[i]);
-        i++;
-    }
-    // 可选：添加换行符（蓝牙模块常用\r\n）
-    Serial_SendToBluetooth('\r');
-    Serial_SendToBluetooth('\n');
-}
-
-/**
- * @brief 串口接收中断回调（接收蓝牙模块/电脑发来的数据）
- * @note  接收的数据先解析，再决定是否转发给蓝牙/电脑
- */
-void uart_rx_interrupt_handler (uint8 dat)
-{
-    // 1. 读取串口接收到的字节（来自蓝牙模块/电脑）
-    uart_query_byte(UART_INDEX, &dat);                                     
+    // 初始化UART4：TX=P03，RX=P02，波特率9600（逐飞库标准接口）
+    uart_init(UART_4, 9600, UART4_TX_P03, UART4_RX_P02);
     
-    // 2. [xxx]数据包解析逻辑
-    if (RxState == 0)
+    // 开启UART4 DMA接收+中断（逐飞库原生接口）
+    uart_rx_start_buff(UART_4);         // 启动DMA接收缓冲
+    uart_rx_interrupt(UART_4, 1);       // 1=开启接收中断，0=关闭
+    
+    // 发送初始化提示
+    uart_write_string(UART_4, "HC-04 Bluetooth Init OK!\r\n");
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// 函数简介     发送单个字节
+// 参数说明     dat        要发送的字节
+// 返回参数     void
+// 使用示例     bluetooth_send_byte(0x55);
+//-------------------------------------------------------------------------------------------------------------------
+void bluetooth_send_byte(uint8 dat)
+{
+    uart_write_byte(UART_4, dat);
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// 函数简介     发送指定长度数组
+// 参数说明     buff       数组首地址
+// 参数说明     len        数组长度
+// 返回参数     void
+// 使用示例     bluetooth_send_array(buff, 10);
+//-------------------------------------------------------------------------------------------------------------------
+void bluetooth_send_array(uint8 *buff, uint16 len)
+{
+    uart_write_buffer(UART_4, buff, len);
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// 函数简介     发送字符串
+// 参数说明     str        字符串首地址
+// 返回参数     void
+// 使用示例     bluetooth_send_string("Hello STC32G!");
+//-------------------------------------------------------------------------------------------------------------------
+void bluetooth_send_string(char *str)
+{
+    uart_write_string(UART_4, str);
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// 函数简介     幂运算（用于数字转字符串）
+// 参数说明     X          底数
+// 参数说明     Y          指数
+// 返回参数     uint32     运算结果
+// 使用示例     bluetooth_pow(10, 3); // 返回1000
+//-------------------------------------------------------------------------------------------------------------------
+uint32 bluetooth_pow(uint32 X, uint8 Y)
+{
+    uint32 Result = 1;
+    while (Y--)
     {
-        if (dat == '[')
+        Result *= X;
+    }
+    return Result;
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// 函数简介     发送数字（指定位数）
+// 参数说明     num        要发送的数字
+// 参数说明     len        数字位数
+// 返回参数     void
+// 使用示例     bluetooth_send_number(123, 3); // 发送"123"
+//-------------------------------------------------------------------------------------------------------------------
+void bluetooth_send_number(uint32 num, uint8 len)
+{
+    uint8 i;
+    for (i = 0; i < len; i++)
+    {
+        bluetooth_send_byte(num / bluetooth_pow(10, len - i - 1) % 10 + '0');
+    }
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// 函数简介     格式化打印适配（支持printf）
+// 参数说明     ch         输出字符
+// 参数说明     f          文件指针（C251兼容，无实际意义）
+// 返回参数     int        输出的字符
+// 备注信息     重定向printf到蓝牙串口
+//-------------------------------------------------------------------------------------------------------------------
+int fputc(int ch, FILE *f)
+{
+    bluetooth_send_byte(ch);
+    return ch;
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// 函数简介     格式化打印函数（逐飞库风格）
+// 参数说明     format     格式化字符串
+// 参数说明     ...        可变参数
+// 返回参数     void
+// 使用示例     bluetooth_printf("Encoder: %d\r\n", 123);
+//-------------------------------------------------------------------------------------------------------------------
+void bluetooth_printf(char *format, ...)
+{
+    char    str[100] = {0};
+    va_list arg;
+    va_start(arg, format);
+    vsprintf(str, format, arg);
+    va_end(arg);
+    bluetooth_send_string(str);
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// 函数简介     UART4中断处理函数（解析[数据包]）
+// 参数说明     void
+// 返回参数     void
+// 备注信息     需在isr.c中注册该函数（逐飞库中断规范）
+//-------------------------------------------------------------------------------------------------------------------
+void uart4_isr_handler(void)
+{
+    uint8 RxData = 0;
+    
+    // 查询UART4接收数据（逐飞库原生接口，C251兼容）
+    if(uart_query_byte(UART_4, &RxData))
+    {
+        // 状态机解析[数据包]（和STM32逻辑一致，适配C251）
+        if (RxState == 0)
         {
-            RxState = 1;
-            pRxPacket = 0;
-            memset(Serial_RxPacket, 0, sizeof(Serial_RxPacket));
+            // 检测数据包起始符 '['
+            if (RxData == '[' && Serial_RxFlag == 0)
+            {
+                RxState = 1;
+                pRxPacket = 0;
+                memset(Serial_RxPacket, 0, sizeof(Serial_RxPacket)); // 清空缓存
+            }
+        }
+        else if (RxState == 1)
+        {
+            // 检测数据包结束符 ']'
+            if (RxData == ']')
+            {
+                RxState = 0;
+                Serial_RxPacket[pRxPacket] = '\0';
+                Serial_RxFlag = 1; // 标记数据包接收完成
+            }
+            else
+            {
+                // 存储数据（防止数组越界）
+                if(pRxPacket < (sizeof(Serial_RxPacket) - 1))
+                {
+                    Serial_RxPacket[pRxPacket] = RxData;
+                    pRxPacket++;
+                }
+            }
         }
     }
-    else if (RxState == 1)
-    {
-        if (dat == ']')
-        {
-            RxState = 0;
-            Serial_RxPacket[pRxPacket] = '\0';
-            Serial_RxFlag = 1;
-            // 解析到完整数据包后，发送给蓝牙模块
-            Serial_SendStringToBluetooth((uint8*)"Received: ");
-            Serial_SendStringToBluetooth((uint8*)Serial_RxPacket);
-        }
-        else if (pRxPacket < 63)
-        {
-            Serial_RxPacket[pRxPacket] = dat;
-            pRxPacket++;
-        }
-    }
-    
-    // 3. 写入FIFO缓冲区（保留FIFO机制，方便后续处理）
-    fifo_write_buffer(&uart_data_fifo, &dat, 1);                           
-}  
-
-/**
- * @brief 串口初始化（蓝牙模块串口）
- */
-void serial_Init(void)
-{
-    // 1. 初始化FIFO接收缓冲区
-    fifo_init(&uart_data_fifo, FIFO_DATA_8BIT, uart_get_data, 64);             
-    
-    // 2. 初始化蓝牙模块对应的串口
-    uart_init(UART_INDEX, UART_BAUDRATE, UART_TX_PIN, UART_RX_PIN);
-    
-    // 3. 开启串口接收中断
-    uart_rx_interrupt(UART_INDEX, ZF_ENABLE);   	
-    
-    // 4. 绑定中断回调函数
-    uart1_irq_handler = uart_rx_interrupt_handler;	
 }
 
-/**
- * @brief 串口接收处理（转发FIFO数据到蓝牙模块）
- * @note  把接收到的原始数据直接发送给蓝牙模块，而非电脑
- */
-void serial_Receive(void)
-{
-    // 读取FIFO中的原始数据
-    fifo_data_count = fifo_used(&uart_data_fifo);    
-    while(fifo_data_count > 0)
-    {
-        // 从FIFO读取数据
-        fifo_read_buffer(&uart_data_fifo, fifo_get_data, &fifo_data_count, FIFO_READ_AND_CLEAN);
-        
-        // 把数据发送给蓝牙模块（替换原printf，核心修正点）
-        uart_write_buffer(UART_INDEX, fifo_get_data, fifo_data_count);
-    }
-}
