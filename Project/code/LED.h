@@ -1,15 +1,15 @@
-#ifndef __LED_H
-#define __LED_H
-
-#include "zf_common_headfile.h"
-
-// ºËĞÄ°åÉÏµÄ LED Í¨³£½ÓÔÚ P5.2 (µÍµçÆ½µãÁÁ)
-#define LED_PIN IO_P52
-
-void LED_Init(void);
-void LED_ON(void);
-void LED_OFF(void);
-// ·­×ªº¯Êı (µ÷ÊÔÉÁË¸ÓÃ)
-#define LED_TOGGLE()  gpio_set_level(LED_PIN, !gpio_get_level(LED_PIN))
-
-#endif
+#ifndef __LED_H
+#define __LED_H
+
+#include "zf_common_headfile.h"
+
+// æ ¸å¿ƒæ¿ä¸Šçš„ LED é€šå¸¸æ¥åœ¨ P5.2 (ä½ç”µå¹³ç‚¹äº®)
+#define LED_PIN IO_P52
+
+void LED_Init(void);
+void LED_ON(void);
+void LED_OFF(void);
+// ç¿»è½¬å‡½æ•° (è°ƒè¯•é—ªçƒç”¨)
+#define LED_TOGGLE()  gpio_set_level(LED_PIN, !gpio_get_level(LED_PIN))
+
+#endif

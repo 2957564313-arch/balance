@@ -1,37 +1,37 @@
-#include "Buzzer.h"
-
-// µ¹¼ÆÊ±¼ÆÊıÆ÷
-static uint16 beep_timer = 0;
-
-void Buzzer_Init(void)
-{
-    // ³õÊ¼»¯ÎªÍÆÍìÊä³ö£¬Ä¬ÈÏµÍµçÆ½(²»Ïì)
-    // Èç¹ûÄãµÄ·äÃùÆ÷Ò»ÉÏµç¾ÍÏì£¬°ÑÕâÀïµÄ 0 ¸ÄÎª 1
-    gpio_init(BEEP_PIN, GPO, 0, GPO_PUSH_PULL);
-}
-
-// ÉèÖÃÃù½ĞÊ±¼ä (·Ç×èÈû)
-// ²ÎÊı ms: ÏëÒªÏì¶àÉÙºÁÃë
-void Buzzer_Beep(uint16 ms)
-{
-    // ¼ÆËãĞèÒª¶àÉÙ¸ö 5ms ÖÜÆÚ
-    if(ms < 5) ms = 5;
-    beep_timer = ms / 5;
-    
-    // ¿ªÆô·äÃùÆ÷ (¸ßµçÆ½Ïì)
-    gpio_set_level(BEEP_PIN, 1); 
-}
-
-// ÖÜÆÚĞÔÈÎÎñ (·ÅÔÚ 5ms ÖĞ¶ÏÀï)
-void Buzzer_Task(void)
-{
-    if(beep_timer > 0)
-    {
-        beep_timer--;
-        if(beep_timer == 0)
-        {
-            // µ¹¼ÆÊ±½áÊø£¬¹Ø±Õ·äÃùÆ÷
-            gpio_set_level(BEEP_PIN, 0); 
-        }
-    }
-}
+#include "Buzzer.h"
+
+// å€’è®¡æ—¶è®¡æ•°å™¨
+static uint16 beep_timer = 0;
+
+void Buzzer_Init(void)
+{
+    // åˆå§‹åŒ–ä¸ºæ¨æŒ½è¾“å‡ºï¼Œé»˜è®¤ä½ç”µå¹³(ä¸å“)
+    // å¦‚æœä½ çš„èœ‚é¸£å™¨ä¸€ä¸Šç”µå°±å“ï¼ŒæŠŠè¿™é‡Œçš„ 0 æ”¹ä¸º 1
+    gpio_init(BEEP_PIN, GPO, 0, GPO_PUSH_PULL);
+}
+
+// è®¾ç½®é¸£å«æ—¶é—´ (éé˜»å¡)
+// å‚æ•° ms: æƒ³è¦å“å¤šå°‘æ¯«ç§’
+void Buzzer_Beep(uint16 ms)
+{
+    // è®¡ç®—éœ€è¦å¤šå°‘ä¸ª 5ms å‘¨æœŸ
+    if(ms < 5) ms = 5;
+    beep_timer = ms / 5;
+    
+    // å¼€å¯èœ‚é¸£å™¨ (é«˜ç”µå¹³å“)
+    gpio_set_level(BEEP_PIN, 1); 
+}
+
+// å‘¨æœŸæ€§ä»»åŠ¡ (æ”¾åœ¨ 5ms ä¸­æ–­é‡Œ)
+void Buzzer_Task(void)
+{
+    if(beep_timer > 0)
+    {
+        beep_timer--;
+        if(beep_timer == 0)
+        {
+            // å€’è®¡æ—¶ç»“æŸï¼Œå…³é—­èœ‚é¸£å™¨
+            gpio_set_level(BEEP_PIN, 0); 
+        }
+    }
+}

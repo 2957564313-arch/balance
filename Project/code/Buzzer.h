@@ -1,13 +1,13 @@
-#ifndef _BUZZER_H_
-#define _BUZZER_H_
-
-#include "zf_common_headfile.h"
-
-// ¶¨Òå·äÃùÆ÷Òı½Å (ÇëÈ·±£Ô­ÀíÍ¼ÊÇ P6.7)
-#define BEEP_PIN IO_P67 
-
-void Buzzer_Init(void);
-void Buzzer_Beep(uint16 ms); // Éè¶¨ÏìÉùÊ±³¤(ºÁÃë)
-void Buzzer_Task(void);      // ·ÅÔÚ 5ms ¶¨Ê±Æ÷ÖĞ
-
-#endif
+#ifndef _BUZZER_H_
+#define _BUZZER_H_
+
+#include "zf_common_headfile.h"
+
+// å®šä¹‰èœ‚é¸£å™¨å¼•è„š (è¯·ç¡®ä¿åŸç†å›¾æ˜¯ P6.7)
+#define BEEP_PIN IO_P67 
+
+void Buzzer_Init(void);
+void Buzzer_Beep(uint16 ms); // è®¾å®šå“å£°æ—¶é•¿(æ¯«ç§’)
+void Buzzer_Task(void);      // æ”¾åœ¨ 5ms å®šæ—¶å™¨ä¸­
+
+#endif
