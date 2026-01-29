@@ -188,7 +188,7 @@
           <Target251Misc>
             <MemoryModel>4</MemoryModel>
             <RTOS>0</RTOS>
-            <RomSize>3</RomSize>
+            <RomSize>4</RomSize>
             <NearDataHold>0</NearDataHold>
             <XDataHold>0</XDataHold>
             <FarDataHold>0</FarDataHold>
@@ -565,164 +565,24 @@
           <GroupName>zf_device</GroupName>
           <Files>
             <File>
-              <FileName>zf_device_ble6a20.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\libraries\zf_device\zf_device_ble6a20.c</FilePath>
-            </File>
-            <File>
-              <FileName>zf_device_ble6a20.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\libraries\zf_device\zf_device_ble6a20.h</FilePath>
-            </File>
-            <File>
-              <FileName>zf_device_config.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\libraries\zf_device\zf_device_config.c</FilePath>
-            </File>
-            <File>
-              <FileName>zf_device_config.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\libraries\zf_device\zf_device_config.h</FilePath>
-            </File>
-            <File>
-              <FileName>zf_device_dl1a.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\libraries\zf_device\zf_device_dl1a.c</FilePath>
-            </File>
-            <File>
-              <FileName>zf_device_dl1a.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\libraries\zf_device\zf_device_dl1a.h</FilePath>
-            </File>
-            <File>
-              <FileName>zf_device_dl1b.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\libraries\zf_device\zf_device_dl1b.c</FilePath>
-            </File>
-            <File>
-              <FileName>zf_device_dl1b.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\libraries\zf_device\zf_device_dl1b.h</FilePath>
-            </File>
-            <File>
-              <FileName>zf_device_gps_tau1201.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\libraries\zf_device\zf_device_gps_tau1201.c</FilePath>
-            </File>
-            <File>
-              <FileName>zf_device_gps_tau1201.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\libraries\zf_device\zf_device_gps_tau1201.h</FilePath>
-            </File>
-            <File>
-              <FileName>zf_device_icm20602.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\libraries\zf_device\zf_device_icm20602.c</FilePath>
-            </File>
-            <File>
-              <FileName>zf_device_icm20602.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\libraries\zf_device\zf_device_icm20602.h</FilePath>
-            </File>
-            <File>
               <FileName>zf_device_imu660ra.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\libraries\zf_device\zf_device_imu660ra.c</FilePath>
+              <FilePath>..\..\Libraries\zf_device\zf_device_imu660ra.c</FilePath>
             </File>
             <File>
               <FileName>zf_device_imu660ra.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\..\libraries\zf_device\zf_device_imu660ra.h</FilePath>
-            </File>
-            <File>
-              <FileName>zf_device_imu660rb.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\libraries\zf_device\zf_device_imu660rb.c</FilePath>
-            </File>
-            <File>
-              <FileName>zf_device_imu660rb.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\libraries\zf_device\zf_device_imu660rb.h</FilePath>
-            </File>
-            <File>
-              <FileName>zf_device_imu963ra.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\libraries\zf_device\zf_device_imu963ra.c</FilePath>
-            </File>
-            <File>
-              <FileName>zf_device_imu963ra.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\libraries\zf_device\zf_device_imu963ra.h</FilePath>
-            </File>
-            <File>
-              <FileName>zf_device_ips114.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\libraries\zf_device\zf_device_ips114.c</FilePath>
-            </File>
-            <File>
-              <FileName>zf_device_ips114.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\libraries\zf_device\zf_device_ips114.h</FilePath>
+              <FilePath>..\..\Libraries\zf_device\zf_device_imu660ra.h</FilePath>
             </File>
             <File>
               <FileName>zf_device_ips200.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\libraries\zf_device\zf_device_ips200.c</FilePath>
+              <FilePath>..\..\Libraries\zf_device\zf_device_ips200.c</FilePath>
             </File>
             <File>
               <FileName>zf_device_ips200.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\..\libraries\zf_device\zf_device_ips200.h</FilePath>
-            </File>
-            <File>
-              <FileName>zf_device_ips200pro.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Libraries\zf_device\zf_device_ips200pro.c</FilePath>
-            </File>
-            <File>
-              <FileName>zf_device_ips200pro.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\Libraries\zf_device\zf_device_ips200pro.h</FilePath>
-            </File>
-            <File>
-              <FileName>zf_device_tft180.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\libraries\zf_device\zf_device_tft180.c</FilePath>
-            </File>
-            <File>
-              <FileName>zf_device_tft180.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\libraries\zf_device\zf_device_tft180.h</FilePath>
-            </File>
-            <File>
-              <FileName>zf_device_tsl1401.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\libraries\zf_device\zf_device_tsl1401.c</FilePath>
-            </File>
-            <File>
-              <FileName>zf_device_tsl1401.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\libraries\zf_device\zf_device_tsl1401.h</FilePath>
-            </File>
-            <File>
-              <FileName>zf_device_type.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\libraries\zf_device\zf_device_type.c</FilePath>
-            </File>
-            <File>
-              <FileName>zf_device_type.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\libraries\zf_device\zf_device_type.h</FilePath>
-            </File>
-            <File>
-              <FileName>zf_device_wireless_uart.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\libraries\zf_device\zf_device_wireless_uart.c</FilePath>
-            </File>
-            <File>
-              <FileName>zf_device_wireless_uart.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\libraries\zf_device\zf_device_wireless_uart.h</FilePath>
+              <FilePath>..\..\Libraries\zf_device\zf_device_ips200.h</FilePath>
             </File>
           </Files>
         </Group>

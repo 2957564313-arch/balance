@@ -7,7 +7,7 @@
 
 #if MPU6050_USE_SOFT_IIC
     #define MPU6050_SOFT_IIC_DELAY  (0)
-    // 软件I2C引脚定义 (请根据实际原理图确认!)
+    // 软件I2C引脚定义
     #define MPU6050_SCL_PIN         (IO_P40)
     #define MPU6050_SDA_PIN         (IO_P41)
 #endif
@@ -29,15 +29,15 @@
 #define MPU6050_ACC_SAMPLE          (0x10) // ±8g
 #define MPU6050_GYR_SAMPLE          (0x18) // ±2000dps
 
-// 全局变量声明 (确保这里是 mpu6050_xxx 而不是 imu660ra_xxx)
+// 全局变量声明
 extern int16 mpu6050_gyro_x, mpu6050_gyro_y, mpu6050_gyro_z;
 extern int16 mpu6050_acc_x, mpu6050_acc_y, mpu6050_acc_z;
 
 // 函数声明
-uint8 mpu6050_init(void);
-void  mpu6050_get_acc(void);
-void  mpu6050_get_gyro(void);
-float mpu6050_acc_transition(int16 acc_value);
-float mpu6050_gyro_transition(int16 gyro_value);
+uint8 mpu6050_init(void);							// 初始化
+void  mpu6050_get_acc(void);						// 5ms中断中调用
+void  mpu6050_get_gyro(void);						// 5ms中断中调用
+float mpu6050_acc_transition(int16 acc_value);	    // 转换函数：Raw -> g (重力加速度)
+float mpu6050_gyro_transition(int16 gyro_value);	// 转换函数：Raw -> deg/s (角速度)
 
 #endif

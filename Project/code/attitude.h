@@ -5,17 +5,17 @@
 
 typedef struct
 {
-    float q0, q1, q2, q3; // 四元数
-    float pitch, roll, yaw; // 欧拉角 (-180 ~ 180)
+    float q0, q1, q2, q3;    // 四元数
+    float pitch, roll, yaw;  // 欧拉角 (-180 ~ 180)
     
-    // === 新增：累积航向角 ===
+    // === 累积航向角 ===
     // 这个变量记录车子转过的总角度（绝对值累加）
     // 比如：进弯时是 0，出弯时应该是 180
     float total_yaw; 
     
-    float ix, iy, iz; 
-    float kp, ki;
-    float sample_freq;
+    float ix, iy, iz; 		 // 积分项（补偿陀螺零偏）
+    float kp, ki;			 // Mahony 的 PI 增益
+    float sample_freq;		 // 采样频率 Hz
 } mahony_t;
 
 extern mahony_t m_imu;
