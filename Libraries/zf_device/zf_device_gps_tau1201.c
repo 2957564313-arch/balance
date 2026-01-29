@@ -1,578 +1,578 @@
-/*********************************************************************************************************************
-* STC32G Opensourec Library ¼´£¨STC32G ¿ªÔ´¿â£©ÊÇÒ»¸ö»ùÓÚ¹Ù·½ SDK ½Ó¿ÚµÄµÚÈı·½¿ªÔ´¿â
-* Copyright (c) 2022 SEEKFREE Öğ·É¿Æ¼¼
-*
-* ±¾ÎÄ¼şÊÇSTC ¿ªÔ´¿âµÄÒ»²¿·Ö
-*
-* STC32G ¿ªÔ´¿â ÊÇÃâ·ÑÈí¼ş
-* Äú¿ÉÒÔ¸ù¾İ×ÔÓÉÈí¼ş»ù½ğ»á·¢²¼µÄ GPL£¨GNU General Public License£¬¼´ GNUÍ¨ÓÃ¹«¹²Ğí¿ÉÖ¤£©µÄÌõ¿î
-* ¼´ GPL µÄµÚ3°æ£¨¼´ GPL3.0£©»ò£¨ÄúÑ¡ÔñµÄ£©ÈÎºÎºóÀ´µÄ°æ±¾£¬ÖØĞÂ·¢²¼ºÍ/»òĞŞ¸ÄËü
-*
-* ±¾¿ªÔ´¿âµÄ·¢²¼ÊÇÏ£ÍûËüÄÜ·¢»Ó×÷ÓÃ£¬µ«²¢Î´¶ÔÆä×÷ÈÎºÎµÄ±£Ö¤
-* ÉõÖÁÃ»ÓĞÒşº¬µÄÊÊÏúĞÔ»òÊÊºÏÌØ¶¨ÓÃÍ¾µÄ±£Ö¤
-* ¸ü¶àÏ¸½ÚÇë²Î¼û GPL
-*
-* ÄúÓ¦¸ÃÔÚÊÕµ½±¾¿ªÔ´¿âµÄÍ¬Ê±ÊÕµ½Ò»·İ GPL µÄ¸±±¾
-* Èç¹ûÃ»ÓĞ£¬Çë²ÎÔÄ<https://www.gnu.org/licenses/>
-*
-* ¶îÍâ×¢Ã÷£º
-* ±¾¿ªÔ´¿âÊ¹ÓÃ GPL3.0 ¿ªÔ´Ğí¿ÉÖ¤Ğ­Òé ÒÔÉÏĞí¿ÉÉêÃ÷ÎªÒëÎÄ°æ±¾
-* Ğí¿ÉÉêÃ÷Ó¢ÎÄ°æÔÚ libraries/doc ÎÄ¼ş¼ĞÏÂµÄ GPL3_permission_statement.txt ÎÄ¼şÖĞ
-* Ğí¿ÉÖ¤¸±±¾ÔÚ libraries ÎÄ¼ş¼ĞÏÂ ¼´¸ÃÎÄ¼ş¼ĞÏÂµÄ LICENSE ÎÄ¼ş
-* »¶Ó­¸÷Î»Ê¹ÓÃ²¢´«²¥±¾³ÌĞò µ«ĞŞ¸ÄÄÚÈİÊ±±ØĞë±£ÁôÖğ·É¿Æ¼¼µÄ°æÈ¨ÉùÃ÷£¨¼´±¾ÉùÃ÷£©
-*
-* ÎÄ¼şÃû³Æ          
-* ¹«Ë¾Ãû³Æ          ³É¶¼Öğ·É¿Æ¼¼ÓĞÏŞ¹«Ë¾
-* °æ±¾ĞÅÏ¢          ²é¿´ libraries/doc ÎÄ¼ş¼ĞÄÚ version ÎÄ¼ş °æ±¾ËµÃ÷
-* ¿ª·¢»·¾³          MDK FOR C251
-* ÊÊÓÃÆ½Ì¨          STC32G
-* µêÆÌÁ´½Ó          https://seekfree.taobao.com/
-*
-* ĞŞ¸Ä¼ÇÂ¼
-* ÈÕÆÚ              ×÷Õß           ±¸×¢
-* 2024-08-01        ´óW            first version
-********************************************************************************************************************/
-/*********************************************************************************************************************
-* ½ÓÏß¶¨Òå£º
-*                  ------------------------------------
-*                  Ä£¿é¹Ü½Å             µ¥Æ¬»ú¹Ü½Å
-*                  RX                  ²é¿´ zf_device_gps_tau1201.h ÖĞ GPS_TAU1201_RX ºê¶¨Òå
-*                  TX                  ²é¿´ zf_device_gps_tau1201.h ÖĞ GPS_TAU1201_TX ºê¶¨Òå
-*                  VCC                 3.3VµçÔ´
-*                  GND                 µçÔ´µØ
-*                  ------------------------------------
-********************************************************************************************************************/
-
-#include "math.h"
-#include "zf_common_function.h"
-#include "zf_common_fifo.h"
-
-#include "zf_driver_delay.h"
-#include "zf_driver_uart.h"
-
-#include "zf_device_type.h"
-#include "zf_device_gps_tau1201.h"
-
-#pragma warning disable = 183
-
-#define GPS_TAU1201_BUFFER_SIZE     ( 128 )
-
-uint8                       gps_tau1201_flag = 0;                                   // 1£º²É¼¯Íê³ÉµÈ´ı´¦ÀíÊı¾İ 0£ºÃ»ÓĞ²É¼¯Íê³É
-gps_info_struct             gps_tau1201;                                            // GPS½âÎöÖ®ºóµÄÊı¾İ
-
-static  uint8               gps_tau1201_state = 0;                                  // 1£ºGPS³õÊ¼»¯Íê³É
-static  fifo_struct         gps_tau1201_receiver_fifo;                              //
-static  uint8               gps_tau1201_receiver_buffer[GPS_TAU1201_BUFFER_SIZE];   // Êı¾İ´æ·ÅÊı×é
-
-gps_state_enum              gps_gga_state = GPS_STATE_RECEIVING;                    // gga Óï¾ä×´Ì¬
-gps_state_enum              gps_rmc_state = GPS_STATE_RECEIVING;                    // rmc Óï¾ä×´Ì¬
-
-static  uint8               gps_gga_buffer[GPS_TAU1201_BUFFER_SIZE];                // GGAÓï¾ä»º³åÇø
-static  uint8               gps_rmc_buffer[GPS_TAU1201_BUFFER_SIZE];                // RMCÓï¾ä»º³åÇø
-
-//-------------------------------------------------------------------------------------------------------------------
-// º¯Êı¼ò½é     »ñÈ¡Ö¸¶¨ ',' ºóÃæµÄË÷Òı
-// ²ÎÊıËµÃ÷     num             µÚ¼¸¸ö¶ººÅ
-// ²ÎÊıËµÃ÷     *str            ×Ö·û´®
-// ·µ»Ø²ÎÊı     uint8           ·µ»ØË÷Òı
-// Ê¹ÓÃÊ¾Àı     get_parameter_index(1, s);
-// ±¸×¢ĞÅÏ¢     ÄÚ²¿Ê¹ÓÃ
-//-------------------------------------------------------------------------------------------------------------------
-static uint8 get_parameter_index (uint8 num, char *str)
-{
-    uint8 i = 0, j = 0;
-    char *temp = strchr(str, '\n');
-    uint8 len = 0, len1 = 0;
-
-    if(NULL != temp)
-    {
-        len = (uint8)((uint32)temp - (uint32)str + 1);
-    }
-
-    for(i = 0; i < len; i ++)
-    {
-        if(',' == str[i])
-        {
-            j ++;
-        }
-        if(j == num)
-        {
-            len1 =  i + 1;
-            break;
-        }
-    }
-
-    return len1;
-}
-
-//-------------------------------------------------------------------------------------------------------------------
-// º¯Êı¼ò½é     ¸ø¶¨×Ö·û´®µÚÒ»¸ö ',' Ö®Ç°µÄÊı¾İ×ª»»Îªint
-// ²ÎÊıËµÃ÷     *s              ×Ö·û´®
-// ·µ»Ø²ÎÊı     float           ·µ»ØÊıÖµ
-// Ê¹ÓÃÊ¾Àı     get_int_number(&buf[get_parameter_index(7, buf)]);
-// ±¸×¢ĞÅÏ¢     ÄÚ²¿Ê¹ÓÃ
-//-------------------------------------------------------------------------------------------------------------------
-static int get_int_number (char *s)
-{
-    char buf[10];
-    uint8 i = 0;
-    int return_value = 0;
-    i = get_parameter_index(1, s);
-    i = i - 1;
-    strncpy(buf, s, i);
-    buf[i] = 0;
-    return_value = func_str_to_int(buf);
-    return return_value;
-}
-
-//-------------------------------------------------------------------------------------------------------------------
-// º¯Êı¼ò½é     ¸ø¶¨×Ö·û´®µÚÒ»¸ö ',' Ö®Ç°µÄÊı¾İ×ª»»Îªfloat
-// ²ÎÊıËµÃ÷     *s              ×Ö·û´®
-// ·µ»Ø²ÎÊı     float           ·µ»ØÊıÖµ
-// Ê¹ÓÃÊ¾Àı     get_float_number(&buf[get_parameter_index(8, buf)]);
-// ±¸×¢ĞÅÏ¢     ÄÚ²¿Ê¹ÓÃ
-//-------------------------------------------------------------------------------------------------------------------
-static float get_float_number (char *s)
-{
-    uint8 i = 0;
-    char buf[15];
-    float return_value = 0;
-
-    i = get_parameter_index(1, s);
-    i = i - 1;
-    strncpy(buf, s, i);
-    buf[i] = 0;
-    return_value = (float)func_str_to_double(buf);
-    return return_value;
-}
-
-//-------------------------------------------------------------------------------------------------------------------
-// º¯Êı¼ò½é     ¸ø¶¨×Ö·û´®µÚÒ»¸ö ',' Ö®Ç°µÄÊı¾İ×ª»»Îªdouble
-// ²ÎÊıËµÃ÷     *s              ×Ö·û´®
-// ·µ»Ø²ÎÊı     double          ·µ»ØÊıÖµ
-// Ê¹ÓÃÊ¾Àı     get_double_number(&buf[get_parameter_index(3, buf)]);
-// ±¸×¢ĞÅÏ¢     ÄÚ²¿Ê¹ÓÃ
-//-------------------------------------------------------------------------------------------------------------------
-static double get_double_number (char *s)
-{
-    uint8 i = 0;
-    char buf[15];
-    double return_value = 0;
-
-    i = get_parameter_index(1, s);
-    i = i - 1;
-    strncpy(buf, s, i);
-    buf[i] = 0;
-    return_value = func_str_to_double(buf);
-    return return_value;
-}
-
-//-------------------------------------------------------------------------------------------------------------------
-// º¯Êı¼ò½é     ÊÀ½çÊ±¼ä×ª»»Îª±±¾©Ê±¼ä
-// ²ÎÊıËµÃ÷     *time           ±£´æµÄÊ±¼ä
-// ·µ»Ø²ÎÊı     void
-// Ê¹ÓÃÊ¾Àı     utc_to_btc(&gps->time);
-// ±¸×¢ĞÅÏ¢     ÄÚ²¿Ê¹ÓÃ
-//-------------------------------------------------------------------------------------------------------------------
-static void utc_to_btc (gps_time_struct *time)
-{
-    uint8 day_num = 0;
-
-    time->hour = time->hour + 8;
-    if(23 < time->hour)
-    {
-        time->hour -= 24;
-        time->day += 1;
-
-        if(2 == time->month)
-        {
-            day_num = 28;
-            if((0 == time->year % 4 && 0 != time->year % 100) || 0 == time->year % 400) // ÅĞ¶ÏÊÇ·ñÎªÈòÄê
-            {
-                day_num ++;                                                     // ÈòÔÂ 2ÔÂÎª29Ìì
-            }
-        }
-        else
-        {
-            day_num = 31;                                                       // 1 3 5 7 8 10 12ÕâĞ©ÔÂ·İÎª31Ìì
-            if(4  == time->month || 6  == time->month || 9  == time->month || 11 == time->month )
-            {
-                day_num = 30;
-            }
-        }
-
-        if(time->day > day_num)
-        {
-            time->day = 1;
-            time->month ++;
-            if(12 < time->month)
-            {
-                time->month -= 12;
-                time->year ++;
-            }
-        }
-    }
-}
-
-//-------------------------------------------------------------------------------------------------------------------
-// º¯Êı¼ò½é     RMCÓï¾ä½âÎö
-// ²ÎÊıËµÃ÷     *line           ½ÓÊÕµ½µÄÓï¾äĞÅÏ¢
-// ²ÎÊıËµÃ÷     *gps            ±£´æ½âÎöºóµÄÊı¾İ
-// ·µ»Ø²ÎÊı     uint8           1£º½âÎö³É¹¦ 0£ºÊı¾İÓĞÎÊÌâ²»ÄÜ½âÎö
-// Ê¹ÓÃÊ¾Àı     gps_gnrmc_parse((char *)data_buffer, &gps_tau1201);
-// ±¸×¢ĞÅÏ¢     ÄÚ²¿Ê¹ÓÃ
-//-------------------------------------------------------------------------------------------------------------------
-static uint8 gps_gnrmc_parse (char *line, gps_info_struct *gps)
-{
-    uint8 state = 0, temp = 0;
-
-    double  latitude = 0;                                                       // Î³¶È
-    double  longitude = 0;                                                      // ¾­¶È
-
-    double lati_cent_tmp = 0, lati_second_tmp = 0;
-    double long_cent_tmp = 0, long_second_tmp = 0;
-    float speed_tmp = 0;
-    char *buf = line;
-    uint8 return_state = 0;
-
-    state = buf[get_parameter_index(2, buf)];
-
-    gps->state = 0;
-    if('A' == state)                                                            // Èç¹ûÊı¾İÓĞĞ§ Ôò½âÎöÊı¾İ
-    {
-        return_state = 1;
-        gps->state = 1;
-        gps -> ns               = buf[get_parameter_index(4, buf)];
-        gps -> ew               = buf[get_parameter_index(6, buf)];
-
-        latitude                = get_double_number(&buf[get_parameter_index(3, buf)]);
-        longitude               = get_double_number(&buf[get_parameter_index(5, buf)]);
-
-        gps->latitude_degree    = (int)latitude / 100;                          // Î³¶È×ª»»Îª¶È·ÖÃë
-        lati_cent_tmp           = (latitude - gps->latitude_degree * 100);
-        gps->latitude_cent      = (int)lati_cent_tmp;
-        lati_second_tmp         = (lati_cent_tmp - gps->latitude_cent) * 6000;
-        gps->latitude_second    = (int)lati_second_tmp;
-
-        gps->longitude_degree   = (int)longitude / 100;                         // ¾­¶È×ª»»Îª¶È·ÖÃë
-        long_cent_tmp           = (longitude - gps->longitude_degree * 100);
-        gps->longitude_cent     = (int)long_cent_tmp;
-        long_second_tmp         = (long_cent_tmp - gps->longitude_cent) * 6000;
-        gps->longitude_second   = (int)long_second_tmp;
-
-        gps->latitude   = gps->latitude_degree + lati_cent_tmp / 60;
-        gps->longitude  = gps->longitude_degree + long_cent_tmp / 60;
-
-        speed_tmp       = get_float_number(&buf[get_parameter_index(7, buf)]);  // ËÙ¶È(º£Àï/Ğ¡Ê±)
-        gps->speed      = speed_tmp * 1.85f;                                    // ×ª»»Îª¹«Àï/Ğ¡Ê±
-        gps->direction  = get_float_number(&buf[get_parameter_index(8, buf)]);  // ½Ç¶È
-    }
-
-    // ÔÚ¶¨Î»Ã»ÓĞÉúĞ§Ç°Ò²ÊÇÓĞÊ±¼äÊı¾İµÄ£¬¿ÉÒÔÖ±½Ó½âÎö
-    gps->time.hour    = (buf[7] - '0') * 10 + (buf[8] - '0');                   // Ê±¼ä
-    gps->time.minute  = (buf[9] - '0') * 10 + (buf[10] - '0');
-    gps->time.second  = (buf[11] - '0') * 10 + (buf[12] - '0');
-    temp = get_parameter_index(9, buf);
-    gps->time.day     = (buf[temp + 0] - '0') * 10 + (buf[temp + 1] - '0');     // ÈÕÆÚ
-    gps->time.month   = (buf[temp + 2] - '0') * 10 + (buf[temp + 3] - '0');
-    gps->time.year    = (buf[temp + 4] - '0') * 10 + (buf[temp + 5] - '0') + 2000;
-
-    utc_to_btc(&gps->time);
-
-    return return_state;
-}
-
-//-------------------------------------------------------------------------------------------------------------------
-// º¯Êı¼ò½é     GGAÓï¾ä½âÎö
-// ²ÎÊıËµÃ÷     *line           ½ÓÊÕµ½µÄÓï¾äĞÅÏ¢
-// ²ÎÊıËµÃ÷     *gps            ±£´æ½âÎöºóµÄÊı¾İ
-// ·µ»Ø²ÎÊı     uint8           1£º½âÎö³É¹¦ 0£ºÊı¾İÓĞÎÊÌâ²»ÄÜ½âÎö
-// Ê¹ÓÃÊ¾Àı     gps_gngga_parse((char *)data_buffer, &gps_tau1201);
-// ±¸×¢ĞÅÏ¢     ÄÚ²¿Ê¹ÓÃ
-//-------------------------------------------------------------------------------------------------------------------
-static uint8 gps_gngga_parse (char *line, gps_info_struct *gps)
-{
-    uint8 state = 0;
-    char *buf = line;
-    uint8 return_state = 0;
-
-    state = buf[get_parameter_index(2, buf)];
-
-    if(',' != state)
-    {
-        gps->satellite_used = (uint8)get_int_number(&buf[get_parameter_index(7, buf)]);
-        gps->height         = get_float_number(&buf[get_parameter_index(9, buf)]) + get_float_number(&buf[get_parameter_index(11, buf)]);  // ¸ß¶È = º£°Î¸ß¶È + µØÇòÍÖÇòÃæÏà¶Ô´óµØË®×¼ÃæµÄ¸ß¶È
-        return_state = 1;
-    }
-
-    return return_state;
-}
-
-//-------------------------------------------------------------------------------------------------------------------
-// º¯Êı¼ò½é     ¼ÆËã´ÓµÚÒ»¸öµãµ½µÚ¶ş¸öµãµÄ¾àÀë
-// ²ÎÊıËµÃ÷     latitude1       µÚÒ»¸öµãµÄÎ³¶È
-// ²ÎÊıËµÃ÷     longitude1      µÚÒ»¸öµãµÄ¾­¶È
-// ²ÎÊıËµÃ÷     latitude2       µÚ¶ş¸öµãµÄÎ³¶È
-// ²ÎÊıËµÃ÷     longitude2      µÚ¶ş¸öµãµÄ¾­¶È
-// ·µ»Ø²ÎÊı     double          ·µ»ØÁ½µã¾àÀë
-// Ê¹ÓÃÊ¾Àı     get_two_points_distance(latitude1_1, longitude1, latitude2, longitude2);
-// ±¸×¢ĞÅÏ¢
-//-------------------------------------------------------------------------------------------------------------------
-double get_two_points_distance (double latitude1, double longitude1, double latitude2, double longitude2)
-{
-    const double EARTH_RADIUS = 6378137;                                        // µØÇò°ë¾¶(µ¥Î»£ºm)
-    double rad_latitude1 = 0;
-    double rad_latitude2 = 0;
-    double rad_longitude1 = 0;
-    double rad_longitude2 = 0;
-    double distance = 0;
-    double a = 0;
-    double b = 0;
-
-    rad_latitude1 = ANGLE_TO_RAD(latitude1);                                    // ¸ù¾İ½Ç¶È¼ÆËã»¡¶È
-    rad_latitude2 = ANGLE_TO_RAD(latitude2);
-    rad_longitude1 = ANGLE_TO_RAD(longitude1);
-    rad_longitude2 = ANGLE_TO_RAD(longitude2);
-
-    a = rad_latitude1 - rad_latitude2;
-    b = rad_longitude1 - rad_longitude2;
-
-    distance = 2 * asin(sqrt(pow(sin(a / 2), 2) + cos(rad_latitude1) * cos(rad_latitude2) * pow(sin(b / 2), 2)));   // google maps ÀïÃæÊµÏÖµÄËã·¨
-    distance = distance * EARTH_RADIUS;
-
-    return distance;
-}
-
-//-------------------------------------------------------------------------------------------------------------------
-// º¯Êı¼ò½é     ¼ÆËã´ÓµÚÒ»¸öµãµ½µÚ¶ş¸öµãµÄ·½Î»½Ç
-// ²ÎÊıËµÃ÷     latitude1       µÚÒ»¸öµãµÄÎ³¶È
-// ²ÎÊıËµÃ÷     longitude1      µÚÒ»¸öµãµÄ¾­¶È
-// ²ÎÊıËµÃ÷     latitude2       µÚ¶ş¸öµãµÄÎ³¶È
-// ²ÎÊıËµÃ÷     longitude2      µÚ¶ş¸öµãµÄ¾­¶È
-// ·µ»Ø²ÎÊı     double          ·µ»Ø·½Î»½Ç£¨0ÖÁ360£©
-// Ê¹ÓÃÊ¾Àı     get_two_points_azimuth(latitude1_1, longitude1, latitude2, longitude2);
-// ±¸×¢ĞÅÏ¢
-//-------------------------------------------------------------------------------------------------------------------
-double get_two_points_azimuth (double latitude1, double longitude1, double latitude2, double longitude2)
-{
-	double x = 0;
-	double y = 0;
-	double angle = 0;
-	
-	
-    latitude1 = ANGLE_TO_RAD(latitude1);
-    latitude2 = ANGLE_TO_RAD(latitude2);
-    longitude1 = ANGLE_TO_RAD(longitude1);
-    longitude2 = ANGLE_TO_RAD(longitude2);
-
-    x = sin(longitude2 - longitude1) * cos(latitude2);
-    y = cos(latitude1) * sin(latitude2) - sin(latitude1) * cos(latitude2) * cos(longitude2 - longitude1);
-
-    angle = RAD_TO_ANGLE(atan(x/y));
-
-	
-    if (y == 0 && x == 0) return 0;
-
-    if (y == 0)
-    {
-        if (x > 0) return 90;
-        else angle = -90;
-    }
-
-    else if (x == 0)
-    {
-        if (y > 0) return 0;
-        else angle = -180.0f;
-    }
-	else
-	{
-		if (y < 0 && angle > 0) angle -= 180.0f;
-		else if (y < 0 && angle < 0) angle += 180.0f;
-	}
-
-	if(angle >= 360)
-	{
-		angle = angle - 360;
-	}
-	else if(angle < 0)
-	{
-		angle = angle + 360;
-	}
-
-    return angle;
-}
-
-//-------------------------------------------------------------------------------------------------------------------
-// º¯Êı¼ò½é     ½âÎöGPSÊı¾İ
-// ²ÎÊıËµÃ÷     void
-// ·µ»Ø²ÎÊı     uint8           0-½âÎö³É¹¦ 1-½âÎöÊ§°Ü ¿ÉÄÜÊı¾İ°ü´íÎó
-// Ê¹ÓÃÊ¾Àı     gps_data_parse();
-// ±¸×¢ĞÅÏ¢
-//-------------------------------------------------------------------------------------------------------------------
-uint8 gps_data_parse (void)
-{
-    uint8 return_state = 0;
-    uint8 check_buffer[5] = {'0', 'x', 0x00, 0x00, 0x00};
-    uint8 bbc_xor_origin = 0;
-    uint8 bbc_xor_calculation = 0;
-    uint32 data_len = 0;
-
-    do
-    {
-        if(GPS_STATE_RECEIVED == gps_rmc_state)
-        {
-            gps_rmc_state = GPS_STATE_PARSING;
-            strncpy((char *)&check_buffer[2], strchr((const char *)gps_rmc_buffer, '*') + 1, 2);
-            bbc_xor_origin = (uint8)func_str_to_hex((char *)check_buffer);
-            for(bbc_xor_calculation = gps_rmc_buffer[1], data_len = 2; '*' != gps_rmc_buffer[data_len]; data_len ++)
-            {
-                bbc_xor_calculation ^= gps_rmc_buffer[data_len];
-            }
-            if(bbc_xor_calculation != bbc_xor_origin)
-            {
-                // Êı¾İĞ£ÑéÊ§°Ü
-                return_state = 1;
-                break;
-            }
-
-            gps_gnrmc_parse((char *)gps_rmc_buffer, &gps_tau1201);
-        }
-        gps_rmc_state = GPS_STATE_RECEIVING;
-
-        if(GPS_STATE_RECEIVED == gps_gga_state)
-        {
-            gps_gga_state = GPS_STATE_PARSING;
-            strncpy((char *)&check_buffer[2], strchr((const char *)gps_gga_buffer, '*') + 1, 2);
-            bbc_xor_origin = (uint8)func_str_to_hex((char *)check_buffer);
-
-            for(bbc_xor_calculation = gps_gga_buffer[1], data_len = 2; '*' != gps_gga_buffer[data_len]; data_len ++)
-            {
-                bbc_xor_calculation ^= gps_gga_buffer[data_len];
-            }
-            if(bbc_xor_calculation != bbc_xor_origin)
-            {
-                // Êı¾İĞ£ÑéÊ§°Ü
-                return_state = 1;
-                break;
-            }
-
-            gps_gngga_parse((char *)gps_gga_buffer, &gps_tau1201);
-        }
-        gps_gga_state = GPS_STATE_RECEIVING;
-
-    }while(0);
-    return return_state;
-}
-
-
-//-------------------------------------------------------------------------------------------------------------------
-// º¯Êı¼ò½é     GPS´®¿Ú»Øµ÷º¯Êı
-// ²ÎÊıËµÃ÷     void
-// ·µ»Ø²ÎÊı     void
-// Ê¹ÓÃÊ¾Àı     gps_uart_callback();
-// ±¸×¢ĞÅÏ¢     ´Ëº¯ÊıĞèÒªÔÚ´®¿Ú½ÓÊÕÖĞ¶ÏÄÚ½øĞĞµ÷ÓÃ
-//-------------------------------------------------------------------------------------------------------------------
-void gps_uart_callback (uint8 uart_dat)
-{
-    uint8 temp_gps[6];
-    uint32 temp_length = 0;
-
-    if(gps_tau1201_state)
-    {
-		fifo_write_buffer(&gps_tau1201_receiver_fifo, &uart_dat, 1);
-        if('\n' == uart_dat)
-        {
-            // ¶ÁÈ¡Ç°6¸öÊı¾İ ÓÃÓÚÅĞ¶ÏÓï¾äÀàĞÍ
-            temp_length = 6;
-            fifo_read_buffer(&gps_tau1201_receiver_fifo, temp_gps, &temp_length, FIFO_READ_ONLY);
-
-            // ¸ù¾İ²»Í¬ÀàĞÍ½«Êı¾İ¿½±´µ½²»Í¬µÄ»º³åÇø
-            if(0 == strncmp((char *)&temp_gps[3], "RMC", 3))
-            {
-                // Èç¹ûÃ»ÓĞÔÚ½âÎöÊı¾İÔò¸üĞÂ»º³åÇøµÄÊı¾İ
-                if(GPS_STATE_PARSING != gps_rmc_state)
-                {
-                    gps_rmc_state = GPS_STATE_RECEIVED;
-                    temp_length = fifo_used(&gps_tau1201_receiver_fifo);
-                    fifo_read_buffer(&gps_tau1201_receiver_fifo, gps_rmc_buffer, &temp_length, FIFO_READ_AND_CLEAN);
-                }
-            }
-            else if(0 == strncmp((char *)&temp_gps[3], "GGA", 3))
-            {
-                // Èç¹ûÃ»ÓĞÔÚ½âÎöÊı¾İÔò¸üĞÂ»º³åÇøµÄÊı¾İ
-                if(GPS_STATE_PARSING != gps_gga_state)
-                {
-                    gps_gga_state = GPS_STATE_RECEIVED;
-                    temp_length = fifo_used(&gps_tau1201_receiver_fifo);
-                    fifo_read_buffer(&gps_tau1201_receiver_fifo, gps_gga_buffer, &temp_length, FIFO_READ_AND_CLEAN);
-                }
-            }
-
-            // Í³Ò»½«FIFOÇå¿Õ
-            fifo_clear(&gps_tau1201_receiver_fifo);
-
-            gps_tau1201_flag = 1;
-        }
-    }
-}
-
-//-------------------------------------------------------------------------------------------------------------------
-// º¯Êı¼ò½é     GPS³õÊ¼»¯
-// ²ÎÊıËµÃ÷     void
-// ·µ»Ø²ÎÊı     void
-// Ê¹ÓÃÊ¾Àı     gps_init();
-// ±¸×¢ĞÅÏ¢
-//-------------------------------------------------------------------------------------------------------------------
-void gps_init (void)
-{
-    const uint8 set_rate[]      = {0xF1, 0xD9, 0x06, 0x42, 0x14, 0x00, 0x00, 0x0A, 0x05, 0x00, 0x64, 0x00, 0x00, 0x00, 0x60, 0xEA, 0x00, 0x00, 0xD0, 0x07, 0x00, 0x00, 0xC8, 0x00, 0x00, 0x00, 0xB8, 0xED};
-    const uint8 open_gga[]      = {0xF1, 0xD9, 0x06, 0x01, 0x03, 0x00, 0xF0, 0x00, 0x01, 0xFB, 0x10};
-    const uint8 open_rmc[]      = {0xF1, 0xD9, 0x06, 0x01, 0x03, 0x00, 0xF0, 0x05, 0x01, 0x00, 0x1A};
-
-    const uint8 close_gll[]     = {0xF1, 0xD9, 0x06, 0x01, 0x03, 0x00, 0xF0, 0x01, 0x00, 0xFB, 0x11};
-    const uint8 close_gsa[]     = {0xF1, 0xD9, 0x06, 0x01, 0x03, 0x00, 0xF0, 0x02, 0x00, 0xFC, 0x13};
-    const uint8 close_grs[]     = {0xF1, 0xD9, 0x06, 0x01, 0x03, 0x00, 0xF0, 0x03, 0x00, 0xFD, 0x15};
-    const uint8 close_gsv[]     = {0xF1, 0xD9, 0x06, 0x01, 0x03, 0x00, 0xF0, 0x04, 0x00, 0xFE, 0x17};
-    const uint8 close_vtg[]     = {0xF1, 0xD9, 0x06, 0x01, 0x03, 0x00, 0xF0, 0x06, 0x00, 0x00, 0x1B};
-    const uint8 close_zda[]     = {0xF1, 0xD9, 0x06, 0x01, 0x03, 0x00, 0xF0, 0x07, 0x00, 0x01, 0x1D};
-    const uint8 close_gst[]     = {0xF1, 0xD9, 0x06, 0x01, 0x03, 0x00, 0xF0, 0x08, 0x00, 0x02, 0x1F};
-    const uint8 close_txt[]     = {0xF1, 0xD9, 0x06, 0x01, 0x03, 0x00, 0xF0, 0x40, 0x00, 0x3A, 0x8F};
-    const uint8 close_txt_ant[] = {0xF1, 0xD9, 0x06, 0x01, 0x03, 0x00, 0xF0, 0x20, 0x00, 0x1A, 0x4F};
-
-    fifo_init(&gps_tau1201_receiver_fifo, FIFO_DATA_8BIT, gps_tau1201_receiver_buffer, GPS_TAU1201_BUFFER_SIZE);
-    system_delay_ms(500);                                                           // µÈ´ıGPSÆô¶¯ºó¿ªÊ¼³õÊ¼»¯
-    
-	uart_init(GPS_TAU1201_UART, 115200, GPS_TAU1201_RX, GPS_TAU1201_TX);
-    uart_rx_interrupt(GPS_TAU1201_UART, 0);
-
-	set_gps_type(GPS_TAU1201, GPS_TAU1201_UART, gps_uart_callback);
-	
-    uart_write_buffer(GPS_TAU1201_UART, (uint8 *)set_rate, sizeof(set_rate));       // ÉèÖÃGPS¸üĞÂËÙÂÊÎª10hz Èç¹û²»µ÷ÓÃ´ËÓï¾äÔòÄ¬ÈÏÎª1hz
-    system_delay_ms(200);
-
-    uart_write_buffer(GPS_TAU1201_UART, (uint8 *)open_rmc, sizeof(open_rmc));       // ¿ªÆôrmcÓï¾ä
-    system_delay_ms(50);
-    uart_write_buffer(GPS_TAU1201_UART, (uint8 *)open_gga, sizeof(open_gga));       // ¿ªÆôggaÓï¾ä
-    system_delay_ms(50);
-    uart_write_buffer(GPS_TAU1201_UART, (uint8 *)close_gll, sizeof(close_gll));
-    system_delay_ms(50);
-    uart_write_buffer(GPS_TAU1201_UART, (uint8 *)close_gsa, sizeof(close_gsa));
-    system_delay_ms(50);
-    uart_write_buffer(GPS_TAU1201_UART, (uint8 *)close_grs, sizeof(close_grs));
-    system_delay_ms(50);
-    uart_write_buffer(GPS_TAU1201_UART, (uint8 *)close_gsv, sizeof(close_gsv));
-    system_delay_ms(50);
-    uart_write_buffer(GPS_TAU1201_UART, (uint8 *)close_vtg, sizeof(close_vtg));
-    system_delay_ms(50);
-    uart_write_buffer(GPS_TAU1201_UART, (uint8 *)close_zda, sizeof(close_zda));
-    system_delay_ms(50);
-    uart_write_buffer(GPS_TAU1201_UART, (uint8 *)close_gst, sizeof(close_gst));
-    system_delay_ms(50);
-    uart_write_buffer(GPS_TAU1201_UART, (uint8 *)close_txt, sizeof(close_txt));
-    system_delay_ms(50);
-    uart_write_buffer(GPS_TAU1201_UART, (uint8 *)close_txt_ant, sizeof(close_txt_ant));
-    system_delay_ms(50);
-
-    gps_tau1201_state = 1;
-    uart_rx_interrupt(GPS_TAU1201_UART, 1);
-}
+/*********************************************************************************************************************
+* STC32G Opensourec Library å³ï¼ˆSTC32G å¼€æºåº“ï¼‰æ˜¯ä¸€ä¸ªåŸºäºå®˜æ–¹ SDK æ¥å£çš„ç¬¬ä¸‰æ–¹å¼€æºåº“
+* Copyright (c) 2022 SEEKFREE é€é£ç§‘æŠ€
+*
+* æœ¬æ–‡ä»¶æ˜¯STC å¼€æºåº“çš„ä¸€éƒ¨åˆ†
+*
+* STC32G å¼€æºåº“ æ˜¯å…è´¹è½¯ä»¶
+* æ‚¨å¯ä»¥æ ¹æ®è‡ªç”±è½¯ä»¶åŸºé‡‘ä¼šå‘å¸ƒçš„ GPLï¼ˆGNU General Public Licenseï¼Œå³ GNUé€šç”¨å…¬å…±è®¸å¯è¯ï¼‰çš„æ¡æ¬¾
+* å³ GPL çš„ç¬¬3ç‰ˆï¼ˆå³ GPL3.0ï¼‰æˆ–ï¼ˆæ‚¨é€‰æ‹©çš„ï¼‰ä»»ä½•åæ¥çš„ç‰ˆæœ¬ï¼Œé‡æ–°å‘å¸ƒå’Œ/æˆ–ä¿®æ”¹å®ƒ
+*
+* æœ¬å¼€æºåº“çš„å‘å¸ƒæ˜¯å¸Œæœ›å®ƒèƒ½å‘æŒ¥ä½œç”¨ï¼Œä½†å¹¶æœªå¯¹å…¶ä½œä»»ä½•çš„ä¿è¯
+* ç”šè‡³æ²¡æœ‰éšå«çš„é€‚é”€æ€§æˆ–é€‚åˆç‰¹å®šç”¨é€”çš„ä¿è¯
+* æ›´å¤šç»†èŠ‚è¯·å‚è§ GPL
+*
+* æ‚¨åº”è¯¥åœ¨æ”¶åˆ°æœ¬å¼€æºåº“çš„åŒæ—¶æ”¶åˆ°ä¸€ä»½ GPL çš„å‰¯æœ¬
+* å¦‚æœæ²¡æœ‰ï¼Œè¯·å‚é˜…<https://www.gnu.org/licenses/>
+*
+* é¢å¤–æ³¨æ˜ï¼š
+* æœ¬å¼€æºåº“ä½¿ç”¨ GPL3.0 å¼€æºè®¸å¯è¯åè®® ä»¥ä¸Šè®¸å¯ç”³æ˜ä¸ºè¯‘æ–‡ç‰ˆæœ¬
+* è®¸å¯ç”³æ˜è‹±æ–‡ç‰ˆåœ¨ libraries/doc æ–‡ä»¶å¤¹ä¸‹çš„ GPL3_permission_statement.txt æ–‡ä»¶ä¸­
+* è®¸å¯è¯å‰¯æœ¬åœ¨ libraries æ–‡ä»¶å¤¹ä¸‹ å³è¯¥æ–‡ä»¶å¤¹ä¸‹çš„ LICENSE æ–‡ä»¶
+* æ¬¢è¿å„ä½ä½¿ç”¨å¹¶ä¼ æ’­æœ¬ç¨‹åº ä½†ä¿®æ”¹å†…å®¹æ—¶å¿…é¡»ä¿ç•™é€é£ç§‘æŠ€çš„ç‰ˆæƒå£°æ˜ï¼ˆå³æœ¬å£°æ˜ï¼‰
+*
+* æ–‡ä»¶åç§°          
+* å…¬å¸åç§°          æˆéƒ½é€é£ç§‘æŠ€æœ‰é™å…¬å¸
+* ç‰ˆæœ¬ä¿¡æ¯          æŸ¥çœ‹ libraries/doc æ–‡ä»¶å¤¹å†… version æ–‡ä»¶ ç‰ˆæœ¬è¯´æ˜
+* å¼€å‘ç¯å¢ƒ          MDK FOR C251
+* é€‚ç”¨å¹³å°          STC32G
+* åº—é“ºé“¾æ¥          https://seekfree.taobao.com/
+*
+* ä¿®æ”¹è®°å½•
+* æ—¥æœŸ              ä½œè€…           å¤‡æ³¨
+* 2024-08-01        å¤§W            first version
+********************************************************************************************************************/
+/*********************************************************************************************************************
+* æ¥çº¿å®šä¹‰ï¼š
+*                  ------------------------------------
+*                  æ¨¡å—ç®¡è„š             å•ç‰‡æœºç®¡è„š
+*                  RX                  æŸ¥çœ‹ zf_device_gps_tau1201.h ä¸­ GPS_TAU1201_RX å®å®šä¹‰
+*                  TX                  æŸ¥çœ‹ zf_device_gps_tau1201.h ä¸­ GPS_TAU1201_TX å®å®šä¹‰
+*                  VCC                 3.3Vç”µæº
+*                  GND                 ç”µæºåœ°
+*                  ------------------------------------
+********************************************************************************************************************/
+
+#include "math.h"
+#include "zf_common_function.h"
+#include "zf_common_fifo.h"
+
+#include "zf_driver_delay.h"
+#include "zf_driver_uart.h"
+
+#include "zf_device_type.h"
+#include "zf_device_gps_tau1201.h"
+
+#pragma warning disable = 183
+
+#define GPS_TAU1201_BUFFER_SIZE     ( 128 )
+
+uint8                       gps_tau1201_flag = 0;                                   // 1ï¼šé‡‡é›†å®Œæˆç­‰å¾…å¤„ç†æ•°æ® 0ï¼šæ²¡æœ‰é‡‡é›†å®Œæˆ
+gps_info_struct             gps_tau1201;                                            // GPSè§£æä¹‹åçš„æ•°æ®
+
+static  uint8               gps_tau1201_state = 0;                                  // 1ï¼šGPSåˆå§‹åŒ–å®Œæˆ
+static  fifo_struct         gps_tau1201_receiver_fifo;                              //
+static  uint8               gps_tau1201_receiver_buffer[GPS_TAU1201_BUFFER_SIZE];   // æ•°æ®å­˜æ”¾æ•°ç»„
+
+gps_state_enum              gps_gga_state = GPS_STATE_RECEIVING;                    // gga è¯­å¥çŠ¶æ€
+gps_state_enum              gps_rmc_state = GPS_STATE_RECEIVING;                    // rmc è¯­å¥çŠ¶æ€
+
+static  uint8               gps_gga_buffer[GPS_TAU1201_BUFFER_SIZE];                // GGAè¯­å¥ç¼“å†²åŒº
+static  uint8               gps_rmc_buffer[GPS_TAU1201_BUFFER_SIZE];                // RMCè¯­å¥ç¼“å†²åŒº
+
+//-------------------------------------------------------------------------------------------------------------------
+// å‡½æ•°ç®€ä»‹     è·å–æŒ‡å®š ',' åé¢çš„ç´¢å¼•
+// å‚æ•°è¯´æ˜     num             ç¬¬å‡ ä¸ªé€—å·
+// å‚æ•°è¯´æ˜     *str            å­—ç¬¦ä¸²
+// è¿”å›å‚æ•°     uint8           è¿”å›ç´¢å¼•
+// ä½¿ç”¨ç¤ºä¾‹     get_parameter_index(1, s);
+// å¤‡æ³¨ä¿¡æ¯     å†…éƒ¨ä½¿ç”¨
+//-------------------------------------------------------------------------------------------------------------------
+static uint8 get_parameter_index (uint8 num, char *str)
+{
+    uint8 i = 0, j = 0;
+    char *temp = strchr(str, '\n');
+    uint8 len = 0, len1 = 0;
+
+    if(NULL != temp)
+    {
+        len = (uint8)((uint32)temp - (uint32)str + 1);
+    }
+
+    for(i = 0; i < len; i ++)
+    {
+        if(',' == str[i])
+        {
+            j ++;
+        }
+        if(j == num)
+        {
+            len1 =  i + 1;
+            break;
+        }
+    }
+
+    return len1;
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// å‡½æ•°ç®€ä»‹     ç»™å®šå­—ç¬¦ä¸²ç¬¬ä¸€ä¸ª ',' ä¹‹å‰çš„æ•°æ®è½¬æ¢ä¸ºint
+// å‚æ•°è¯´æ˜     *s              å­—ç¬¦ä¸²
+// è¿”å›å‚æ•°     float           è¿”å›æ•°å€¼
+// ä½¿ç”¨ç¤ºä¾‹     get_int_number(&buf[get_parameter_index(7, buf)]);
+// å¤‡æ³¨ä¿¡æ¯     å†…éƒ¨ä½¿ç”¨
+//-------------------------------------------------------------------------------------------------------------------
+static int get_int_number (char *s)
+{
+    char buf[10];
+    uint8 i = 0;
+    int return_value = 0;
+    i = get_parameter_index(1, s);
+    i = i - 1;
+    strncpy(buf, s, i);
+    buf[i] = 0;
+    return_value = func_str_to_int(buf);
+    return return_value;
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// å‡½æ•°ç®€ä»‹     ç»™å®šå­—ç¬¦ä¸²ç¬¬ä¸€ä¸ª ',' ä¹‹å‰çš„æ•°æ®è½¬æ¢ä¸ºfloat
+// å‚æ•°è¯´æ˜     *s              å­—ç¬¦ä¸²
+// è¿”å›å‚æ•°     float           è¿”å›æ•°å€¼
+// ä½¿ç”¨ç¤ºä¾‹     get_float_number(&buf[get_parameter_index(8, buf)]);
+// å¤‡æ³¨ä¿¡æ¯     å†…éƒ¨ä½¿ç”¨
+//-------------------------------------------------------------------------------------------------------------------
+static float get_float_number (char *s)
+{
+    uint8 i = 0;
+    char buf[15];
+    float return_value = 0;
+
+    i = get_parameter_index(1, s);
+    i = i - 1;
+    strncpy(buf, s, i);
+    buf[i] = 0;
+    return_value = (float)func_str_to_double(buf);
+    return return_value;
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// å‡½æ•°ç®€ä»‹     ç»™å®šå­—ç¬¦ä¸²ç¬¬ä¸€ä¸ª ',' ä¹‹å‰çš„æ•°æ®è½¬æ¢ä¸ºdouble
+// å‚æ•°è¯´æ˜     *s              å­—ç¬¦ä¸²
+// è¿”å›å‚æ•°     double          è¿”å›æ•°å€¼
+// ä½¿ç”¨ç¤ºä¾‹     get_double_number(&buf[get_parameter_index(3, buf)]);
+// å¤‡æ³¨ä¿¡æ¯     å†…éƒ¨ä½¿ç”¨
+//-------------------------------------------------------------------------------------------------------------------
+static double get_double_number (char *s)
+{
+    uint8 i = 0;
+    char buf[15];
+    double return_value = 0;
+
+    i = get_parameter_index(1, s);
+    i = i - 1;
+    strncpy(buf, s, i);
+    buf[i] = 0;
+    return_value = func_str_to_double(buf);
+    return return_value;
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// å‡½æ•°ç®€ä»‹     ä¸–ç•Œæ—¶é—´è½¬æ¢ä¸ºåŒ—äº¬æ—¶é—´
+// å‚æ•°è¯´æ˜     *time           ä¿å­˜çš„æ—¶é—´
+// è¿”å›å‚æ•°     void
+// ä½¿ç”¨ç¤ºä¾‹     utc_to_btc(&gps->time);
+// å¤‡æ³¨ä¿¡æ¯     å†…éƒ¨ä½¿ç”¨
+//-------------------------------------------------------------------------------------------------------------------
+static void utc_to_btc (gps_time_struct *time)
+{
+    uint8 day_num = 0;
+
+    time->hour = time->hour + 8;
+    if(23 < time->hour)
+    {
+        time->hour -= 24;
+        time->day += 1;
+
+        if(2 == time->month)
+        {
+            day_num = 28;
+            if((0 == time->year % 4 && 0 != time->year % 100) || 0 == time->year % 400) // åˆ¤æ–­æ˜¯å¦ä¸ºé—°å¹´
+            {
+                day_num ++;                                                     // é—°æœˆ 2æœˆä¸º29å¤©
+            }
+        }
+        else
+        {
+            day_num = 31;                                                       // 1 3 5 7 8 10 12è¿™äº›æœˆä»½ä¸º31å¤©
+            if(4  == time->month || 6  == time->month || 9  == time->month || 11 == time->month )
+            {
+                day_num = 30;
+            }
+        }
+
+        if(time->day > day_num)
+        {
+            time->day = 1;
+            time->month ++;
+            if(12 < time->month)
+            {
+                time->month -= 12;
+                time->year ++;
+            }
+        }
+    }
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// å‡½æ•°ç®€ä»‹     RMCè¯­å¥è§£æ
+// å‚æ•°è¯´æ˜     *line           æ¥æ”¶åˆ°çš„è¯­å¥ä¿¡æ¯
+// å‚æ•°è¯´æ˜     *gps            ä¿å­˜è§£æåçš„æ•°æ®
+// è¿”å›å‚æ•°     uint8           1ï¼šè§£ææˆåŠŸ 0ï¼šæ•°æ®æœ‰é—®é¢˜ä¸èƒ½è§£æ
+// ä½¿ç”¨ç¤ºä¾‹     gps_gnrmc_parse((char *)data_buffer, &gps_tau1201);
+// å¤‡æ³¨ä¿¡æ¯     å†…éƒ¨ä½¿ç”¨
+//-------------------------------------------------------------------------------------------------------------------
+static uint8 gps_gnrmc_parse (char *line, gps_info_struct *gps)
+{
+    uint8 state = 0, temp = 0;
+
+    double  latitude = 0;                                                       // çº¬åº¦
+    double  longitude = 0;                                                      // ç»åº¦
+
+    double lati_cent_tmp = 0, lati_second_tmp = 0;
+    double long_cent_tmp = 0, long_second_tmp = 0;
+    float speed_tmp = 0;
+    char *buf = line;
+    uint8 return_state = 0;
+
+    state = buf[get_parameter_index(2, buf)];
+
+    gps->state = 0;
+    if('A' == state)                                                            // å¦‚æœæ•°æ®æœ‰æ•ˆ åˆ™è§£ææ•°æ®
+    {
+        return_state = 1;
+        gps->state = 1;
+        gps -> ns               = buf[get_parameter_index(4, buf)];
+        gps -> ew               = buf[get_parameter_index(6, buf)];
+
+        latitude                = get_double_number(&buf[get_parameter_index(3, buf)]);
+        longitude               = get_double_number(&buf[get_parameter_index(5, buf)]);
+
+        gps->latitude_degree    = (int)latitude / 100;                          // çº¬åº¦è½¬æ¢ä¸ºåº¦åˆ†ç§’
+        lati_cent_tmp           = (latitude - gps->latitude_degree * 100);
+        gps->latitude_cent      = (int)lati_cent_tmp;
+        lati_second_tmp         = (lati_cent_tmp - gps->latitude_cent) * 6000;
+        gps->latitude_second    = (int)lati_second_tmp;
+
+        gps->longitude_degree   = (int)longitude / 100;                         // ç»åº¦è½¬æ¢ä¸ºåº¦åˆ†ç§’
+        long_cent_tmp           = (longitude - gps->longitude_degree * 100);
+        gps->longitude_cent     = (int)long_cent_tmp;
+        long_second_tmp         = (long_cent_tmp - gps->longitude_cent) * 6000;
+        gps->longitude_second   = (int)long_second_tmp;
+
+        gps->latitude   = gps->latitude_degree + lati_cent_tmp / 60;
+        gps->longitude  = gps->longitude_degree + long_cent_tmp / 60;
+
+        speed_tmp       = get_float_number(&buf[get_parameter_index(7, buf)]);  // é€Ÿåº¦(æµ·é‡Œ/å°æ—¶)
+        gps->speed      = speed_tmp * 1.85f;                                    // è½¬æ¢ä¸ºå…¬é‡Œ/å°æ—¶
+        gps->direction  = get_float_number(&buf[get_parameter_index(8, buf)]);  // è§’åº¦
+    }
+
+    // åœ¨å®šä½æ²¡æœ‰ç”Ÿæ•ˆå‰ä¹Ÿæ˜¯æœ‰æ—¶é—´æ•°æ®çš„ï¼Œå¯ä»¥ç›´æ¥è§£æ
+    gps->time.hour    = (buf[7] - '0') * 10 + (buf[8] - '0');                   // æ—¶é—´
+    gps->time.minute  = (buf[9] - '0') * 10 + (buf[10] - '0');
+    gps->time.second  = (buf[11] - '0') * 10 + (buf[12] - '0');
+    temp = get_parameter_index(9, buf);
+    gps->time.day     = (buf[temp + 0] - '0') * 10 + (buf[temp + 1] - '0');     // æ—¥æœŸ
+    gps->time.month   = (buf[temp + 2] - '0') * 10 + (buf[temp + 3] - '0');
+    gps->time.year    = (buf[temp + 4] - '0') * 10 + (buf[temp + 5] - '0') + 2000;
+
+    utc_to_btc(&gps->time);
+
+    return return_state;
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// å‡½æ•°ç®€ä»‹     GGAè¯­å¥è§£æ
+// å‚æ•°è¯´æ˜     *line           æ¥æ”¶åˆ°çš„è¯­å¥ä¿¡æ¯
+// å‚æ•°è¯´æ˜     *gps            ä¿å­˜è§£æåçš„æ•°æ®
+// è¿”å›å‚æ•°     uint8           1ï¼šè§£ææˆåŠŸ 0ï¼šæ•°æ®æœ‰é—®é¢˜ä¸èƒ½è§£æ
+// ä½¿ç”¨ç¤ºä¾‹     gps_gngga_parse((char *)data_buffer, &gps_tau1201);
+// å¤‡æ³¨ä¿¡æ¯     å†…éƒ¨ä½¿ç”¨
+//-------------------------------------------------------------------------------------------------------------------
+static uint8 gps_gngga_parse (char *line, gps_info_struct *gps)
+{
+    uint8 state = 0;
+    char *buf = line;
+    uint8 return_state = 0;
+
+    state = buf[get_parameter_index(2, buf)];
+
+    if(',' != state)
+    {
+        gps->satellite_used = (uint8)get_int_number(&buf[get_parameter_index(7, buf)]);
+        gps->height         = get_float_number(&buf[get_parameter_index(9, buf)]) + get_float_number(&buf[get_parameter_index(11, buf)]);  // é«˜åº¦ = æµ·æ‹”é«˜åº¦ + åœ°çƒæ¤­çƒé¢ç›¸å¯¹å¤§åœ°æ°´å‡†é¢çš„é«˜åº¦
+        return_state = 1;
+    }
+
+    return return_state;
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// å‡½æ•°ç®€ä»‹     è®¡ç®—ä»ç¬¬ä¸€ä¸ªç‚¹åˆ°ç¬¬äºŒä¸ªç‚¹çš„è·ç¦»
+// å‚æ•°è¯´æ˜     latitude1       ç¬¬ä¸€ä¸ªç‚¹çš„çº¬åº¦
+// å‚æ•°è¯´æ˜     longitude1      ç¬¬ä¸€ä¸ªç‚¹çš„ç»åº¦
+// å‚æ•°è¯´æ˜     latitude2       ç¬¬äºŒä¸ªç‚¹çš„çº¬åº¦
+// å‚æ•°è¯´æ˜     longitude2      ç¬¬äºŒä¸ªç‚¹çš„ç»åº¦
+// è¿”å›å‚æ•°     double          è¿”å›ä¸¤ç‚¹è·ç¦»
+// ä½¿ç”¨ç¤ºä¾‹     get_two_points_distance(latitude1_1, longitude1, latitude2, longitude2);
+// å¤‡æ³¨ä¿¡æ¯
+//-------------------------------------------------------------------------------------------------------------------
+double get_two_points_distance (double latitude1, double longitude1, double latitude2, double longitude2)
+{
+    const double EARTH_RADIUS = 6378137;                                        // åœ°çƒåŠå¾„(å•ä½ï¼šm)
+    double rad_latitude1 = 0;
+    double rad_latitude2 = 0;
+    double rad_longitude1 = 0;
+    double rad_longitude2 = 0;
+    double distance = 0;
+    double a = 0;
+    double b = 0;
+
+    rad_latitude1 = ANGLE_TO_RAD(latitude1);                                    // æ ¹æ®è§’åº¦è®¡ç®—å¼§åº¦
+    rad_latitude2 = ANGLE_TO_RAD(latitude2);
+    rad_longitude1 = ANGLE_TO_RAD(longitude1);
+    rad_longitude2 = ANGLE_TO_RAD(longitude2);
+
+    a = rad_latitude1 - rad_latitude2;
+    b = rad_longitude1 - rad_longitude2;
+
+    distance = 2 * asin(sqrt(pow(sin(a / 2), 2) + cos(rad_latitude1) * cos(rad_latitude2) * pow(sin(b / 2), 2)));   // google maps é‡Œé¢å®ç°çš„ç®—æ³•
+    distance = distance * EARTH_RADIUS;
+
+    return distance;
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// å‡½æ•°ç®€ä»‹     è®¡ç®—ä»ç¬¬ä¸€ä¸ªç‚¹åˆ°ç¬¬äºŒä¸ªç‚¹çš„æ–¹ä½è§’
+// å‚æ•°è¯´æ˜     latitude1       ç¬¬ä¸€ä¸ªç‚¹çš„çº¬åº¦
+// å‚æ•°è¯´æ˜     longitude1      ç¬¬ä¸€ä¸ªç‚¹çš„ç»åº¦
+// å‚æ•°è¯´æ˜     latitude2       ç¬¬äºŒä¸ªç‚¹çš„çº¬åº¦
+// å‚æ•°è¯´æ˜     longitude2      ç¬¬äºŒä¸ªç‚¹çš„ç»åº¦
+// è¿”å›å‚æ•°     double          è¿”å›æ–¹ä½è§’ï¼ˆ0è‡³360ï¼‰
+// ä½¿ç”¨ç¤ºä¾‹     get_two_points_azimuth(latitude1_1, longitude1, latitude2, longitude2);
+// å¤‡æ³¨ä¿¡æ¯
+//-------------------------------------------------------------------------------------------------------------------
+double get_two_points_azimuth (double latitude1, double longitude1, double latitude2, double longitude2)
+{
+	double x = 0;
+	double y = 0;
+	double angle = 0;
+	
+	
+    latitude1 = ANGLE_TO_RAD(latitude1);
+    latitude2 = ANGLE_TO_RAD(latitude2);
+    longitude1 = ANGLE_TO_RAD(longitude1);
+    longitude2 = ANGLE_TO_RAD(longitude2);
+
+    x = sin(longitude2 - longitude1) * cos(latitude2);
+    y = cos(latitude1) * sin(latitude2) - sin(latitude1) * cos(latitude2) * cos(longitude2 - longitude1);
+
+    angle = RAD_TO_ANGLE(atan(x/y));
+
+	
+    if (y == 0 && x == 0) return 0;
+
+    if (y == 0)
+    {
+        if (x > 0) return 90;
+        else angle = -90;
+    }
+
+    else if (x == 0)
+    {
+        if (y > 0) return 0;
+        else angle = -180.0f;
+    }
+	else
+	{
+		if (y < 0 && angle > 0) angle -= 180.0f;
+		else if (y < 0 && angle < 0) angle += 180.0f;
+	}
+
+	if(angle >= 360)
+	{
+		angle = angle - 360;
+	}
+	else if(angle < 0)
+	{
+		angle = angle + 360;
+	}
+
+    return angle;
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// å‡½æ•°ç®€ä»‹     è§£æGPSæ•°æ®
+// å‚æ•°è¯´æ˜     void
+// è¿”å›å‚æ•°     uint8           0-è§£ææˆåŠŸ 1-è§£æå¤±è´¥ å¯èƒ½æ•°æ®åŒ…é”™è¯¯
+// ä½¿ç”¨ç¤ºä¾‹     gps_data_parse();
+// å¤‡æ³¨ä¿¡æ¯
+//-------------------------------------------------------------------------------------------------------------------
+uint8 gps_data_parse (void)
+{
+    uint8 return_state = 0;
+    uint8 check_buffer[5] = {'0', 'x', 0x00, 0x00, 0x00};
+    uint8 bbc_xor_origin = 0;
+    uint8 bbc_xor_calculation = 0;
+    uint32 data_len = 0;
+
+    do
+    {
+        if(GPS_STATE_RECEIVED == gps_rmc_state)
+        {
+            gps_rmc_state = GPS_STATE_PARSING;
+            strncpy((char *)&check_buffer[2], strchr((const char *)gps_rmc_buffer, '*') + 1, 2);
+            bbc_xor_origin = (uint8)func_str_to_hex((char *)check_buffer);
+            for(bbc_xor_calculation = gps_rmc_buffer[1], data_len = 2; '*' != gps_rmc_buffer[data_len]; data_len ++)
+            {
+                bbc_xor_calculation ^= gps_rmc_buffer[data_len];
+            }
+            if(bbc_xor_calculation != bbc_xor_origin)
+            {
+                // æ•°æ®æ ¡éªŒå¤±è´¥
+                return_state = 1;
+                break;
+            }
+
+            gps_gnrmc_parse((char *)gps_rmc_buffer, &gps_tau1201);
+        }
+        gps_rmc_state = GPS_STATE_RECEIVING;
+
+        if(GPS_STATE_RECEIVED == gps_gga_state)
+        {
+            gps_gga_state = GPS_STATE_PARSING;
+            strncpy((char *)&check_buffer[2], strchr((const char *)gps_gga_buffer, '*') + 1, 2);
+            bbc_xor_origin = (uint8)func_str_to_hex((char *)check_buffer);
+
+            for(bbc_xor_calculation = gps_gga_buffer[1], data_len = 2; '*' != gps_gga_buffer[data_len]; data_len ++)
+            {
+                bbc_xor_calculation ^= gps_gga_buffer[data_len];
+            }
+            if(bbc_xor_calculation != bbc_xor_origin)
+            {
+                // æ•°æ®æ ¡éªŒå¤±è´¥
+                return_state = 1;
+                break;
+            }
+
+            gps_gngga_parse((char *)gps_gga_buffer, &gps_tau1201);
+        }
+        gps_gga_state = GPS_STATE_RECEIVING;
+
+    }while(0);
+    return return_state;
+}
+
+
+//-------------------------------------------------------------------------------------------------------------------
+// å‡½æ•°ç®€ä»‹     GPSä¸²å£å›è°ƒå‡½æ•°
+// å‚æ•°è¯´æ˜     void
+// è¿”å›å‚æ•°     void
+// ä½¿ç”¨ç¤ºä¾‹     gps_uart_callback();
+// å¤‡æ³¨ä¿¡æ¯     æ­¤å‡½æ•°éœ€è¦åœ¨ä¸²å£æ¥æ”¶ä¸­æ–­å†…è¿›è¡Œè°ƒç”¨
+//-------------------------------------------------------------------------------------------------------------------
+void gps_uart_callback (uint8 uart_dat)
+{
+    uint8 temp_gps[6];
+    uint32 temp_length = 0;
+
+    if(gps_tau1201_state)
+    {
+		fifo_write_buffer(&gps_tau1201_receiver_fifo, &uart_dat, 1);
+        if('\n' == uart_dat)
+        {
+            // è¯»å–å‰6ä¸ªæ•°æ® ç”¨äºåˆ¤æ–­è¯­å¥ç±»å‹
+            temp_length = 6;
+            fifo_read_buffer(&gps_tau1201_receiver_fifo, temp_gps, &temp_length, FIFO_READ_ONLY);
+
+            // æ ¹æ®ä¸åŒç±»å‹å°†æ•°æ®æ‹·è´åˆ°ä¸åŒçš„ç¼“å†²åŒº
+            if(0 == strncmp((char *)&temp_gps[3], "RMC", 3))
+            {
+                // å¦‚æœæ²¡æœ‰åœ¨è§£ææ•°æ®åˆ™æ›´æ–°ç¼“å†²åŒºçš„æ•°æ®
+                if(GPS_STATE_PARSING != gps_rmc_state)
+                {
+                    gps_rmc_state = GPS_STATE_RECEIVED;
+                    temp_length = fifo_used(&gps_tau1201_receiver_fifo);
+                    fifo_read_buffer(&gps_tau1201_receiver_fifo, gps_rmc_buffer, &temp_length, FIFO_READ_AND_CLEAN);
+                }
+            }
+            else if(0 == strncmp((char *)&temp_gps[3], "GGA", 3))
+            {
+                // å¦‚æœæ²¡æœ‰åœ¨è§£ææ•°æ®åˆ™æ›´æ–°ç¼“å†²åŒºçš„æ•°æ®
+                if(GPS_STATE_PARSING != gps_gga_state)
+                {
+                    gps_gga_state = GPS_STATE_RECEIVED;
+                    temp_length = fifo_used(&gps_tau1201_receiver_fifo);
+                    fifo_read_buffer(&gps_tau1201_receiver_fifo, gps_gga_buffer, &temp_length, FIFO_READ_AND_CLEAN);
+                }
+            }
+
+            // ç»Ÿä¸€å°†FIFOæ¸…ç©º
+            fifo_clear(&gps_tau1201_receiver_fifo);
+
+            gps_tau1201_flag = 1;
+        }
+    }
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// å‡½æ•°ç®€ä»‹     GPSåˆå§‹åŒ–
+// å‚æ•°è¯´æ˜     void
+// è¿”å›å‚æ•°     void
+// ä½¿ç”¨ç¤ºä¾‹     gps_init();
+// å¤‡æ³¨ä¿¡æ¯
+//-------------------------------------------------------------------------------------------------------------------
+void gps_init (void)
+{
+    const uint8 set_rate[]      = {0xF1, 0xD9, 0x06, 0x42, 0x14, 0x00, 0x00, 0x0A, 0x05, 0x00, 0x64, 0x00, 0x00, 0x00, 0x60, 0xEA, 0x00, 0x00, 0xD0, 0x07, 0x00, 0x00, 0xC8, 0x00, 0x00, 0x00, 0xB8, 0xED};
+    const uint8 open_gga[]      = {0xF1, 0xD9, 0x06, 0x01, 0x03, 0x00, 0xF0, 0x00, 0x01, 0xFB, 0x10};
+    const uint8 open_rmc[]      = {0xF1, 0xD9, 0x06, 0x01, 0x03, 0x00, 0xF0, 0x05, 0x01, 0x00, 0x1A};
+
+    const uint8 close_gll[]     = {0xF1, 0xD9, 0x06, 0x01, 0x03, 0x00, 0xF0, 0x01, 0x00, 0xFB, 0x11};
+    const uint8 close_gsa[]     = {0xF1, 0xD9, 0x06, 0x01, 0x03, 0x00, 0xF0, 0x02, 0x00, 0xFC, 0x13};
+    const uint8 close_grs[]     = {0xF1, 0xD9, 0x06, 0x01, 0x03, 0x00, 0xF0, 0x03, 0x00, 0xFD, 0x15};
+    const uint8 close_gsv[]     = {0xF1, 0xD9, 0x06, 0x01, 0x03, 0x00, 0xF0, 0x04, 0x00, 0xFE, 0x17};
+    const uint8 close_vtg[]     = {0xF1, 0xD9, 0x06, 0x01, 0x03, 0x00, 0xF0, 0x06, 0x00, 0x00, 0x1B};
+    const uint8 close_zda[]     = {0xF1, 0xD9, 0x06, 0x01, 0x03, 0x00, 0xF0, 0x07, 0x00, 0x01, 0x1D};
+    const uint8 close_gst[]     = {0xF1, 0xD9, 0x06, 0x01, 0x03, 0x00, 0xF0, 0x08, 0x00, 0x02, 0x1F};
+    const uint8 close_txt[]     = {0xF1, 0xD9, 0x06, 0x01, 0x03, 0x00, 0xF0, 0x40, 0x00, 0x3A, 0x8F};
+    const uint8 close_txt_ant[] = {0xF1, 0xD9, 0x06, 0x01, 0x03, 0x00, 0xF0, 0x20, 0x00, 0x1A, 0x4F};
+
+    fifo_init(&gps_tau1201_receiver_fifo, FIFO_DATA_8BIT, gps_tau1201_receiver_buffer, GPS_TAU1201_BUFFER_SIZE);
+    system_delay_ms(500);                                                           // ç­‰å¾…GPSå¯åŠ¨åå¼€å§‹åˆå§‹åŒ–
+    
+	uart_init(GPS_TAU1201_UART, 115200, GPS_TAU1201_RX, GPS_TAU1201_TX);
+    uart_rx_interrupt(GPS_TAU1201_UART, 0);
+
+	set_gps_type(GPS_TAU1201, GPS_TAU1201_UART, gps_uart_callback);
+	
+    uart_write_buffer(GPS_TAU1201_UART, (uint8 *)set_rate, sizeof(set_rate));       // è®¾ç½®GPSæ›´æ–°é€Ÿç‡ä¸º10hz å¦‚æœä¸è°ƒç”¨æ­¤è¯­å¥åˆ™é»˜è®¤ä¸º1hz
+    system_delay_ms(200);
+
+    uart_write_buffer(GPS_TAU1201_UART, (uint8 *)open_rmc, sizeof(open_rmc));       // å¼€å¯rmcè¯­å¥
+    system_delay_ms(50);
+    uart_write_buffer(GPS_TAU1201_UART, (uint8 *)open_gga, sizeof(open_gga));       // å¼€å¯ggaè¯­å¥
+    system_delay_ms(50);
+    uart_write_buffer(GPS_TAU1201_UART, (uint8 *)close_gll, sizeof(close_gll));
+    system_delay_ms(50);
+    uart_write_buffer(GPS_TAU1201_UART, (uint8 *)close_gsa, sizeof(close_gsa));
+    system_delay_ms(50);
+    uart_write_buffer(GPS_TAU1201_UART, (uint8 *)close_grs, sizeof(close_grs));
+    system_delay_ms(50);
+    uart_write_buffer(GPS_TAU1201_UART, (uint8 *)close_gsv, sizeof(close_gsv));
+    system_delay_ms(50);
+    uart_write_buffer(GPS_TAU1201_UART, (uint8 *)close_vtg, sizeof(close_vtg));
+    system_delay_ms(50);
+    uart_write_buffer(GPS_TAU1201_UART, (uint8 *)close_zda, sizeof(close_zda));
+    system_delay_ms(50);
+    uart_write_buffer(GPS_TAU1201_UART, (uint8 *)close_gst, sizeof(close_gst));
+    system_delay_ms(50);
+    uart_write_buffer(GPS_TAU1201_UART, (uint8 *)close_txt, sizeof(close_txt));
+    system_delay_ms(50);
+    uart_write_buffer(GPS_TAU1201_UART, (uint8 *)close_txt_ant, sizeof(close_txt_ant));
+    system_delay_ms(50);
+
+    gps_tau1201_state = 1;
+    uart_rx_interrupt(GPS_TAU1201_UART, 1);
+}

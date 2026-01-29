@@ -3,34 +3,34 @@
 
 #include "zf_common_headfile.h"
 
-// ²ÎÊı½á¹¹Ìå
-typedef struct {
-    uint16 flag;         // Ğ£ÑéÎ» 0x55AA (ÓÃÓÚÅĞ¶ÏFlashÊÇ·ñÎª¿Õ)
-    
-    // Æ½ºâ»·
+// å‚æ•°ç»“æ„ä½“
+typedef struct
+{
+    uint16 flag;         // æ ¡éªŒä½ 0x55AA (ç”¨äºåˆ¤æ–­Flashæ˜¯å¦ä¸ºç©º)
+
+    // å¹³è¡¡ç¯
     float balance_kp;
     float balance_kd;
-    
-    // ËÙ¶È»·
+
+    // é€Ÿåº¦ç¯
     float velocity_kp;
     float velocity_ki;
-    
-    // ×ªÏò»·
+
+    // è½¬å‘ç¯
     float turn_kp;       
     float turn_kd;       
-    
-    // ÆäËûÅäÖÃ
-    int16 track_speed;   // Ñ­¼£»ù×¼ËÙ¶È
-    float mech_zero_pitch; // »úĞµÖĞÖµ
-    
+
+    // å…¶ä»–é…ç½®
+    int16 track_speed;   // å¾ªè¿¹åŸºå‡†é€Ÿåº¦
+    float mech_zero_pitch; // æœºæ¢°ä¸­å€¼
 } SysParam_t;
 
-// È«¾Ö²ÎÊı±äÁ¿
+// å…¨å±€å‚æ•°å˜é‡
 extern SysParam_t g_sys_param;
 
-// API º¯Êı
-void Param_Init(void);       // ³õÊ¼»¯²¢¶ÁÈ¡
-void Param_Save(void);       // ±£´æµ±Ç°²ÎÊıµ½ Flash
-void Param_SetDefaults(void);// »Ö¸´Ä¬ÈÏÖµ
+// API å‡½æ•°
+void Param_Init(void);       // åˆå§‹åŒ–å¹¶è¯»å–
+void Param_Save(void);       // ä¿å­˜å½“å‰å‚æ•°åˆ° Flash
+void Param_SetDefaults(void);// æ¢å¤é»˜è®¤å€¼
 
 #endif

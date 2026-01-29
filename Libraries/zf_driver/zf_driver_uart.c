@@ -1,429 +1,429 @@
-#include "stdlib.h"
-#include "zf_common_clock.h"
-#include "zf_common_debug.h"
-
-#include "zf_driver_uart.h"
-#include "zf_driver_timer.h"
-#include "zf_driver_gpio.h"
-
-#pragma warning disable = 177
-#pragma warning disable = 183
-
-uint8 xdata uart_rx_buff[UART_RESERVE][1] = {0};
-
-#define DMA_URXT_CFG(uart_n)		(*(unsigned char volatile far *)(0x7efa30 + uart_n*0x10))
-#define DMA_URXT_CR(uart_n)     	(*(unsigned char volatile far *)(0x7efa31 + uart_n*0x10))
-#define DMA_URXT_STA(uart_n)    	(*(unsigned char volatile far *)(0x7efa32 + uart_n*0x10))
-#define DMA_URXT_AMT(uart_n)    	(*(unsigned char volatile far *)(0x7efa33 + uart_n*0x10))
-#define DMA_URXT_DONE(uart_n)   	(*(unsigned char volatile far *)(0x7efa34 + uart_n*0x10))
-#define DMA_URXT_TXAH(uart_n)   	(*(unsigned char volatile far *)(0x7efa35 + uart_n*0x10))
-#define DMA_URXT_TXAL(uart_n)   	(*(unsigned char volatile far *)(0x7efa36 + uart_n*0x10))
-#define DMA_URXR_CFG(uart_n)    	(*(unsigned char volatile far *)(0x7efa38 + uart_n*0x10))
-#define DMA_URXR_CR(uart_n)     	(*(unsigned char volatile far *)(0x7efa39 + uart_n*0x10))
-#define DMA_URXR_STA(uart_n)    	(*(unsigned char volatile far *)(0x7efa3a + uart_n*0x10))
-#define DMA_URXR_AMT(uart_n)    	(*(unsigned char volatile far *)(0x7efa3b + uart_n*0x10))
-#define DMA_URXR_DONE(uart_n)   	(*(unsigned char volatile far *)(0x7efa3c + uart_n*0x10))
-#define DMA_URXR_RXAH(uart_n)   	(*(unsigned char volatile far *)(0x7efa3d + uart_n*0x10))
-#define DMA_URXR_RXAL(uart_n)   	(*(unsigned char volatile far *)(0x7efa3e + uart_n*0x10))
-
-#define DMA_URXT_AMTH(uart_n)   	(*(unsigned char volatile far *)(0x7efa88 + uart_n*0x04))
-#define DMA_URXT_DONEH(uart_n)  	(*(unsigned char volatile far *)(0x7efa89 + uart_n*0x04))
-#define DMA_URXR_AMTH(uart_n)   	(*(unsigned char volatile far *)(0x7efa8a + uart_n*0x04))
-#define DMA_URXR_DONEH(uart_n)  	(*(unsigned char volatile far *)(0x7efa8b + uart_n*0x04))
-
-
-// ∏√ ˝◊ÈΩ˚÷π–ﬁ∏ƒ£¨ƒ⁄≤ø π”√,”√ªßŒﬁ–Ëπÿ–ƒ
-static uart_function_enum uart_function_state[4] =
-{
-    UART_FUNCTION_INIT,
-    UART_FUNCTION_INIT,
-    UART_FUNCTION_INIT,
-    UART_FUNCTION_INIT,
-};
-
-//-------------------------------------------------------------------------------------------------------------------
-// ∫Ø ˝ºÚΩÈ     UART Õ‚…Ë»∑»œπ¶ƒ‹◊¥Ã¨ ø‚ƒ⁄≤øµ˜”√
-// ≤Œ ˝Àµ√˜     index           UART Õ‚…Ëƒ£øÈ∫≈
-// ≤Œ ˝Àµ√˜     mode            –Ë“™»∑µƒπ¶ƒ‹ƒ£øÈ
-// ∑µªÿ≤Œ ˝     uint8           1-ø…“‘ π”√ 0-≤ªø…“‘ π”√
-//  π”√ æ¿˝     zf_assert(uart_funciton_check(UART_2, UART_FUNCTION_UART));
-//-------------------------------------------------------------------------------------------------------------------
-uint8 uart_funciton_check (uart_index_enum index, uart_function_enum mode)
-{
-    uint8 return_state = 1;
-    if(UART_FUNCTION_INIT == uart_function_state[index])
-    {
-        uart_function_state[index] = mode;
-    }
-    else if(uart_function_state[index] == mode)
-    {
-        return_state = 1;
-    }
-    else
-    {
-        return_state = 0;
-    }
-    return return_state;
-}
-//-------------------------------------------------------------------------------------------------------------------
-// ∫Ø ˝ºÚΩÈ     ¥Æø⁄∑¢ÀÕ ˝◊È
-// ≤Œ ˝Àµ√˜     uart_n       ¥Æø⁄Õ®µ¿
-// ≤Œ ˝Àµ√˜     buff        “™∑¢ÀÕµƒ ˝◊Èµÿ÷∑
-// ≤Œ ˝Àµ√˜     len          ˝æ›≥§∂»
-// ∑µªÿ≤Œ ˝     void
-//  π”√ æ¿˝     uart_write_buffer(UART_1, buff, 10);     //¥Æø⁄1∑¢ÀÕ10∏ˆbuff ˝◊È°£
-//-------------------------------------------------------------------------------------------------------------------
-void uart_write_buffer(uart_index_enum uart_n, const uint8 *buff, uint16 len)
-{
-    #define BUFF_LEN 64
-	
-	// “ÚUART_DMA÷ªƒ‹≤Ÿ◊˜xdata«¯”Úµƒ ˝æ›£¨À˘“‘£¨’‚¿Ô–¬Ω®“ª∏ˆ ˝◊È£¨∞·“∆°£
-	uint8 xdata tmp_buff[BUFF_LEN] = {0};
-    uint16 tmp_len = 0;
-	while(len)
-	{
-        tmp_len = (len > BUFF_LEN) ? BUFF_LEN : len;        // º∆À„≥§∂»
-        memcpy(tmp_buff, buff, tmp_len);                    // øΩ±¥
-        len -= tmp_len;                                     // »•µÙ“—æ≠∑¢ÀÕµƒ≥§∂»
-        buff += tmp_len;                                    // ÷∏’Î÷∏œÚ∫Û√Ê
-        
-        //	DMA_URXT_CFG(uart_n)  = 0x00; 		            // DMA”≈œ»º∂µÕ
-        DMA_URXT_STA(uart_n) = 0;				            // «Âø’±Í÷æŒª
-
-        DMA_URXT_AMT(uart_n)  = (tmp_len - 1) & 0xff;		// …Ë÷√¥´ ‰◊‹◊÷Ω⁄ ˝(µÕ8Œª)£∫n+1
-        DMA_URXT_AMTH(uart_n) = (tmp_len - 1) >> 8;		    // …Ë÷√¥´ ‰◊‹◊÷Ω⁄ ˝(∏ﬂ8Œª)£∫n+1
-        DMA_URXT_TXAH(uart_n) = (uint8)((uint16)tmp_buff >> 8);
-        DMA_URXT_TXAL(uart_n) = (uint8)((uint16)tmp_buff);
-        DMA_URXT_CR(uart_n) = 0xC0; 			            //  πƒ‹DMA TXπ¶ƒ‹
-
-        while(!(DMA_URXT_STA(uart_n) & 0x01));	            // µ»¥˝∑¢ÀÕÕÍ≥…
-
-        DMA_URXT_CR(uart_n) = 0x00;				            // πÿ±’DMA TX
-	}
-}
-//-------------------------------------------------------------------------------------------------------------------
-// ∫Ø ˝ºÚΩÈ     ¥Æø⁄∑¢ÀÕ◊÷∑˚¥Æ
-// ≤Œ ˝Àµ√˜     uart_n       ¥Æø⁄Õ®µ¿
-// ≤Œ ˝Àµ√˜     str         ◊÷∑˚¥Æ ◊µÿ÷∑
-// ∑µªÿ≤Œ ˝     void
-//  π”√ æ¿˝     uart_putstr(UART_1, (uint8 *)"12345")   //¥Æø⁄1∑¢ÀÕ12345’‚∏ˆ◊÷∑˚¥Æ
-//-------------------------------------------------------------------------------------------------------------------
-void uart_write_string(uart_index_enum uart_n, const char *str)
-{
-    uint16 len = strlen(str);
-    uart_write_buffer(uart_n, str, len);
-}
-
-//-------------------------------------------------------------------------------------------------------------------
-// ∫Ø ˝ºÚΩÈ     ¥Æø⁄∑¢ÀÕ“ª∏ˆ◊÷Ω⁄
-// ≤Œ ˝Àµ√˜     uart_n       ¥Æø⁄Õ®µ¿
-// ≤Œ ˝Àµ√˜     dat         ¥Æø⁄ ˝æ›
-// ∑µªÿ≤Œ ˝     void
-//  π”√ æ¿˝     uart_write_byte(UART_1, 0x43);        //¥Æø⁄1∑¢ÀÕ0x43°£
-//-------------------------------------------------------------------------------------------------------------------
-void uart_write_byte(uart_index_enum uart_n, const uint8 dat)
-{
-    uart_write_buffer(uart_n, &dat, 1);
-}
-
-//-------------------------------------------------------------------------------------------------------------------
-// ∫Ø ˝ºÚΩÈ     ¥Æø⁄ø™ ºΩ” ’ ˝æ›
-// ≤Œ ˝Àµ√˜     uart_n       ¥Æø⁄Õ®µ¿
-// ∑µªÿ≤Œ ˝     void
-//  π”√ æ¿˝     uart_rx_start_buff(UART_1);
-//-------------------------------------------------------------------------------------------------------------------
-void uart_rx_start_buff(uart_index_enum uart_n)
-{
-    DMA_URXR_AMT(uart_n) = (1 - 1);										// …Ë÷√Ω” ’µƒ◊÷Ω⁄ ˝
-    DMA_URXR_AMTH(uart_n) = (1 - 1) >> 8;								// …Ë÷√Ω” ’µƒ◊÷Ω⁄ ˝
-    DMA_URXR_RXAL(uart_n) = (uint8)((uint16)uart_rx_buff[uart_n]);		// …Ë÷√Ω” ’ª∫≥Âµÿ÷∑
-    DMA_URXR_RXAH(uart_n) = (uint8)((uint16)uart_rx_buff[uart_n] >> 8);	// …Ë÷√Ω” ’ª∫≥Âµÿ÷∑
-    DMA_URXR_CR(uart_n) = 0xA1;											// ø™∆ÙDMA RXΩ” ’÷–∂œ£¨ø™∆ÙDMA RXΩ” ’£¨«Âø’FIFO
-}
-
-//-------------------------------------------------------------------------------------------------------------------
-// ∫Ø ˝ºÚΩÈ     ¥Úø™¥Æø⁄Ω” ’÷–∂œ
-// ≤Œ ˝Àµ√˜     uart_n       ¥Æø⁄Õ®µ¿
-// ≤Œ ˝Àµ√˜     status       πƒ‹ªÚ’ﬂ ßƒ‹
-// ∑µªÿ≤Œ ˝     void
-//  π”√ æ¿˝     uart_rx_irq(UART_1, ENABLE);        //¥Úø™¥Æø⁄1Ω” ’÷–∂œ
-//-------------------------------------------------------------------------------------------------------------------
-void uart_rx_interrupt (uart_index_enum uart_n, uint8 status)
-{
-	if(status)
-	{
-		DMA_URXR_CFG(uart_n) |= 0x80;
-	}
-	else
-	{
-		DMA_URXR_CFG(uart_n) &= ~0x80;
-	} 
-}
-
-//-------------------------------------------------------------------------------------------------------------------
-// ∫Ø ˝ºÚΩÈ     ∂¡»°¥Æø⁄Ω” ’µƒ ˝æ›£®whlieµ»¥˝£©
-// ≤Œ ˝Àµ√˜     uart_n           ¥Æø⁄ƒ£øÈ∫≈(UART_1 - UART_4)
-// ≤Œ ˝Àµ√˜     *dat            Ω” ’ ˝æ›µƒµÿ÷∑
-// ∑µªÿ≤Œ ˝     void
-//  π”√ æ¿˝     dat = uart_read_byte(USART_1);       // Ω” ’¥Æø⁄1 ˝æ›  ¥Ê‘⁄‘⁄dat±‰¡ø¿Ô
-//-------------------------------------------------------------------------------------------------------------------
-uint8 uart_read_byte(uart_index_enum uart_n)
-{
-	uint8 dat;
-	
-	// µ»¥˝¥Æø⁄”– ˝æ›
-	while(!(DMA_URXR_STA(uart_n)&0x03));
-
-	// ∂¡»° ˝æ›
-	dat = uart_rx_buff[uart_n][0];
-		
-	// «Âø’±Í÷æŒª
-	DMA_URXR_STA(uart_n) = 0x00;
-	
-	// ø™ ºœ¬“ª¥ŒΩ” ’
-	uart_rx_start_buff(uart_n);
-	return dat;
-}
-
-//-------------------------------------------------------------------------------------------------------------------
-// ∫Ø ˝ºÚΩÈ     ∂¡»°¥Æø⁄Ω” ’µƒ ˝æ›£®≤È—ØΩ” ’£©
-// ≤Œ ˝Àµ√˜     uart_n           ¥Æø⁄ƒ£øÈ∫≈(UART_1 - UART_8)
-// ≤Œ ˝Àµ√˜     *dat            Ω” ’ ˝æ›µƒµÿ÷∑
-// ∑µªÿ≤Œ ˝     uint8           1£∫Ω” ’≥…π¶   0£∫Œ¥Ω” ’µΩ ˝æ›
-//  π”√ æ¿˝     uint8 dat; uart_query_byte(USART_1,&dat);       // Ω” ’¥Æø⁄1 ˝æ›  ¥Ê‘⁄‘⁄dat±‰¡ø¿Ô
-//-------------------------------------------------------------------------------------------------------------------
-uint8 uart_query_byte(uart_index_enum uart_n, uint8 *dat)
-{
-	uint8 ret = 0; 
-
-	// ∂¡»° ˝æ›
-	*dat = uart_rx_buff[uart_n][0];
-	
-	if(DMA_URXR_STA(uart_n) & 0x03)
-	{
-		ret = 1;
-		
-		DMA_URXR_STA(uart_n) &= ~0x03;
-	}
-	else
-	{
-		ret = 0;
-	}
-	
-	// ø™ ºœ¬“ª¥ŒΩ” ’
-	uart_rx_start_buff(uart_n);
-
-	return ret;
-}
-
-//-------------------------------------------------------------------------------------------------------------------
-// ∫Ø ˝ºÚΩÈ     ¥Æø⁄DMA≥ı ºªØ
-// ≤Œ ˝Àµ√˜     uart_n       ¥Æø⁄Õ®µ¿
-// ∑µªÿ≤Œ ˝     void
-//  π”√ æ¿˝     uart_dma_init(UART_1);
-//-------------------------------------------------------------------------------------------------------------------
-void uart_dma_init(uart_index_enum uart_n)
-{
-	DMA_URXT_CFG(uart_n)  = 0x00;	// DMA TX ˝æ›∑√Œ ”≈œ»º∂◊ÓµÕ£¨πÿ±’DMA∑¢ÀÕ÷–∂œ£¨
-	DMA_URXT_STA(uart_n)  = 0x00;	// «Â≥˝DMA TX◊¥Ã¨
-	DMA_URXT_CR(uart_n)   = 0x00;	// πÿ±’DMA TX
-		
-	DMA_URXR_CFG(uart_n)  = 0x00;	// πÿ±’DMAΩ” ’÷–∂œ
-	DMA_URXR_STA(uart_n)  = 0x00;	// «Â≥˝DMA RX◊¥Ã¨
-	DMA_URXR_CR(uart_n)   = 0x00;	// πÿ±’DMA RX
-
-	DMA_URXR_AMT(uart_n)  = (1 - 1);									// …Ë÷√Ω” ’µƒ◊÷Ω⁄ ˝
-	DMA_URXR_AMTH(uart_n) = (1 - 1)>>8;									// …Ë÷√Ω” ’µƒ◊÷Ω⁄ ˝
-	DMA_URXR_RXAL(uart_n) = (uint8)((uint16)uart_rx_buff[uart_n]);		// …Ë÷√Ω” ’ª∫≥Âµÿ÷∑
-	DMA_URXR_RXAH(uart_n) = (uint8)((uint16)uart_rx_buff[uart_n] >> 8);	// …Ë÷√Ω” ’ª∫≥Âµÿ÷∑
-	DMA_URXR_CFG(uart_n)  = 0x0F;										// ÷–∂œ”≈œ»º∂◊Ó∏ﬂ£¨DMA”≈œ»º∂◊Ó∏ﬂ
-	DMA_URXR_CR(uart_n)   = 0xA1;										// ø™∆ÙDMA RX£¨«Âø’FIFO
- 
-}
-
-//-------------------------------------------------------------------------------------------------------------------
-// ∫Ø ˝ºÚΩÈ     ¥Æø⁄≥ı ºªØ
-// ≤Œ ˝Àµ√˜     uart_n       ¥Æø⁄Õ®µ¿
-// ≤Œ ˝Àµ√˜     baud        ≤®Ãÿ¬ 
-// ≤Œ ˝Àµ√˜     tx_pin      ¥Æø⁄∑¢ÀÕ“˝Ω≈∫≈
-// ≤Œ ˝Àµ√˜     rx_pin      ¥Æø⁄Ω” ’“˝Ω≈∫≈
-// ∑µªÿ≤Œ ˝     void
-//  π”√ æ¿˝     uart_init(UART_2, 115200, UART2_TX_P11, UART2_RX_P10); //¥Æø⁄2≥ı ºªØ“˝Ω≈∫≈,TXŒ™P11,RXŒ™P10
-// ±∏◊¢–≈œ¢     À˘”–µƒ¥Æø⁄£¨∂º÷ªƒ‹ π”√∂® ±∆˜2 ◊ˆ≤®Ãÿ¬ ∑¢…˙∆˜£¨À˘”–µƒ¥Æø⁄÷ªƒ‹ «Õ¨“ª∏ˆ≤®Ãÿ¬ °£
-//-------------------------------------------------------------------------------------------------------------------
-void uart_init(uart_index_enum uart_n, uint32 baud, uart_pin_enum tx_pin, uart_pin_enum rx_pin)
-{
-    uint16 brt;
-    
-	// »Áπ˚≥Ã–Ú‘⁄ ‰≥ˆ¡À∂œ—‘–≈œ¢ ≤¢«“Ã· æ≥ˆ¥ÌŒª÷√‘⁄’‚¿Ô
-    // æÕ»•≤Èø¥ƒ„‘⁄ ≤√¥µÿ∑Ωµ˜”√’‚∏ˆ∫Ø ˝ ºÏ≤Èƒ„µƒ¥´»Î≤Œ ˝
-    // ’‚¿Ô «ºÏ≤È «∑Ò”–÷ÿ∏¥ π”√UART1 ∫Õ UART2π¶ƒ‹
-    // ±»»Á≥ı ºªØ¡À UART1 »ª∫Û”÷≥ı ºªØ≥… SPI1 ’‚÷÷”√∑® «≤ª‘ –Ìµƒ
-	// UART1∫ÕSPI1 π”√Õ¨“ª∏ˆºƒ¥Ê∆˜£¨“™√¥”√UART1“™√¥ π”√SPI1,÷ªƒ‹ «∂˛—°“ª°£
-	// UART2∫ÕSPI2 π”√Õ¨“ª∏ˆºƒ¥Ê∆˜£¨“™√¥”√UART2“™√¥ π”√SPI2,÷ªƒ‹ «∂˛—°“ª°£
-    zf_assert(uart_funciton_check(uart_n, UART_FUNCTION_UART));
-	
-	    
-	// »Áπ˚≥Ã–Ú‘⁄ ‰≥ˆ¡À∂œ—‘–≈œ¢ ≤¢«“Ã· æ≥ˆ¥ÌŒª÷√‘⁄’‚¿Ô
-    // æÕ»•≤Èø¥ƒ„‘⁄ ≤√¥µÿ∑Ωµ˜”√’‚∏ˆ∫Ø ˝ ºÏ≤Èƒ„µƒ¥´»Î≤Œ ˝
-    // ’‚¿Ô «ºÏ≤È «∑Ò”–÷ÿ∏¥ π”√∂® ±∆˜
-	// TIM2“—æ≠∏¯¥Æø⁄”√◊˜≤®Ãÿ¬ ∑¢…˙∆˜¡À°£≤ªƒ‹‘Ÿ≥ı ºªØŒ™∆‰À˚µƒ°£
-	zf_assert(timer_funciton_check(TIM_2, TIMER_FUNCTION_UART));
-	
-	
-	// ¥Æø⁄µƒRX∫ÕTX±ÿ–Î «“ª◊È«–ªª£¨»Áπ˚‘⁄’‚¿ÔΩ¯––±®¥Ì£¨
-	// ‘ÚÀµ√˜ƒ„—°µΩ≤ª «Õ¨“ª◊Èµƒ“˝Ω≈¡À
-	zf_assert(((tx_pin >> 8) & 0x0f) == ((rx_pin >> 8) & 0x0f));
-	
-	// ≥ı ºªØGPIO
-	gpio_init(tx_pin&0xFF, GPO, 1, GPO_PUSH_PULL);
-	gpio_init(rx_pin&0xFF, GPI, 1, GPI_FLOATING_IN);
-	
-    brt = (uint16)(65536 - (system_clock / (baud + 2) / 4));
-    
-    switch(uart_n)
-    {
-        case UART_1:
-        {
-            //            if(TIM_1 == tim_n)
-            //            {
-            //                SCON |= 0x50;
-            //                TMOD |= 0x00;
-            //                TL1 = brt;
-            //                TH1 = brt >> 8;
-            //                AUXR |= 0x40;
-            //                TR1 = 0;	//πÿ±’∑¢ÀÕ÷–∂œ
-            //
-            //            }
-            //            else if(TIM_2 == tim_n)
-            {
-                SCON |= 0x50;
-                T2L = brt;
-                T2H = brt >> 8;
-                AUXR |= 0x15;
-                TR1 = 0;	//πÿ±’∑¢ÀÕ÷–∂œ
-            }
-            
-            P_SW1 &= ~(0x03 << 6);
-            
-            if((UART1_RX_P30 == rx_pin) && (UART1_TX_P31 == tx_pin))
-            {
-                P_SW1 |= 0x00;
-            }
-            else if((UART1_RX_P36 == rx_pin) && (UART1_TX_P37 == tx_pin))
-            {
-                P_SW1 |= 0x40;
-            }
-            else if((UART1_RX_P16 == rx_pin) && (UART1_TX_P17 == tx_pin))
-            {
-                P_SW1 |= 0x80;
-            }
-            else if((UART1_RX_P43 == rx_pin) && (UART1_TX_P44 == tx_pin))
-            {
-                P_SW1 |= 0xc0;
-            }
-            
-            //            ES = 1;	//‘ –Ì¥Æ––ø⁄1÷–∂œ
-            break;
-        }
-        
-        case UART_2:
-        {
-            //            if(TIM_2 == tim_n)
-            {
-                S2CON |= 0x50;
-                T2L = brt;
-                T2H = brt >> 8;
-                AUXR |= 0x14;
-            }
-            
-            P_SW2 &= ~(0x01 << 0);
-            
-            if((UART2_RX_P10 == rx_pin) && (UART2_TX_P11 == tx_pin))
-            {
-                P_SW2 |= 0x00;
-            }
-            else if((UART2_RX_P46 == rx_pin) && (UART2_TX_P47 == tx_pin))
-            {
-                P_SW2 |= 0x01;
-            }
-            
-            //            IE2 |= 0x01 << 0;	//‘ –Ì¥Æ––ø⁄2÷–∂œ
-            
-            break;
-        }
-        
-        case UART_3:
-        {
-            //            if(TIM_2 == tim_n)
-            {
-                S3CON |= 0x10;
-                T2L = brt;
-                T2H = brt >> 8;
-                AUXR |= 0x14;
-            }
-            //            else if(TIM_3 == tim_n)
-            //            {
-            //                S3CON |= 0x50;
-            //                T3L = brt;
-            //                T3H = brt >> 8;
-            //                T4T3M |= 0x0a;
-            //            }
-            
-            P_SW2 &= ~(0x01 << 1);
-            
-            if((UART3_RX_P00 == rx_pin) && (UART3_TX_P01 == tx_pin))
-            {
-                P_SW2 |= 0x00;
-            }
-            else if((UART3_RX_P50 == rx_pin) && (UART3_TX_P51 == tx_pin))
-            {
-                P_SW2 |= 0x02;
-            }
-            
-            //            IE2 |= 0x01 << 3;	//‘ –Ì¥Æ––ø⁄3÷–∂œ
-            
-            break;
-        }
-        
-        case UART_4:
-        {
-            //            if(TIM_2 == tim_n)
-            {
-                S4CON |= 0x10;
-                T2L = brt;
-                T2H = brt >> 8;
-                AUXR |= 0x14;
-            }
-            //            else if(TIM_4 == tim_n)
-            //            {
-            //                S4CON |= 0x50;
-            //                T4L = brt;
-            //                T4H = brt >> 8;
-            //                T4T3M |= 0xa0;
-            //            }
-            
-            P_SW2 &= ~(0x01 << 2);
-            
-            if((UART4_RX_P02 == rx_pin) && (UART4_TX_P03 == tx_pin))
-            {
-                P_SW2 |= 0x00;
-            }
-            else if((UART4_RX_P52 == rx_pin) && (UART4_TX_P53 == tx_pin))
-            {
-//                P5M0 = 0x00;
-//                P5M1 = 0x01 << 2; //P5.2 –Ë“™…Ë÷√Œ™∏ﬂ◊Ë
-                P_SW2 |= 0x04;
-            }
-            
-            //            IE2 |= 0x01 << 4;	//‘ –Ì¥Æ––ø⁄4÷–∂œ
-            
-            break;
-        }
-        
-    }
-    
-	// uart dma ≥ı ºªØ
-    uart_dma_init(uart_n);
-    
-}
+#include "stdlib.h"
+#include "zf_common_clock.h"
+#include "zf_common_debug.h"
+
+#include "zf_driver_uart.h"
+#include "zf_driver_timer.h"
+#include "zf_driver_gpio.h"
+
+#pragma warning disable = 177
+#pragma warning disable = 183
+
+uint8 xdata uart_rx_buff[UART_RESERVE][1] = {0};
+
+#define DMA_URXT_CFG(uart_n)		(*(unsigned char volatile far *)(0x7efa30 + uart_n*0x10))
+#define DMA_URXT_CR(uart_n)     	(*(unsigned char volatile far *)(0x7efa31 + uart_n*0x10))
+#define DMA_URXT_STA(uart_n)    	(*(unsigned char volatile far *)(0x7efa32 + uart_n*0x10))
+#define DMA_URXT_AMT(uart_n)    	(*(unsigned char volatile far *)(0x7efa33 + uart_n*0x10))
+#define DMA_URXT_DONE(uart_n)   	(*(unsigned char volatile far *)(0x7efa34 + uart_n*0x10))
+#define DMA_URXT_TXAH(uart_n)   	(*(unsigned char volatile far *)(0x7efa35 + uart_n*0x10))
+#define DMA_URXT_TXAL(uart_n)   	(*(unsigned char volatile far *)(0x7efa36 + uart_n*0x10))
+#define DMA_URXR_CFG(uart_n)    	(*(unsigned char volatile far *)(0x7efa38 + uart_n*0x10))
+#define DMA_URXR_CR(uart_n)     	(*(unsigned char volatile far *)(0x7efa39 + uart_n*0x10))
+#define DMA_URXR_STA(uart_n)    	(*(unsigned char volatile far *)(0x7efa3a + uart_n*0x10))
+#define DMA_URXR_AMT(uart_n)    	(*(unsigned char volatile far *)(0x7efa3b + uart_n*0x10))
+#define DMA_URXR_DONE(uart_n)   	(*(unsigned char volatile far *)(0x7efa3c + uart_n*0x10))
+#define DMA_URXR_RXAH(uart_n)   	(*(unsigned char volatile far *)(0x7efa3d + uart_n*0x10))
+#define DMA_URXR_RXAL(uart_n)   	(*(unsigned char volatile far *)(0x7efa3e + uart_n*0x10))
+
+#define DMA_URXT_AMTH(uart_n)   	(*(unsigned char volatile far *)(0x7efa88 + uart_n*0x04))
+#define DMA_URXT_DONEH(uart_n)  	(*(unsigned char volatile far *)(0x7efa89 + uart_n*0x04))
+#define DMA_URXR_AMTH(uart_n)   	(*(unsigned char volatile far *)(0x7efa8a + uart_n*0x04))
+#define DMA_URXR_DONEH(uart_n)  	(*(unsigned char volatile far *)(0x7efa8b + uart_n*0x04))
+
+
+// ËØ•Êï∞ÁªÑÁ¶ÅÊ≠¢‰øÆÊîπÔºåÂÜÖÈÉ®‰ΩøÁî®,Áî®Êà∑Êó†ÈúÄÂÖ≥ÂøÉ
+static uart_function_enum uart_function_state[4] =
+{
+    UART_FUNCTION_INIT,
+    UART_FUNCTION_INIT,
+    UART_FUNCTION_INIT,
+    UART_FUNCTION_INIT,
+};
+
+//-------------------------------------------------------------------------------------------------------------------
+// ÂáΩÊï∞ÁÆÄ‰ªã     UART Â§ñËÆæÁ°ÆËÆ§ÂäüËÉΩÁä∂ÊÄÅ Â∫ìÂÜÖÈÉ®Ë∞ÉÁî®
+// ÂèÇÊï∞ËØ¥Êòé     index           UART Â§ñËÆæÊ®°ÂùóÂè∑
+// ÂèÇÊï∞ËØ¥Êòé     mode            ÈúÄË¶ÅÁ°ÆÁöÑÂäüËÉΩÊ®°Âùó
+// ËøîÂõûÂèÇÊï∞     uint8           1-ÂèØ‰ª•‰ΩøÁî® 0-‰∏çÂèØ‰ª•‰ΩøÁî®
+// ‰ΩøÁî®Á§∫‰æã     zf_assert(uart_funciton_check(UART_2, UART_FUNCTION_UART));
+//-------------------------------------------------------------------------------------------------------------------
+uint8 uart_funciton_check (uart_index_enum index, uart_function_enum mode)
+{
+    uint8 return_state = 1;
+    if(UART_FUNCTION_INIT == uart_function_state[index])
+    {
+        uart_function_state[index] = mode;
+    }
+    else if(uart_function_state[index] == mode)
+    {
+        return_state = 1;
+    }
+    else
+    {
+        return_state = 0;
+    }
+    return return_state;
+}
+//-------------------------------------------------------------------------------------------------------------------
+// ÂáΩÊï∞ÁÆÄ‰ªã     ‰∏≤Âè£ÂèëÈÄÅÊï∞ÁªÑ
+// ÂèÇÊï∞ËØ¥Êòé     uart_n       ‰∏≤Âè£ÈÄöÈÅì
+// ÂèÇÊï∞ËØ¥Êòé     buff        Ë¶ÅÂèëÈÄÅÁöÑÊï∞ÁªÑÂú∞ÂùÄ
+// ÂèÇÊï∞ËØ¥Êòé     len         Êï∞ÊçÆÈïøÂ∫¶
+// ËøîÂõûÂèÇÊï∞     void
+// ‰ΩøÁî®Á§∫‰æã     uart_write_buffer(UART_1, buff, 10);     //‰∏≤Âè£1ÂèëÈÄÅ10‰∏™buffÊï∞ÁªÑ„ÄÇ
+//-------------------------------------------------------------------------------------------------------------------
+void uart_write_buffer(uart_index_enum uart_n, const uint8 *buff, uint16 len)
+{
+    #define BUFF_LEN 64
+	
+	// Âõ†UART_DMAÂè™ËÉΩÊìç‰ΩúxdataÂå∫ÂüüÁöÑÊï∞ÊçÆÔºåÊâÄ‰ª•ÔºåËøôÈáåÊñ∞Âª∫‰∏Ä‰∏™Êï∞ÁªÑÔºåÊê¨Áßª„ÄÇ
+	uint8 xdata tmp_buff[BUFF_LEN] = {0};
+    uint16 tmp_len = 0;
+	while(len)
+	{
+        tmp_len = (len > BUFF_LEN) ? BUFF_LEN : len;        // ËÆ°ÁÆóÈïøÂ∫¶
+        memcpy(tmp_buff, buff, tmp_len);                    // Êã∑Ë¥ù
+        len -= tmp_len;                                     // ÂéªÊéâÂ∑≤ÁªèÂèëÈÄÅÁöÑÈïøÂ∫¶
+        buff += tmp_len;                                    // ÊåáÈíàÊåáÂêëÂêéÈù¢
+        
+        //	DMA_URXT_CFG(uart_n)  = 0x00; 		            // DMA‰ºòÂÖàÁ∫ß‰Ωé
+        DMA_URXT_STA(uart_n) = 0;				            // Ê∏ÖÁ©∫Ê†áÂøó‰Ωç
+
+        DMA_URXT_AMT(uart_n)  = (tmp_len - 1) & 0xff;		// ËÆæÁΩÆ‰º†ËæìÊÄªÂ≠óËäÇÊï∞(‰Ωé8‰Ωç)Ôºön+1
+        DMA_URXT_AMTH(uart_n) = (tmp_len - 1) >> 8;		    // ËÆæÁΩÆ‰º†ËæìÊÄªÂ≠óËäÇÊï∞(È´ò8‰Ωç)Ôºön+1
+        DMA_URXT_TXAH(uart_n) = (uint8)((uint16)tmp_buff >> 8);
+        DMA_URXT_TXAL(uart_n) = (uint8)((uint16)tmp_buff);
+        DMA_URXT_CR(uart_n) = 0xC0; 			            // ‰ΩøËÉΩDMA TXÂäüËÉΩ
+
+        while(!(DMA_URXT_STA(uart_n) & 0x01));	            // Á≠âÂæÖÂèëÈÄÅÂÆåÊàê
+
+        DMA_URXT_CR(uart_n) = 0x00;				            // ÂÖ≥Èó≠DMA TX
+	}
+}
+//-------------------------------------------------------------------------------------------------------------------
+// ÂáΩÊï∞ÁÆÄ‰ªã     ‰∏≤Âè£ÂèëÈÄÅÂ≠óÁ¨¶‰∏≤
+// ÂèÇÊï∞ËØ¥Êòé     uart_n       ‰∏≤Âè£ÈÄöÈÅì
+// ÂèÇÊï∞ËØ¥Êòé     str         Â≠óÁ¨¶‰∏≤È¶ñÂú∞ÂùÄ
+// ËøîÂõûÂèÇÊï∞     void
+// ‰ΩøÁî®Á§∫‰æã     uart_putstr(UART_1, (uint8 *)"12345")   //‰∏≤Âè£1ÂèëÈÄÅ12345Ëøô‰∏™Â≠óÁ¨¶‰∏≤
+//-------------------------------------------------------------------------------------------------------------------
+void uart_write_string(uart_index_enum uart_n, const char *str)
+{
+    uint16 len = strlen(str);
+    uart_write_buffer(uart_n, str, len);
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// ÂáΩÊï∞ÁÆÄ‰ªã     ‰∏≤Âè£ÂèëÈÄÅ‰∏Ä‰∏™Â≠óËäÇ
+// ÂèÇÊï∞ËØ¥Êòé     uart_n       ‰∏≤Âè£ÈÄöÈÅì
+// ÂèÇÊï∞ËØ¥Êòé     dat         ‰∏≤Âè£Êï∞ÊçÆ
+// ËøîÂõûÂèÇÊï∞     void
+// ‰ΩøÁî®Á§∫‰æã     uart_write_byte(UART_1, 0x43);        //‰∏≤Âè£1ÂèëÈÄÅ0x43„ÄÇ
+//-------------------------------------------------------------------------------------------------------------------
+void uart_write_byte(uart_index_enum uart_n, const uint8 dat)
+{
+    uart_write_buffer(uart_n, &dat, 1);
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// ÂáΩÊï∞ÁÆÄ‰ªã     ‰∏≤Âè£ÂºÄÂßãÊé•Êî∂Êï∞ÊçÆ
+// ÂèÇÊï∞ËØ¥Êòé     uart_n       ‰∏≤Âè£ÈÄöÈÅì
+// ËøîÂõûÂèÇÊï∞     void
+// ‰ΩøÁî®Á§∫‰æã     uart_rx_start_buff(UART_1);
+//-------------------------------------------------------------------------------------------------------------------
+void uart_rx_start_buff(uart_index_enum uart_n)
+{
+    DMA_URXR_AMT(uart_n) = (1 - 1);										// ËÆæÁΩÆÊé•Êî∂ÁöÑÂ≠óËäÇÊï∞
+    DMA_URXR_AMTH(uart_n) = (1 - 1) >> 8;								// ËÆæÁΩÆÊé•Êî∂ÁöÑÂ≠óËäÇÊï∞
+    DMA_URXR_RXAL(uart_n) = (uint8)((uint16)uart_rx_buff[uart_n]);		// ËÆæÁΩÆÊé•Êî∂ÁºìÂÜ≤Âú∞ÂùÄ
+    DMA_URXR_RXAH(uart_n) = (uint8)((uint16)uart_rx_buff[uart_n] >> 8);	// ËÆæÁΩÆÊé•Êî∂ÁºìÂÜ≤Âú∞ÂùÄ
+    DMA_URXR_CR(uart_n) = 0xA1;											// ÂºÄÂêØDMA RXÊé•Êî∂‰∏≠Êñ≠ÔºåÂºÄÂêØDMA RXÊé•Êî∂ÔºåÊ∏ÖÁ©∫FIFO
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// ÂáΩÊï∞ÁÆÄ‰ªã     ÊâìÂºÄ‰∏≤Âè£Êé•Êî∂‰∏≠Êñ≠
+// ÂèÇÊï∞ËØ¥Êòé     uart_n       ‰∏≤Âè£ÈÄöÈÅì
+// ÂèÇÊï∞ËØ¥Êòé     status      ‰ΩøËÉΩÊàñËÄÖÂ§±ËÉΩ
+// ËøîÂõûÂèÇÊï∞     void
+// ‰ΩøÁî®Á§∫‰æã     uart_rx_irq(UART_1, ENABLE);        //ÊâìÂºÄ‰∏≤Âè£1Êé•Êî∂‰∏≠Êñ≠
+//-------------------------------------------------------------------------------------------------------------------
+void uart_rx_interrupt (uart_index_enum uart_n, uint8 status)
+{
+	if(status)
+	{
+		DMA_URXR_CFG(uart_n) |= 0x80;
+	}
+	else
+	{
+		DMA_URXR_CFG(uart_n) &= ~0x80;
+	} 
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// ÂáΩÊï∞ÁÆÄ‰ªã     ËØªÂèñ‰∏≤Âè£Êé•Êî∂ÁöÑÊï∞ÊçÆÔºàwhlieÁ≠âÂæÖÔºâ
+// ÂèÇÊï∞ËØ¥Êòé     uart_n           ‰∏≤Âè£Ê®°ÂùóÂè∑(UART_1 - UART_4)
+// ÂèÇÊï∞ËØ¥Êòé     *dat            Êé•Êî∂Êï∞ÊçÆÁöÑÂú∞ÂùÄ
+// ËøîÂõûÂèÇÊï∞     void
+// ‰ΩøÁî®Á§∫‰æã     dat = uart_read_byte(USART_1);       // Êé•Êî∂‰∏≤Âè£1Êï∞ÊçÆ  Â≠òÂú®Âú®datÂèòÈáèÈáå
+//-------------------------------------------------------------------------------------------------------------------
+uint8 uart_read_byte(uart_index_enum uart_n)
+{
+	uint8 dat;
+	
+	// Á≠âÂæÖ‰∏≤Âè£ÊúâÊï∞ÊçÆ
+	while(!(DMA_URXR_STA(uart_n)&0x03));
+
+	// ËØªÂèñÊï∞ÊçÆ
+	dat = uart_rx_buff[uart_n][0];
+		
+	// Ê∏ÖÁ©∫Ê†áÂøó‰Ωç
+	DMA_URXR_STA(uart_n) = 0x00;
+	
+	// ÂºÄÂßã‰∏ã‰∏ÄÊ¨°Êé•Êî∂
+	uart_rx_start_buff(uart_n);
+	return dat;
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// ÂáΩÊï∞ÁÆÄ‰ªã     ËØªÂèñ‰∏≤Âè£Êé•Êî∂ÁöÑÊï∞ÊçÆÔºàÊü•ËØ¢Êé•Êî∂Ôºâ
+// ÂèÇÊï∞ËØ¥Êòé     uart_n           ‰∏≤Âè£Ê®°ÂùóÂè∑(UART_1 - UART_8)
+// ÂèÇÊï∞ËØ¥Êòé     *dat            Êé•Êî∂Êï∞ÊçÆÁöÑÂú∞ÂùÄ
+// ËøîÂõûÂèÇÊï∞     uint8           1ÔºöÊé•Êî∂ÊàêÂäü   0ÔºöÊú™Êé•Êî∂Âà∞Êï∞ÊçÆ
+// ‰ΩøÁî®Á§∫‰æã     uint8 dat; uart_query_byte(USART_1,&dat);       // Êé•Êî∂‰∏≤Âè£1Êï∞ÊçÆ  Â≠òÂú®Âú®datÂèòÈáèÈáå
+//-------------------------------------------------------------------------------------------------------------------
+uint8 uart_query_byte(uart_index_enum uart_n, uint8 *dat)
+{
+	uint8 ret = 0; 
+
+	// ËØªÂèñÊï∞ÊçÆ
+	*dat = uart_rx_buff[uart_n][0];
+	
+	if(DMA_URXR_STA(uart_n) & 0x03)
+	{
+		ret = 1;
+		
+		DMA_URXR_STA(uart_n) &= ~0x03;
+	}
+	else
+	{
+		ret = 0;
+	}
+	
+	// ÂºÄÂßã‰∏ã‰∏ÄÊ¨°Êé•Êî∂
+	uart_rx_start_buff(uart_n);
+
+	return ret;
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// ÂáΩÊï∞ÁÆÄ‰ªã     ‰∏≤Âè£DMAÂàùÂßãÂåñ
+// ÂèÇÊï∞ËØ¥Êòé     uart_n       ‰∏≤Âè£ÈÄöÈÅì
+// ËøîÂõûÂèÇÊï∞     void
+// ‰ΩøÁî®Á§∫‰æã     uart_dma_init(UART_1);
+//-------------------------------------------------------------------------------------------------------------------
+void uart_dma_init(uart_index_enum uart_n)
+{
+	DMA_URXT_CFG(uart_n)  = 0x00;	// DMA TXÊï∞ÊçÆËÆøÈóÆ‰ºòÂÖàÁ∫ßÊúÄ‰ΩéÔºåÂÖ≥Èó≠DMAÂèëÈÄÅ‰∏≠Êñ≠Ôºå
+	DMA_URXT_STA(uart_n)  = 0x00;	// Ê∏ÖÈô§DMA TXÁä∂ÊÄÅ
+	DMA_URXT_CR(uart_n)   = 0x00;	// ÂÖ≥Èó≠DMA TX
+		
+	DMA_URXR_CFG(uart_n)  = 0x00;	// ÂÖ≥Èó≠DMAÊé•Êî∂‰∏≠Êñ≠
+	DMA_URXR_STA(uart_n)  = 0x00;	// Ê∏ÖÈô§DMA RXÁä∂ÊÄÅ
+	DMA_URXR_CR(uart_n)   = 0x00;	// ÂÖ≥Èó≠DMA RX
+
+	DMA_URXR_AMT(uart_n)  = (1 - 1);									// ËÆæÁΩÆÊé•Êî∂ÁöÑÂ≠óËäÇÊï∞
+	DMA_URXR_AMTH(uart_n) = (1 - 1)>>8;									// ËÆæÁΩÆÊé•Êî∂ÁöÑÂ≠óËäÇÊï∞
+	DMA_URXR_RXAL(uart_n) = (uint8)((uint16)uart_rx_buff[uart_n]);		// ËÆæÁΩÆÊé•Êî∂ÁºìÂÜ≤Âú∞ÂùÄ
+	DMA_URXR_RXAH(uart_n) = (uint8)((uint16)uart_rx_buff[uart_n] >> 8);	// ËÆæÁΩÆÊé•Êî∂ÁºìÂÜ≤Âú∞ÂùÄ
+	DMA_URXR_CFG(uart_n)  = 0x0F;										// ‰∏≠Êñ≠‰ºòÂÖàÁ∫ßÊúÄÈ´òÔºåDMA‰ºòÂÖàÁ∫ßÊúÄÈ´ò
+	DMA_URXR_CR(uart_n)   = 0xA1;										// ÂºÄÂêØDMA RXÔºåÊ∏ÖÁ©∫FIFO
+ 
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// ÂáΩÊï∞ÁÆÄ‰ªã     ‰∏≤Âè£ÂàùÂßãÂåñ
+// ÂèÇÊï∞ËØ¥Êòé     uart_n       ‰∏≤Âè£ÈÄöÈÅì
+// ÂèÇÊï∞ËØ¥Êòé     baud        Ê≥¢ÁâπÁéá
+// ÂèÇÊï∞ËØ¥Êòé     tx_pin      ‰∏≤Âè£ÂèëÈÄÅÂºïËÑöÂè∑
+// ÂèÇÊï∞ËØ¥Êòé     rx_pin      ‰∏≤Âè£Êé•Êî∂ÂºïËÑöÂè∑
+// ËøîÂõûÂèÇÊï∞     void
+// ‰ΩøÁî®Á§∫‰æã     uart_init(UART_2, 115200, UART2_TX_P11, UART2_RX_P10); //‰∏≤Âè£2ÂàùÂßãÂåñÂºïËÑöÂè∑,TX‰∏∫P11,RX‰∏∫P10
+// Â§áÊ≥®‰ø°ÊÅØ     ÊâÄÊúâÁöÑ‰∏≤Âè£ÔºåÈÉΩÂè™ËÉΩ‰ΩøÁî®ÂÆöÊó∂Âô®2 ÂÅöÊ≥¢ÁâπÁéáÂèëÁîüÂô®ÔºåÊâÄÊúâÁöÑ‰∏≤Âè£Âè™ËÉΩÊòØÂêå‰∏Ä‰∏™Ê≥¢ÁâπÁéá„ÄÇ
+//-------------------------------------------------------------------------------------------------------------------
+void uart_init(uart_index_enum uart_n, uint32 baud, uart_pin_enum tx_pin, uart_pin_enum rx_pin)
+{
+    uint16 brt;
+    
+	// Â¶ÇÊûúÁ®ãÂ∫èÂú®ËæìÂá∫‰∫ÜÊñ≠Ë®Ä‰ø°ÊÅØ Âπ∂‰∏îÊèêÁ§∫Âá∫Èîô‰ΩçÁΩÆÂú®ËøôÈáå
+    // Â∞±ÂéªÊü•Áúã‰Ω†Âú®‰ªÄ‰πàÂú∞ÊñπË∞ÉÁî®Ëøô‰∏™ÂáΩÊï∞ Ê£ÄÊü•‰Ω†ÁöÑ‰º†ÂÖ•ÂèÇÊï∞
+    // ËøôÈáåÊòØÊ£ÄÊü•ÊòØÂê¶ÊúâÈáçÂ§ç‰ΩøÁî®UART1 Âíå UART2ÂäüËÉΩ
+    // ÊØîÂ¶ÇÂàùÂßãÂåñ‰∫Ü UART1 ÁÑ∂ÂêéÂèàÂàùÂßãÂåñÊàê SPI1 ËøôÁßçÁî®Ê≥ïÊòØ‰∏çÂÖÅËÆ∏ÁöÑ
+	// UART1ÂíåSPI1‰ΩøÁî®Âêå‰∏Ä‰∏™ÂØÑÂ≠òÂô®ÔºåË¶Å‰πàÁî®UART1Ë¶Å‰πà‰ΩøÁî®SPI1,Âè™ËÉΩÊòØ‰∫åÈÄâ‰∏Ä„ÄÇ
+	// UART2ÂíåSPI2‰ΩøÁî®Âêå‰∏Ä‰∏™ÂØÑÂ≠òÂô®ÔºåË¶Å‰πàÁî®UART2Ë¶Å‰πà‰ΩøÁî®SPI2,Âè™ËÉΩÊòØ‰∫åÈÄâ‰∏Ä„ÄÇ
+    zf_assert(uart_funciton_check(uart_n, UART_FUNCTION_UART));
+	
+	    
+	// Â¶ÇÊûúÁ®ãÂ∫èÂú®ËæìÂá∫‰∫ÜÊñ≠Ë®Ä‰ø°ÊÅØ Âπ∂‰∏îÊèêÁ§∫Âá∫Èîô‰ΩçÁΩÆÂú®ËøôÈáå
+    // Â∞±ÂéªÊü•Áúã‰Ω†Âú®‰ªÄ‰πàÂú∞ÊñπË∞ÉÁî®Ëøô‰∏™ÂáΩÊï∞ Ê£ÄÊü•‰Ω†ÁöÑ‰º†ÂÖ•ÂèÇÊï∞
+    // ËøôÈáåÊòØÊ£ÄÊü•ÊòØÂê¶ÊúâÈáçÂ§ç‰ΩøÁî®ÂÆöÊó∂Âô®
+	// TIM2Â∑≤ÁªèÁªô‰∏≤Âè£Áî®‰ΩúÊ≥¢ÁâπÁéáÂèëÁîüÂô®‰∫Ü„ÄÇ‰∏çËÉΩÂÜçÂàùÂßãÂåñ‰∏∫ÂÖ∂‰ªñÁöÑ„ÄÇ
+	zf_assert(timer_funciton_check(TIM_2, TIMER_FUNCTION_UART));
+	
+	
+	// ‰∏≤Âè£ÁöÑRXÂíåTXÂøÖÈ°ªÊòØ‰∏ÄÁªÑÂàáÊç¢ÔºåÂ¶ÇÊûúÂú®ËøôÈáåËøõË°åÊä•ÈîôÔºå
+	// ÂàôËØ¥Êòé‰Ω†ÈÄâÂà∞‰∏çÊòØÂêå‰∏ÄÁªÑÁöÑÂºïËÑö‰∫Ü
+	zf_assert(((tx_pin >> 8) & 0x0f) == ((rx_pin >> 8) & 0x0f));
+	
+	// ÂàùÂßãÂåñGPIO
+	gpio_init(tx_pin&0xFF, GPO, 1, GPO_PUSH_PULL);
+	gpio_init(rx_pin&0xFF, GPI, 1, GPI_FLOATING_IN);
+	
+    brt = (uint16)(65536 - (system_clock / (baud + 2) / 4));
+    
+    switch(uart_n)
+    {
+        case UART_1:
+        {
+            //            if(TIM_1 == tim_n)
+            //            {
+            //                SCON |= 0x50;
+            //                TMOD |= 0x00;
+            //                TL1 = brt;
+            //                TH1 = brt >> 8;
+            //                AUXR |= 0x40;
+            //                TR1 = 0;	//ÂÖ≥Èó≠ÂèëÈÄÅ‰∏≠Êñ≠
+            //
+            //            }
+            //            else if(TIM_2 == tim_n)
+            {
+                SCON |= 0x50;
+                T2L = brt;
+                T2H = brt >> 8;
+                AUXR |= 0x15;
+                TR1 = 0;	//ÂÖ≥Èó≠ÂèëÈÄÅ‰∏≠Êñ≠
+            }
+            
+            P_SW1 &= ~(0x03 << 6);
+            
+            if((UART1_RX_P30 == rx_pin) && (UART1_TX_P31 == tx_pin))
+            {
+                P_SW1 |= 0x00;
+            }
+            else if((UART1_RX_P36 == rx_pin) && (UART1_TX_P37 == tx_pin))
+            {
+                P_SW1 |= 0x40;
+            }
+            else if((UART1_RX_P16 == rx_pin) && (UART1_TX_P17 == tx_pin))
+            {
+                P_SW1 |= 0x80;
+            }
+            else if((UART1_RX_P43 == rx_pin) && (UART1_TX_P44 == tx_pin))
+            {
+                P_SW1 |= 0xc0;
+            }
+            
+            //            ES = 1;	//ÂÖÅËÆ∏‰∏≤Ë°åÂè£1‰∏≠Êñ≠
+            break;
+        }
+        
+        case UART_2:
+        {
+            //            if(TIM_2 == tim_n)
+            {
+                S2CON |= 0x50;
+                T2L = brt;
+                T2H = brt >> 8;
+                AUXR |= 0x14;
+            }
+            
+            P_SW2 &= ~(0x01 << 0);
+            
+            if((UART2_RX_P10 == rx_pin) && (UART2_TX_P11 == tx_pin))
+            {
+                P_SW2 |= 0x00;
+            }
+            else if((UART2_RX_P46 == rx_pin) && (UART2_TX_P47 == tx_pin))
+            {
+                P_SW2 |= 0x01;
+            }
+            
+            //            IE2 |= 0x01 << 0;	//ÂÖÅËÆ∏‰∏≤Ë°åÂè£2‰∏≠Êñ≠
+            
+            break;
+        }
+        
+        case UART_3:
+        {
+            //            if(TIM_2 == tim_n)
+            {
+                S3CON |= 0x10;
+                T2L = brt;
+                T2H = brt >> 8;
+                AUXR |= 0x14;
+            }
+            //            else if(TIM_3 == tim_n)
+            //            {
+            //                S3CON |= 0x50;
+            //                T3L = brt;
+            //                T3H = brt >> 8;
+            //                T4T3M |= 0x0a;
+            //            }
+            
+            P_SW2 &= ~(0x01 << 1);
+            
+            if((UART3_RX_P00 == rx_pin) && (UART3_TX_P01 == tx_pin))
+            {
+                P_SW2 |= 0x00;
+            }
+            else if((UART3_RX_P50 == rx_pin) && (UART3_TX_P51 == tx_pin))
+            {
+                P_SW2 |= 0x02;
+            }
+            
+            //            IE2 |= 0x01 << 3;	//ÂÖÅËÆ∏‰∏≤Ë°åÂè£3‰∏≠Êñ≠
+            
+            break;
+        }
+        
+        case UART_4:
+        {
+            //            if(TIM_2 == tim_n)
+            {
+                S4CON |= 0x10;
+                T2L = brt;
+                T2H = brt >> 8;
+                AUXR |= 0x14;
+            }
+            //            else if(TIM_4 == tim_n)
+            //            {
+            //                S4CON |= 0x50;
+            //                T4L = brt;
+            //                T4H = brt >> 8;
+            //                T4T3M |= 0xa0;
+            //            }
+            
+            P_SW2 &= ~(0x01 << 2);
+            
+            if((UART4_RX_P02 == rx_pin) && (UART4_TX_P03 == tx_pin))
+            {
+                P_SW2 |= 0x00;
+            }
+            else if((UART4_RX_P52 == rx_pin) && (UART4_TX_P53 == tx_pin))
+            {
+//                P5M0 = 0x00;
+//                P5M1 = 0x01 << 2; //P5.2 ÈúÄË¶ÅËÆæÁΩÆ‰∏∫È´òÈòª
+                P_SW2 |= 0x04;
+            }
+            
+            //            IE2 |= 0x01 << 4;	//ÂÖÅËÆ∏‰∏≤Ë°åÂè£4‰∏≠Êñ≠
+            
+            break;
+        }
+        
+    }
+    
+	// uart dma ÂàùÂßãÂåñ
+    uart_dma_init(uart_n);
+    
+}

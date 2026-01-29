@@ -4,23 +4,24 @@
 #include "zf_common_headfile.h"
 
 // =================================================================
-// À¶ÑÀÓ²¼şÅäÖÃ
+// è“ç‰™ç¡¬ä»¶é…ç½®
 // =================================================================
+
 #define BT_UART_INDEX   UART_4
 #define BT_TX_PIN       UART4_TX_P03
 #define BT_RX_PIN       UART4_RX_P02
 
-// ²¨ÌØÂÊ (HC-05/HC-08 Ä¬ÈÏÍ¨³£Îª 9600)
+// æ³¢ç‰¹ç‡ (HC-05/HC-08 é»˜è®¤é€šå¸¸ä¸º 9600)
 #define BT_BAUD_RATE    9600 
-#define BT_RX_MAX_LEN   64   // »º³åÇø´óĞ¡£¬64×Ö½Ú×ã¹»´æÏÂÒ¡¸Ë°üÁË
+#define BT_RX_MAX_LEN   64   // ç¼“å†²åŒºå¤§å°ï¼Œ64å­—èŠ‚è¶³å¤Ÿå­˜ä¸‹æ‘‡æ†åŒ…äº†
 
-// È«¾Ö¿ØÖÆ±äÁ¿ (¹© mode.c ¶ÁÈ¡)
-extern int16 remote_speed; // Ò£¿ØËÙ¶È
-extern int16 remote_turn;  // Ò£¿Ø×ªÏò
+// å…¨å±€æ§åˆ¶å˜é‡ (ä¾› mode.c è¯»å–)
+extern int16 remote_speed; // é¥æ§é€Ÿåº¦
+extern int16 remote_turn;  // é¥æ§è½¬å‘
 
-// API º¯ÊıÉùÃ÷
+// API å‡½æ•°å£°æ˜
 void BT_Init(void);
-void BT_Check_Rx(void); // ·ÅÔÚÖ÷Ñ­»·Àïµ÷ÓÃ
-void BT_Printf(const char *fmt, ...); // µ÷ÊÔ´òÓ¡ÓÃ
+void BT_Check_Rx(void); // æ”¾åœ¨ä¸»å¾ªç¯é‡Œè°ƒç”¨
+void BT_Printf(const char *fmt, ...); // è°ƒè¯•æ‰“å°ç”¨
 
 #endif
