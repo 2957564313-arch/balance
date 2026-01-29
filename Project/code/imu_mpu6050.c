@@ -1,9 +1,9 @@
 #include "imu_mpu6050.h"
 #include "zf_driver_soft_iic.h" 
 
-// 定义全局变量 (与 .h 保持一致)
-int16 mpu6050_gyro_x = 0, mpu6050_gyro_y = 0, mpu6050_gyro_z = 0;
-int16 mpu6050_acc_x = 0, mpu6050_acc_y = 0, mpu6050_acc_z = 0;
+// 定义全局变量 (在 .h extern)
+int16 mpu6050_gyro_x = 0, mpu6050_gyro_y = 0, mpu6050_gyro_z = 0;	//陀螺仪原始数据
+int16 mpu6050_acc_x = 0, mpu6050_acc_y = 0, mpu6050_acc_z = 0;		//加速度计原始数据
 
 #if MPU6050_USE_SOFT_IIC
 static soft_iic_info_struct mpu6050_iic_struct;
