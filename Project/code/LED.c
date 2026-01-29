@@ -1,17 +1,17 @@
-#include "LED.h"
-
-void LED_Init(void)
-{
-    // ³õÊ¼»¯ÎªÍÆÍìÊä³ö£¬Ä¬ÈÏ¸ßµçÆ½(Ãğ)
-    gpio_init(LED_PIN, GPO, 1, GPO_PUSH_PULL);
-}
-
-void LED_ON(void)
-{
-    gpio_set_level(LED_PIN, 0); // µÍµçÆ½ÁÁ
-}
-
-void LED_OFF(void)
-{
-    gpio_set_level(LED_PIN, 1); // ¸ßµçÆ½Ãğ
-}
+#include "LED.h"
+
+void LED_Init(void)
+{
+    // åˆå§‹åŒ–ä¸ºæ¨æŒ½è¾“å‡ºï¼Œé»˜è®¤é«˜ç”µå¹³(ç­)
+    gpio_init(LED_PIN, GPO, 1, GPO_PUSH_PULL);
+}
+
+void LED_ON(void)
+{
+    gpio_set_level(LED_PIN, 0); // ä½ç”µå¹³äº®
+}
+
+void LED_OFF(void)
+{
+    gpio_set_level(LED_PIN, 1); // é«˜ç”µå¹³ç­
+}

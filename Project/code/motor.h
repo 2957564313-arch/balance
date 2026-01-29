@@ -1,37 +1,37 @@
-#ifndef _MOTOR_H_
-#define _MOTOR_H_
-
-#include "zf_common_headfile.h"
-
-// PWM ²ÎÊı
-// ÆµÂÊ 17kHz (ÈË¶úÌı²»µ½µÄ³¬Éù²¨Æµ¶Î£¬µç»ú¸ü¾²Òô)
-#define PWM_FREQ            17000
-// ×î´óÕ¼¿Õ±È (Öğ·É¿âÍ¨³£ÊÇ 0-10000 »ò 0-100)
-// ÕâÀï¼ÙÉè¿âÊ¹ÓÃµÄÊÇ 0-10000 µÄ·Ö±æÂÊ
-#define MOTOR_MAX_DUTY      10000
-
-// ×óµç»ú PWM (P6.0 / P6.4)
-#define MOTOR_L_IN1_PWM     PWMA_CH1P_P60
-#define MOTOR_L_IN2_PWM     PWMA_CH3P_P64
-
-// ÓÒµç»ú PWM (P6.2 / P6.6)
-#define MOTOR_R_IN1_PWM     PWMA_CH2P_P62
-#define MOTOR_R_IN2_PWM     PWMA_CH4P_P66
-
-// ×ó±àÂëÆ÷ (Ó²¼ş Timer1: P3.4 / P3.5)
-#define ENCODER_L_TIM       TIM_1
-#define ENCODER_L_A         IO_P34 
-#define ENCODER_L_B         IO_P35
-
-// ÓÒ±àÂëÆ÷ (Èí¼şÄ£Äâ: P0.4 / P5.3)
-#define ENCODER_R_A_PIN     IO_P04
-#define ENCODER_R_B_PIN     IO_P53
-
-// API º¯ÊıÉùÃ÷
-void Motor_Init(void);
-void Motor_Set_L(int16 duty);
-void Motor_Set_R(int16 duty);
-void Soft_Encoder_Scan(void);
-void Encoder_Get_Val(int16 *L, int16 *R);
-
-#endif
+#ifndef _MOTOR_H_
+#define _MOTOR_H_
+
+#include "zf_common_headfile.h"
+
+// PWM å‚æ•°
+// é¢‘ç‡ 17kHz (äººè€³å¬ä¸åˆ°çš„è¶…å£°æ³¢é¢‘æ®µï¼Œç”µæœºæ›´é™éŸ³)
+#define PWM_FREQ            17000
+// æœ€å¤§å ç©ºæ¯” (é€é£åº“é€šå¸¸æ˜¯ 0-10000 æˆ– 0-100)
+// è¿™é‡Œå‡è®¾åº“ä½¿ç”¨çš„æ˜¯ 0-10000 çš„åˆ†è¾¨ç‡
+#define MOTOR_MAX_DUTY      10000
+
+// å·¦ç”µæœº PWM (P6.0 / P6.4)
+#define MOTOR_L_IN1_PWM     PWMA_CH1P_P60
+#define MOTOR_L_IN2_PWM     PWMA_CH3P_P64
+
+// å³ç”µæœº PWM (P6.2 / P6.6)
+#define MOTOR_R_IN1_PWM     PWMA_CH2P_P62
+#define MOTOR_R_IN2_PWM     PWMA_CH4P_P66
+
+// å·¦ç¼–ç å™¨ (ç¡¬ä»¶ Timer1: P3.4 / P3.5)
+#define ENCODER_L_TIM       TIM_1
+#define ENCODER_L_A         IO_P34 
+#define ENCODER_L_B         IO_P35
+
+// å³ç¼–ç å™¨ (è½¯ä»¶æ¨¡æ‹Ÿ: P0.4 / P5.3)
+#define ENCODER_R_A_PIN     IO_P04
+#define ENCODER_R_B_PIN     IO_P53
+
+// API å‡½æ•°å£°æ˜
+void Motor_Init(void);
+void Motor_Set_L(int16 duty);
+void Motor_Set_R(int16 duty);
+void Soft_Encoder_Scan(void);
+void Encoder_Get_Val(int16 *L, int16 *R);
+
+#endif

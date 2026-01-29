@@ -1,98 +1,98 @@
-#include "imu_mpu6050.h"
-#include "zf_driver_soft_iic.h" 
-
-// ∂®“Â»´æ÷±‰¡ø (”Î .h ±£≥÷“ª÷¬)
-int16 mpu6050_gyro_x = 0, mpu6050_gyro_y = 0, mpu6050_gyro_z = 0;
-int16 mpu6050_acc_x = 0, mpu6050_acc_y = 0, mpu6050_acc_z = 0;
-
-#if MPU6050_USE_SOFT_IIC
-static soft_iic_info_struct mpu6050_iic_struct;
-
-// ∫Í∑‚◊∞£∫∑Ω±„µ˜”√÷∑…ø‚µƒ Soft I2C
-#define mpu6050_write_register(reg, dat)       (soft_iic_write_8bit_register(&mpu6050_iic_struct, (reg), (dat)))
-#define mpu6050_read_register(reg)             (soft_iic_read_8bit_register(&mpu6050_iic_struct, (reg)))
-#define mpu6050_read_registers(reg, dat, len)  (soft_iic_read_8bit_registers(&mpu6050_iic_struct, (reg), (dat), (len)))
-
-#else
-// ”≤º˛I2C‘§¡Ù
-#endif
-
-// ◊‘ºÏ∫Ø ˝
-static uint8 mpu6050_self_check(void)
-{
-    uint8 dat = 0;
-    uint16 timeout = 0;
-    
-    // ªΩ–—≤¢∂¡»°ºƒ¥Ê∆˜≤‚ ‘
-    mpu6050_write_register(MPU6050_PWR_MGMT_1, 0x00); 
-    mpu6050_write_register(MPU6050_SMPLRT_DIV, 0x07); 
-    
-    // ºÚµ•µƒ◊‘–˝µ»¥˝£¨≤ª“¿¿µÕ‚≤ø—” ±∫Ø ˝
-    while(0x07 != dat)
-    {
-        if(timeout++ > MPU6050_TIMEOUT_COUNT) return 1; // ≥¨ ± ß∞‹
-        dat = mpu6050_read_register(MPU6050_SMPLRT_DIV);
-        { volatile uint16 i=1000; while(i--); } // ºÚµ•—” ±
-    }
-    return 0; // ≥…π¶
-}
-
-// ≥ı ºªØ
-uint8 mpu6050_init(void)
-{
-#if MPU6050_USE_SOFT_IIC
-    // ≥ı ºªØ»Ìº˛ I2C “˝Ω≈
-    soft_iic_init(&mpu6050_iic_struct, MPU6050_DEV_ADDR, MPU6050_SOFT_IIC_DELAY, MPU6050_SCL_PIN, MPU6050_SDA_PIN);
-#endif
-    
-    // …œµÁ—” ±
-    { volatile uint32 i=50000; while(i--); }
-
-    if(mpu6050_self_check()) return 1; // ◊‘ºÏ ß∞‹
-
-    // === ∫À–ƒ≈‰÷√ ===
-    mpu6050_write_register(MPU6050_PWR_MGMT_1, 0x00); // Ω‚≥˝–›√ﬂ
-    
-    // ≤…—˘∑÷∆µ…ËŒ™ 0 -> 1kHz  ‰≥ˆ
-    mpu6050_write_register(MPU6050_SMPLRT_DIV, 0x00); 
-    
-    // DLPF 20Hz (∆Ωª¨ ˝æ›£¨  ∫œ∆Ω∫‚≥µ)
-    mpu6050_write_register(MPU6050_CONFIG, 0x04);      
-    
-    mpu6050_write_register(MPU6050_GYRO_CONFIG, MPU6050_GYR_SAMPLE); // °¿2000dps
-    mpu6050_write_register(MPU6050_ACCEL_CONFIG, MPU6050_ACC_SAMPLE); // °¿8g
-    
-    return 0;
-}
-
-void mpu6050_get_acc(void)
-{
-    uint8 dat[6];
-    mpu6050_read_registers(MPU6050_ACCEL_XOUT_H, dat, 6);
-    mpu6050_acc_x = (int16)(((uint16)dat[0] << 8 | dat[1]));
-    mpu6050_acc_y = (int16)(((uint16)dat[2] << 8 | dat[3]));
-    mpu6050_acc_z = (int16)(((uint16)dat[4] << 8 | dat[5]));
-}
-
-void mpu6050_get_gyro(void)
-{
-    uint8 dat[6];
-    mpu6050_read_registers(MPU6050_GYRO_XOUT_H, dat, 6);
-    mpu6050_gyro_x = (int16)(((uint16)dat[0] << 8 | dat[1]));
-    mpu6050_gyro_y = (int16)(((uint16)dat[2] << 8 | dat[3]));
-    mpu6050_gyro_z = (int16)(((uint16)dat[4] << 8 | dat[5]));
-}
-
-// ◊™ªª∫Ø ˝£∫Raw -> g
-float mpu6050_acc_transition(int16 acc_value)
-{
-    // °¿8g ¡ø≥Ã -> 4096 LSB/g
-    return (float)acc_value / 4096.0f;
-}
-
-// ◊™ªª∫Ø ˝£∫Raw -> deg/s
-float mpu6050_gyro_transition(int16 gyro_value)
-{
-    // °¿2000dps ¡ø≥Ã -> 16.4 LSB/(deg/s)
-    return (float)gyro_value / 16.4f;
-}
+#include "imu_mpu6050.h"
+#include "zf_driver_soft_iic.h" 
+
+// ÂÆö‰πâÂÖ®Â±ÄÂèòÈáè (‰∏é .h ‰øùÊåÅ‰∏ÄËá¥)
+int16 mpu6050_gyro_x = 0, mpu6050_gyro_y = 0, mpu6050_gyro_z = 0;
+int16 mpu6050_acc_x = 0, mpu6050_acc_y = 0, mpu6050_acc_z = 0;
+
+#if MPU6050_USE_SOFT_IIC
+static soft_iic_info_struct mpu6050_iic_struct;
+
+// ÂÆèÂ∞ÅË£ÖÔºöÊñπ‰æøË∞ÉÁî®ÈÄêÈ£ûÂ∫ìÁöÑ Soft I2C
+#define mpu6050_write_register(reg, dat)       (soft_iic_write_8bit_register(&mpu6050_iic_struct, (reg), (dat)))
+#define mpu6050_read_register(reg)             (soft_iic_read_8bit_register(&mpu6050_iic_struct, (reg)))
+#define mpu6050_read_registers(reg, dat, len)  (soft_iic_read_8bit_registers(&mpu6050_iic_struct, (reg), (dat), (len)))
+
+#else
+// Á°¨‰ª∂I2CÈ¢ÑÁïô
+#endif
+
+// Ëá™Ê£ÄÂáΩÊï∞
+static uint8 mpu6050_self_check(void)
+{
+    uint8 dat = 0;
+    uint16 timeout = 0;
+    
+    // Âî§ÈÜíÂπ∂ËØªÂèñÂØÑÂ≠òÂô®ÊµãËØï
+    mpu6050_write_register(MPU6050_PWR_MGMT_1, 0x00); 
+    mpu6050_write_register(MPU6050_SMPLRT_DIV, 0x07); 
+    
+    // ÁÆÄÂçïÁöÑËá™ÊóãÁ≠âÂæÖÔºå‰∏ç‰æùËµñÂ§ñÈÉ®Âª∂Êó∂ÂáΩÊï∞
+    while(0x07 != dat)
+    {
+        if(timeout++ > MPU6050_TIMEOUT_COUNT) return 1; // Ë∂ÖÊó∂Â§±Ë¥•
+        dat = mpu6050_read_register(MPU6050_SMPLRT_DIV);
+        { volatile uint16 i=1000; while(i--); } // ÁÆÄÂçïÂª∂Êó∂
+    }
+    return 0; // ÊàêÂäü
+}
+
+// ÂàùÂßãÂåñ
+uint8 mpu6050_init(void)
+{
+#if MPU6050_USE_SOFT_IIC
+    // ÂàùÂßãÂåñËΩØ‰ª∂ I2C ÂºïËÑö
+    soft_iic_init(&mpu6050_iic_struct, MPU6050_DEV_ADDR, MPU6050_SOFT_IIC_DELAY, MPU6050_SCL_PIN, MPU6050_SDA_PIN);
+#endif
+    
+    // ‰∏äÁîµÂª∂Êó∂
+    { volatile uint32 i=50000; while(i--); }
+
+    if(mpu6050_self_check()) return 1; // Ëá™Ê£ÄÂ§±Ë¥•
+
+    // === Ê†∏ÂøÉÈÖçÁΩÆ ===
+    mpu6050_write_register(MPU6050_PWR_MGMT_1, 0x00); // Ëß£Èô§‰ºëÁú†
+    
+    // ÈááÊ†∑ÂàÜÈ¢ëËÆæ‰∏∫ 0 -> 1kHz ËæìÂá∫
+    mpu6050_write_register(MPU6050_SMPLRT_DIV, 0x00); 
+    
+    // DLPF 20Hz (Âπ≥ÊªëÊï∞ÊçÆÔºåÈÄÇÂêàÂπ≥Ë°°ËΩ¶)
+    mpu6050_write_register(MPU6050_CONFIG, 0x04);      
+    
+    mpu6050_write_register(MPU6050_GYRO_CONFIG, MPU6050_GYR_SAMPLE); // ¬±2000dps
+    mpu6050_write_register(MPU6050_ACCEL_CONFIG, MPU6050_ACC_SAMPLE); // ¬±8g
+    
+    return 0;
+}
+
+void mpu6050_get_acc(void)
+{
+    uint8 dat[6];
+    mpu6050_read_registers(MPU6050_ACCEL_XOUT_H, dat, 6);
+    mpu6050_acc_x = (int16)(((uint16)dat[0] << 8 | dat[1]));
+    mpu6050_acc_y = (int16)(((uint16)dat[2] << 8 | dat[3]));
+    mpu6050_acc_z = (int16)(((uint16)dat[4] << 8 | dat[5]));
+}
+
+void mpu6050_get_gyro(void)
+{
+    uint8 dat[6];
+    mpu6050_read_registers(MPU6050_GYRO_XOUT_H, dat, 6);
+    mpu6050_gyro_x = (int16)(((uint16)dat[0] << 8 | dat[1]));
+    mpu6050_gyro_y = (int16)(((uint16)dat[2] << 8 | dat[3]));
+    mpu6050_gyro_z = (int16)(((uint16)dat[4] << 8 | dat[5]));
+}
+
+// ËΩ¨Êç¢ÂáΩÊï∞ÔºöRaw -> g
+float mpu6050_acc_transition(int16 acc_value)
+{
+    // ¬±8g ÈáèÁ®ã -> 4096 LSB/g
+    return (float)acc_value / 4096.0f;
+}
+
+// ËΩ¨Êç¢ÂáΩÊï∞ÔºöRaw -> deg/s
+float mpu6050_gyro_transition(int16 gyro_value)
+{
+    // ¬±2000dps ÈáèÁ®ã -> 16.4 LSB/(deg/s)
+    return (float)gyro_value / 16.4f;
+}

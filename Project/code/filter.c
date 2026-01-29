@@ -1,46 +1,46 @@
-#include "filter.h"
-
-// ÏÞ·ùº¯Êý£º½« x ÏÞÖÆÔÚ [minv, maxv] Ö®¼ä
-float limit_f(float x, float minv, float maxv)
-{
-    if(x > maxv) return maxv;
-    if(x < minv) return minv;
-    return x;
-}
-
-// ËÀÇøº¯Êý£ºÈç¹û x ÔÚ [-dz, dz] Ö®¼ä£¬Ôò·µ»Ø 0
-float deadzone_f(float x, float dz)
-{
-    if(x > -dz && x < dz) return 0.0f;
-    return x;
-}
-
-// LPF ³õÊ¼»¯
-void lpf1_init(lpf1_t *f, float alpha, float init_val)
-{
-    if(0 == f) return; // ¿ÕÖ¸Õë±£»¤
-    
-    f->alpha  = alpha;
-    f->y      = init_val;
-    f->inited = 1;
-}
-
-// LPF ¸üÐÂ¼ÆËã
-// ¹«Ê½£ºOutput = alpha * Last_Output + (1-alpha) * Input
-float lpf1_update(lpf1_t *f, float x)
-{
-    if(0 == f) return x;
-    
-    // µÚÒ»´ÎÔËÐÐÊ±£¬Ö±½Ó½«ÊäÈë×÷ÎªÊä³ö£¬±ÜÃâ´Ó0¿ªÊ¼ÅÀÉý
-    if(!f->inited)
-    {
-        f->y = x;
-        f->inited = 1;
-        return x;
-    }
-    
-    // µü´ú¼ÆËã
-    f->y = f->alpha * f->y + (1.0f - f->alpha) * x;
-    
-    return f->y;
-}
+#include "filter.h"
+
+// é™å¹…å‡½æ•°ï¼šå°† x é™åˆ¶åœ¨ [minv, maxv] ä¹‹é—´
+float limit_f(float x, float minv, float maxv)
+{
+    if(x > maxv) return maxv;
+    if(x < minv) return minv;
+    return x;
+}
+
+// æ­»åŒºå‡½æ•°ï¼šå¦‚æžœ x åœ¨ [-dz, dz] ä¹‹é—´ï¼Œåˆ™è¿”å›ž 0
+float deadzone_f(float x, float dz)
+{
+    if(x > -dz && x < dz) return 0.0f;
+    return x;
+}
+
+// LPF åˆå§‹åŒ–
+void lpf1_init(lpf1_t *f, float alpha, float init_val)
+{
+    if(0 == f) return; // ç©ºæŒ‡é’ˆä¿æŠ¤
+    
+    f->alpha  = alpha;
+    f->y      = init_val;
+    f->inited = 1;
+}
+
+// LPF æ›´æ–°è®¡ç®—
+// å…¬å¼ï¼šOutput = alpha * Last_Output + (1-alpha) * Input
+float lpf1_update(lpf1_t *f, float x)
+{
+    if(0 == f) return x;
+    
+    // ç¬¬ä¸€æ¬¡è¿è¡Œæ—¶ï¼Œç›´æŽ¥å°†è¾“å…¥ä½œä¸ºè¾“å‡ºï¼Œé¿å…ä»Ž0å¼€å§‹çˆ¬å‡
+    if(!f->inited)
+    {
+        f->y = x;
+        f->inited = 1;
+        return x;
+    }
+    
+    // è¿­ä»£è®¡ç®—
+    f->y = f->alpha * f->y + (1.0f - f->alpha) * x;
+    
+    return f->y;
+}

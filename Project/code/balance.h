@@ -1,12 +1,12 @@
-#ifndef _BALANCE_H_
-#define _BALANCE_H_
-
-#include "zf_common_headfile.h"
-
-// Æ½ºâ¿ØÖÆÈÎÎñ£¬ÔÚ 5ms ¶¨Ê±ÖĞ¶ÏÖĞµ÷ÓÃ
-void Balance_Task(void);
-
-// ³õÊ¼»¯Æ½ºâ¿ØÖÆÏà¹Ø
-void Balance_Init(void);
-
-#endif
+#ifndef _BALANCE_H_
+#define _BALANCE_H_
+
+#include "zf_common_headfile.h"
+
+// å¹³è¡¡æ§åˆ¶ä»»åŠ¡ï¼Œåœ¨ 5ms å®šæ—¶ä¸­æ–­ä¸­è°ƒç”¨
+void Balance_Task(void);
+
+// åˆå§‹åŒ–å¹³è¡¡æ§åˆ¶ç›¸å…³
+void Balance_Init(void);
+
+#endif

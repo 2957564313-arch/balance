@@ -1,170 +1,170 @@
-#include "bluetooth.h"
-#include <stdarg.h>
-#include <stdio.h> 
-
-// =================================================================
-// È«¾Ö±äÁ¿¶¨Òå
-// =================================================================
-int16 remote_speed = 0;
-int16 remote_turn = 0;
-
-// ½ÓÊÕÏà¹Ø±äÁ¿
-uint8 bt_rx_buffer[BT_RX_MAX_LEN]; 
-uint8 bt_rx_index = 0;             
-uint8 bt_packet_started = 0;       
-
-void BT_Init(void)
-{
-    // ³õÊ¼»¯ UART4, 9600²¨ÌØÂÊ
-    uart_init(BT_UART_INDEX, BT_BAUD_RATE, BT_TX_PIN, BT_RX_PIN);
-    
-    // Çå¿Õ»º³åÇø
-    {
-        uint8 i;
-        for(i=0; i<BT_RX_MAX_LEN; i++) bt_rx_buffer[i] = 0;
-    }
-    
-    bt_rx_index = 0;
-    bt_packet_started = 0;
-    
-    remote_speed = 0;
-    remote_turn = 0;
-}
-
-void BT_Send_Byte(uint8 dat)
-{
-    uart_write_byte(BT_UART_INDEX, dat);
-}
-
-void BT_Send_Str(char *str)
-{
-    while(*str)
-    {
-        uart_write_byte(BT_UART_INDEX, *str++);
-    }
-}
-
-// ¸ñÊ½»¯´òÓ¡º¯Êı£¬·½±ãµ÷ÊÔ
-void BT_Printf(const char *fmt, ...)
-{
-    char buff[128];
-    va_list args;
-    
-    va_start(args, fmt);
-    vsprintf(buff, fmt, args);
-    va_end(args);
-    
-    BT_Send_Str(buff);
-}
-
-// =================================================================
-// ÊÖĞ´¼òÒ×½âÎö¹¤¾ß£º´Ó×Ö·û´®ÖĞÌáÈ¡ÕûÊı
-// Ìæ´ú±ê×¼¿âµÄ atoi/strtok£¬¸üÇáÁ¿
-// =================================================================
-int My_Atoi(char *str, uint8 *p_idx)
-{
-    int res = 0;
-    int sign = 1;
-    uint8 i = *p_idx;
-    
-    // 1. Ìø¹ı·ÇÊı×Ö×Ö·û (¶ººÅ¡¢¿Õ¸ñ¡¢×ÖÄ¸µÈ)
-    // ×¢Òâ£º²»ÒªÌø¹ı¸ººÅ '-'
-    while(str[i] != '\0' && (str[i] < '0' || str[i] > '9') && str[i] != '-') {
-        i++;
-    }
-    
-    // 2. ¼ì²â¸ººÅ
-    if(str[i] == '-') {
-        sign = -1;
-        i++;
-    }
-    
-    // 3. ÌáÈ¡Á¬ĞøÊı×Ö
-    while(str[i] >= '0' && str[i] <= '9') {
-        res = res * 10 + (str[i] - '0');
-        i++;
-    }
-    
-    *p_idx = i; // ¸üĞÂÍâ²¿Ë÷ÒıÖ¸Õë
-    return res * sign;
-}
-
-// =================================================================
-// ºËĞÄ£º½âÎö½­Ğ­Ğ¡³ÌĞòÊı¾İ°ü
-// ¸ñÊ½: [joystick,LH,LV,RH,RV]  Àı: [joystick,0,100,0,0]
-// =================================================================
-void BT_Parse_Packet(char *packet)
-{
-    uint8 i = 0;
-    int lh, lv, rh, rv;
-    
-    // 1. Í·²¿Æ¥Åä "joy"
-    if(packet[0] == 'j' && packet[1] == 'o' && packet[2] == 'y')
-    {
-        // 2. Ìø¹ı "joystick" (8¸ö×Ö·û)
-        i = 8; 
-        
-        // 3. ÒÀ´ÎÌáÈ¡ 4 ¸öÒ¡¸ËÖµ
-        lh = My_Atoi(packet, &i); // ×óºá
-        lv = My_Atoi(packet, &i); // ×ó×İ (ËÙ¶È)
-        rh = My_Atoi(packet, &i); // ÓÒºá (×ªÏò)
-        rv = My_Atoi(packet, &i); // ÓÒ×İ
-        
-        // 4. Ó³Éäµ½¿ØÖÆ±äÁ¿
-        // LV (×óÒ¡¸Ë×İÏò) -> ËÙ¶È (·Å´ó 2 ±¶)
-        remote_speed = lv * 2; 
-        
-        // RH (ÓÒÒ¡¸ËºáÏò) -> ×ªÏò (·Å´ó 5 ±¶£¬×ªÏòĞèÒªÁéÃôµã)
-        remote_turn = rh * 5;  
-        
-        // 5. ËÀÇø¹ıÂË (·ÀÖ¹¹éÎ»Îó²îµ¼ÖÂ³µ×ÓÂıÆ®)
-        if(remote_speed > -15 && remote_speed < 15) remote_speed = 0;
-        if(remote_turn > -15 && remote_turn < 15) remote_turn = 0;
-    }
-}
-
-// =================================================================
-// ½ÓÊÕ×´Ì¬»ú (ÔÚÖ÷Ñ­»·µ÷ÓÃ)
-// =================================================================
-void BT_Check_Rx(void)
-{
-    uint8 dat;
-    
-    // ²éÑ¯·½Ê½¶ÁÈ¡´®¿ÚÊı¾İ
-    while(uart_query_byte(BT_UART_INDEX, &dat))
-    {
-        // 1. µÈ´ı°üÍ· '['
-        if (dat == '[') 
-        {
-            bt_packet_started = 1;
-            bt_rx_index = 0;
-            bt_rx_buffer[0] = '\0'; 
-        }
-        // 2. ½ÓÊÕÖĞ
-        else if (bt_packet_started)
-        {
-            // 3. µÈ´ı°üÎ² ']'
-            if (dat == ']') 
-            {
-                bt_packet_started = 0;
-                bt_rx_buffer[bt_rx_index] = '\0'; // ²¹ÉÏ½áÊø·û
-                
-                // ½âÎöÍêÕû°ü
-                BT_Parse_Packet((char *)bt_rx_buffer);
-            }
-            // 4. ´æÈë»º³åÇø
-            else 
-            {
-                if (bt_rx_index < BT_RX_MAX_LEN - 1)
-                {
-                    bt_rx_buffer[bt_rx_index++] = dat;
-                }
-                else // Òç³ö±£»¤
-                {
-                    bt_packet_started = 0;
-                    bt_rx_index = 0;
-                }
-            }
-        }
-    }
-}
+#include "bluetooth.h"
+#include <stdarg.h>
+#include <stdio.h> 
+
+// =================================================================
+// å…¨å±€å˜é‡å®šä¹‰
+// =================================================================
+int16 remote_speed = 0;
+int16 remote_turn = 0;
+
+// æ¥æ”¶ç›¸å…³å˜é‡
+uint8 bt_rx_buffer[BT_RX_MAX_LEN]; 
+uint8 bt_rx_index = 0;             
+uint8 bt_packet_started = 0;       
+
+void BT_Init(void)
+{
+    // åˆå§‹åŒ– UART4, 9600æ³¢ç‰¹ç‡
+    uart_init(BT_UART_INDEX, BT_BAUD_RATE, BT_TX_PIN, BT_RX_PIN);
+    
+    // æ¸…ç©ºç¼“å†²åŒº
+    {
+        uint8 i;
+        for(i=0; i<BT_RX_MAX_LEN; i++) bt_rx_buffer[i] = 0;
+    }
+    
+    bt_rx_index = 0;
+    bt_packet_started = 0;
+    
+    remote_speed = 0;
+    remote_turn = 0;
+}
+
+void BT_Send_Byte(uint8 dat)
+{
+    uart_write_byte(BT_UART_INDEX, dat);
+}
+
+void BT_Send_Str(char *str)
+{
+    while(*str)
+    {
+        uart_write_byte(BT_UART_INDEX, *str++);
+    }
+}
+
+// æ ¼å¼åŒ–æ‰“å°å‡½æ•°ï¼Œæ–¹ä¾¿è°ƒè¯•
+void BT_Printf(const char *fmt, ...)
+{
+    char buff[128];
+    va_list args;
+    
+    va_start(args, fmt);
+    vsprintf(buff, fmt, args);
+    va_end(args);
+    
+    BT_Send_Str(buff);
+}
+
+// =================================================================
+// æ‰‹å†™ç®€æ˜“è§£æå·¥å…·ï¼šä»å­—ç¬¦ä¸²ä¸­æå–æ•´æ•°
+// æ›¿ä»£æ ‡å‡†åº“çš„ atoi/strtokï¼Œæ›´è½»é‡
+// =================================================================
+int My_Atoi(char *str, uint8 *p_idx)
+{
+    int res = 0;
+    int sign = 1;
+    uint8 i = *p_idx;
+    
+    // 1. è·³è¿‡éæ•°å­—å­—ç¬¦ (é€—å·ã€ç©ºæ ¼ã€å­—æ¯ç­‰)
+    // æ³¨æ„ï¼šä¸è¦è·³è¿‡è´Ÿå· '-'
+    while(str[i] != '\0' && (str[i] < '0' || str[i] > '9') && str[i] != '-') {
+        i++;
+    }
+    
+    // 2. æ£€æµ‹è´Ÿå·
+    if(str[i] == '-') {
+        sign = -1;
+        i++;
+    }
+    
+    // 3. æå–è¿ç»­æ•°å­—
+    while(str[i] >= '0' && str[i] <= '9') {
+        res = res * 10 + (str[i] - '0');
+        i++;
+    }
+    
+    *p_idx = i; // æ›´æ–°å¤–éƒ¨ç´¢å¼•æŒ‡é’ˆ
+    return res * sign;
+}
+
+// =================================================================
+// æ ¸å¿ƒï¼šè§£ææ±Ÿåå°ç¨‹åºæ•°æ®åŒ…
+// æ ¼å¼: [joystick,LH,LV,RH,RV]  ä¾‹: [joystick,0,100,0,0]
+// =================================================================
+void BT_Parse_Packet(char *packet)
+{
+    uint8 i = 0;
+    int lh, lv, rh, rv;
+    
+    // 1. å¤´éƒ¨åŒ¹é… "joy"
+    if(packet[0] == 'j' && packet[1] == 'o' && packet[2] == 'y')
+    {
+        // 2. è·³è¿‡ "joystick" (8ä¸ªå­—ç¬¦)
+        i = 8; 
+        
+        // 3. ä¾æ¬¡æå– 4 ä¸ªæ‘‡æ†å€¼
+        lh = My_Atoi(packet, &i); // å·¦æ¨ª
+        lv = My_Atoi(packet, &i); // å·¦çºµ (é€Ÿåº¦)
+        rh = My_Atoi(packet, &i); // å³æ¨ª (è½¬å‘)
+        rv = My_Atoi(packet, &i); // å³çºµ
+        
+        // 4. æ˜ å°„åˆ°æ§åˆ¶å˜é‡
+        // LV (å·¦æ‘‡æ†çºµå‘) -> é€Ÿåº¦ (æ”¾å¤§ 2 å€)
+        remote_speed = lv * 2; 
+        
+        // RH (å³æ‘‡æ†æ¨ªå‘) -> è½¬å‘ (æ”¾å¤§ 5 å€ï¼Œè½¬å‘éœ€è¦çµæ•ç‚¹)
+        remote_turn = rh * 5;  
+        
+        // 5. æ­»åŒºè¿‡æ»¤ (é˜²æ­¢å½’ä½è¯¯å·®å¯¼è‡´è½¦å­æ…¢é£˜)
+        if(remote_speed > -15 && remote_speed < 15) remote_speed = 0;
+        if(remote_turn > -15 && remote_turn < 15) remote_turn = 0;
+    }
+}
+
+// =================================================================
+// æ¥æ”¶çŠ¶æ€æœº (åœ¨ä¸»å¾ªç¯è°ƒç”¨)
+// =================================================================
+void BT_Check_Rx(void)
+{
+    uint8 dat;
+    
+    // æŸ¥è¯¢æ–¹å¼è¯»å–ä¸²å£æ•°æ®
+    while(uart_query_byte(BT_UART_INDEX, &dat))
+    {
+        // 1. ç­‰å¾…åŒ…å¤´ '['
+        if (dat == '[') 
+        {
+            bt_packet_started = 1;
+            bt_rx_index = 0;
+            bt_rx_buffer[0] = '\0'; 
+        }
+        // 2. æ¥æ”¶ä¸­
+        else if (bt_packet_started)
+        {
+            // 3. ç­‰å¾…åŒ…å°¾ ']'
+            if (dat == ']') 
+            {
+                bt_packet_started = 0;
+                bt_rx_buffer[bt_rx_index] = '\0'; // è¡¥ä¸Šç»“æŸç¬¦
+                
+                // è§£æå®Œæ•´åŒ…
+                BT_Parse_Packet((char *)bt_rx_buffer);
+            }
+            // 4. å­˜å…¥ç¼“å†²åŒº
+            else 
+            {
+                if (bt_rx_index < BT_RX_MAX_LEN - 1)
+                {
+                    bt_rx_buffer[bt_rx_index++] = dat;
+                }
+                else // æº¢å‡ºä¿æŠ¤
+                {
+                    bt_packet_started = 0;
+                    bt_rx_index = 0;
+                }
+            }
+        }
+    }
+}

@@ -1,112 +1,112 @@
-#include "motor.h"
-#include "filter.h" // ÒıÓÃ filter.h ÒÔÊ¹ÓÃ limit_f º¯Êı
-
-// ËÀÇø²¹³¥Öµ (300 ¶ÔÓ¦ 10000 µÄÂúÁ¿³Ì£¬Ô¼ 3%)
-// Èç¹ûµç»úÓĞÇáÎ¢ÎËÎËÉùµ«²»×ª£¬¿ÉÒÔÊÊµ±¼õĞ¡
-#define MOTOR_DEAD_ZONE  300
-
-// Èí¼ş±àÂëÆ÷±äÁ¿
-volatile int32 soft_enc_r_count = 0;
-static uint8 soft_enc_r_last = 0;
-
-void Motor_Init(void)
-{
-    // 1. ³õÊ¼»¯ PWM (P6.0, P6.2, P6.4, P6.6)
-    // ³õÊ¼Õ¼¿Õ±ÈÉèÎª 0
-    pwm_init(MOTOR_L_IN1_PWM, PWM_FREQ, 0);
-    pwm_init(MOTOR_L_IN2_PWM, PWM_FREQ, 0);
-    pwm_init(MOTOR_R_IN1_PWM, PWM_FREQ, 0);
-    pwm_init(MOTOR_R_IN2_PWM, PWM_FREQ, 0);
-    
-    // 2. ×ó±àÂëÆ÷ (Ó²¼ş Timer1)
-    // ×¢Òâ£ºP3.4/P3.5 ±ØĞë¶ÔÓ¦ Timer1 µÄÓ²¼şÒı½Å
-    encoder_dir_init(ENCODER_L_TIM, ENCODER_L_A, ENCODER_L_B);
-    
-    // 3. ÓÒ±àÂëÆ÷ (Èí¼ş GPIO)
-    // ÉèÖÃÎª¸¡¿ÕÊäÈë»òÉÏÀ­ÊäÈë (ÊÓÓ²¼şµçÂ·¶ø¶¨£¬GPI_PULL_UP ¸üÍ¨ÓÃ)
-    gpio_init(ENCODER_R_A_PIN, GPI, 0, GPI_PULL_UP);
-    gpio_init(ENCODER_R_B_PIN, GPI, 0, GPI_PULL_UP);
-    
-    // ³õÊ¼»¯Èí¼ş±àÂëÆ÷×´Ì¬
-    soft_enc_r_last = (gpio_get_level(ENCODER_R_A_PIN) << 1) | gpio_get_level(ENCODER_R_B_PIN);
-}
-
-// Èí¼ş±àÂëÆ÷É¨Ãè (±ØĞëÔÚ 100us ¶¨Ê±Æ÷ÖĞ¶ÏÖĞµ÷ÓÃ)
-void Soft_Encoder_Scan(void)
-{
-    uint8 curr = (gpio_get_level(ENCODER_R_A_PIN) << 1) | gpio_get_level(ENCODER_R_B_PIN);
-    
-    if (curr != soft_enc_r_last) 
-    {
-        // ¼òµ¥µÄ×´Ì¬»úÅĞ¶Ï·½Ïò
-        // 00 -> 01 (Õı×ª)
-        // 01 -> 11 (Õı×ª)
-        // ...
-        if ((soft_enc_r_last == 0 && curr == 1) || (soft_enc_r_last == 1 && curr == 3) || 
-            (soft_enc_r_last == 3 && curr == 2) || (soft_enc_r_last == 2 && curr == 0)) 
-            soft_enc_r_count++;
-        else 
-            soft_enc_r_count--;
-            
-        soft_enc_r_last = curr;
-    }
-}
-
-// »ñÈ¡±àÂëÆ÷ËÙ¶ÈÖµ (²¢ÇåÁã¼ÆÊıÖµ)
-// ÖÜÆÚĞÔµ÷ÓÃ (Èç 5ms Ò»´Î)
-void Encoder_Get_Val(int16 *L, int16 *R)
-{
-    // ¶ÁÈ¡Ó²¼ş±àÂëÆ÷
-    *L = encoder_get_count(ENCODER_L_TIM);
-    encoder_clear_count(ENCODER_L_TIM);
-    
-    // ¶ÁÈ¡Èí¼ş±àÂëÆ÷
-    // ±ØĞëÇ¿ÖÆ×ª»»ÀàĞÍ£¬ÒòÎª soft_enc_r_count ÊÇ int32
-    *R = (int16)soft_enc_r_count;
-    soft_enc_r_count = 0;
-    
-    // === ¼«ĞÔµ÷Õû ===
-    // Èç¹û³µ×ÓÏòÇ°ÍÆ£¬¶ÁÊıÊÇ¸ºÊı£¬¾ÍĞèÒªÔÚÕâÀï¼Ó¸ººÅ
-    // *L = -(*L); 
-    // *R = -(*R);
-}
-
-// ×óµç»úÊä³ö
-void Motor_Set_L(int16 duty)
-{
-    // ËÀÇø²¹³¥
-    if (duty > 0) duty += MOTOR_DEAD_ZONE;
-    else if (duty < 0) duty -= MOTOR_DEAD_ZONE;
-    
-    // ÏŞ·ù (Ê¹ÓÃ filter.h ÖĞµÄ limit_f)
-    duty = (int16)limit_f((float)duty, -MOTOR_MAX_DUTY, MOTOR_MAX_DUTY);
-    
-    // Êä³ö PWM
-    if (duty >= 0) {
-        pwm_set_duty(MOTOR_L_IN1_PWM, duty);
-        pwm_set_duty(MOTOR_L_IN2_PWM, 0);
-    } else {
-        pwm_set_duty(MOTOR_L_IN1_PWM, 0);
-        pwm_set_duty(MOTOR_L_IN2_PWM, -duty); // È¡ÕıÊı
-    }
-}
-
-// ÓÒµç»úÊä³ö
-void Motor_Set_R(int16 duty)
-{
-    // ËÀÇø²¹³¥
-    if (duty > 0) duty += MOTOR_DEAD_ZONE;
-    else if (duty < 0) duty -= MOTOR_DEAD_ZONE;
-    
-    // ÏŞ·ù
-    duty = (int16)limit_f((float)duty, -MOTOR_MAX_DUTY, MOTOR_MAX_DUTY);
-    
-    // Êä³ö PWM
-    if (duty >= 0) {
-        pwm_set_duty(MOTOR_R_IN1_PWM, duty);
-        pwm_set_duty(MOTOR_R_IN2_PWM, 0);
-    } else {
-        pwm_set_duty(MOTOR_R_IN1_PWM, 0);
-        pwm_set_duty(MOTOR_R_IN2_PWM, -duty);
-    }
-}
+#include "motor.h"
+#include "filter.h" // å¼•ç”¨ filter.h ä»¥ä½¿ç”¨ limit_f å‡½æ•°
+
+// æ­»åŒºè¡¥å¿å€¼ (300 å¯¹åº” 10000 çš„æ»¡é‡ç¨‹ï¼Œçº¦ 3%)
+// å¦‚æœç”µæœºæœ‰è½»å¾®å—¡å—¡å£°ä½†ä¸è½¬ï¼Œå¯ä»¥é€‚å½“å‡å°
+#define MOTOR_DEAD_ZONE  300
+
+// è½¯ä»¶ç¼–ç å™¨å˜é‡
+volatile int32 soft_enc_r_count = 0;
+static uint8 soft_enc_r_last = 0;
+
+void Motor_Init(void)
+{
+    // 1. åˆå§‹åŒ– PWM (P6.0, P6.2, P6.4, P6.6)
+    // åˆå§‹å ç©ºæ¯”è®¾ä¸º 0
+    pwm_init(MOTOR_L_IN1_PWM, PWM_FREQ, 0);
+    pwm_init(MOTOR_L_IN2_PWM, PWM_FREQ, 0);
+    pwm_init(MOTOR_R_IN1_PWM, PWM_FREQ, 0);
+    pwm_init(MOTOR_R_IN2_PWM, PWM_FREQ, 0);
+    
+    // 2. å·¦ç¼–ç å™¨ (ç¡¬ä»¶ Timer1)
+    // æ³¨æ„ï¼šP3.4/P3.5 å¿…é¡»å¯¹åº” Timer1 çš„ç¡¬ä»¶å¼•è„š
+    encoder_dir_init(ENCODER_L_TIM, ENCODER_L_A, ENCODER_L_B);
+    
+    // 3. å³ç¼–ç å™¨ (è½¯ä»¶ GPIO)
+    // è®¾ç½®ä¸ºæµ®ç©ºè¾“å…¥æˆ–ä¸Šæ‹‰è¾“å…¥ (è§†ç¡¬ä»¶ç”µè·¯è€Œå®šï¼ŒGPI_PULL_UP æ›´é€šç”¨)
+    gpio_init(ENCODER_R_A_PIN, GPI, 0, GPI_PULL_UP);
+    gpio_init(ENCODER_R_B_PIN, GPI, 0, GPI_PULL_UP);
+    
+    // åˆå§‹åŒ–è½¯ä»¶ç¼–ç å™¨çŠ¶æ€
+    soft_enc_r_last = (gpio_get_level(ENCODER_R_A_PIN) << 1) | gpio_get_level(ENCODER_R_B_PIN);
+}
+
+// è½¯ä»¶ç¼–ç å™¨æ‰«æ (å¿…é¡»åœ¨ 100us å®šæ—¶å™¨ä¸­æ–­ä¸­è°ƒç”¨)
+void Soft_Encoder_Scan(void)
+{
+    uint8 curr = (gpio_get_level(ENCODER_R_A_PIN) << 1) | gpio_get_level(ENCODER_R_B_PIN);
+    
+    if (curr != soft_enc_r_last) 
+    {
+        // ç®€å•çš„çŠ¶æ€æœºåˆ¤æ–­æ–¹å‘
+        // 00 -> 01 (æ­£è½¬)
+        // 01 -> 11 (æ­£è½¬)
+        // ...
+        if ((soft_enc_r_last == 0 && curr == 1) || (soft_enc_r_last == 1 && curr == 3) || 
+            (soft_enc_r_last == 3 && curr == 2) || (soft_enc_r_last == 2 && curr == 0)) 
+            soft_enc_r_count++;
+        else 
+            soft_enc_r_count--;
+            
+        soft_enc_r_last = curr;
+    }
+}
+
+// è·å–ç¼–ç å™¨é€Ÿåº¦å€¼ (å¹¶æ¸…é›¶è®¡æ•°å€¼)
+// å‘¨æœŸæ€§è°ƒç”¨ (å¦‚ 5ms ä¸€æ¬¡)
+void Encoder_Get_Val(int16 *L, int16 *R)
+{
+    // è¯»å–ç¡¬ä»¶ç¼–ç å™¨
+    *L = encoder_get_count(ENCODER_L_TIM);
+    encoder_clear_count(ENCODER_L_TIM);
+    
+    // è¯»å–è½¯ä»¶ç¼–ç å™¨
+    // å¿…é¡»å¼ºåˆ¶è½¬æ¢ç±»å‹ï¼Œå› ä¸º soft_enc_r_count æ˜¯ int32
+    *R = (int16)soft_enc_r_count;
+    soft_enc_r_count = 0;
+    
+    // === ææ€§è°ƒæ•´ ===
+    // å¦‚æœè½¦å­å‘å‰æ¨ï¼Œè¯»æ•°æ˜¯è´Ÿæ•°ï¼Œå°±éœ€è¦åœ¨è¿™é‡ŒåŠ è´Ÿå·
+    // *L = -(*L); 
+    // *R = -(*R);
+}
+
+// å·¦ç”µæœºè¾“å‡º
+void Motor_Set_L(int16 duty)
+{
+    // æ­»åŒºè¡¥å¿
+    if (duty > 0) duty += MOTOR_DEAD_ZONE;
+    else if (duty < 0) duty -= MOTOR_DEAD_ZONE;
+    
+    // é™å¹… (ä½¿ç”¨ filter.h ä¸­çš„ limit_f)
+    duty = (int16)limit_f((float)duty, -MOTOR_MAX_DUTY, MOTOR_MAX_DUTY);
+    
+    // è¾“å‡º PWM
+    if (duty >= 0) {
+        pwm_set_duty(MOTOR_L_IN1_PWM, duty);
+        pwm_set_duty(MOTOR_L_IN2_PWM, 0);
+    } else {
+        pwm_set_duty(MOTOR_L_IN1_PWM, 0);
+        pwm_set_duty(MOTOR_L_IN2_PWM, -duty); // å–æ­£æ•°
+    }
+}
+
+// å³ç”µæœºè¾“å‡º
+void Motor_Set_R(int16 duty)
+{
+    // æ­»åŒºè¡¥å¿
+    if (duty > 0) duty += MOTOR_DEAD_ZONE;
+    else if (duty < 0) duty -= MOTOR_DEAD_ZONE;
+    
+    // é™å¹…
+    duty = (int16)limit_f((float)duty, -MOTOR_MAX_DUTY, MOTOR_MAX_DUTY);
+    
+    // è¾“å‡º PWM
+    if (duty >= 0) {
+        pwm_set_duty(MOTOR_R_IN1_PWM, duty);
+        pwm_set_duty(MOTOR_R_IN2_PWM, 0);
+    } else {
+        pwm_set_duty(MOTOR_R_IN1_PWM, 0);
+        pwm_set_duty(MOTOR_R_IN2_PWM, -duty);
+    }
+}

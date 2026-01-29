@@ -1,26 +1,26 @@
-#ifndef _ATTITUDE_H_
-#define _ATTITUDE_H_
-
-#include "zf_common_headfile.h"
-
-typedef struct
-{
-    float q0, q1, q2, q3; // ËÄÔªÊı
-    float pitch, roll, yaw; // Å·À­½Ç (-180 ~ 180)
-    
-    // === ĞÂÔö£ºÀÛ»ıº½Ïò½Ç ===
-    // Õâ¸ö±äÁ¿¼ÇÂ¼³µ×Ó×ª¹ıµÄ×Ü½Ç¶È£¨¾ø¶ÔÖµÀÛ¼Ó£©
-    // ±ÈÈç£º½øÍäÊ±ÊÇ 0£¬³öÍäÊ±Ó¦¸ÃÊÇ 180
-    float total_yaw; 
-    
-    float ix, iy, iz; 
-    float kp, ki;
-    float sample_freq;
-} mahony_t;
-
-extern mahony_t m_imu;
-
-void mahony_init(mahony_t *m, float freq, float kp, float ki);
-void mahony_update(mahony_t *m, float ax, float ay, float az, float gx, float gy, float gz);
-
-#endif
+#ifndef _ATTITUDE_H_
+#define _ATTITUDE_H_
+
+#include "zf_common_headfile.h"
+
+typedef struct
+{
+    float q0, q1, q2, q3; // å››å…ƒæ•°
+    float pitch, roll, yaw; // æ¬§æ‹‰è§’ (-180 ~ 180)
+    
+    // === æ–°å¢ï¼šç´¯ç§¯èˆªå‘è§’ ===
+    // è¿™ä¸ªå˜é‡è®°å½•è½¦å­è½¬è¿‡çš„æ€»è§’åº¦ï¼ˆç»å¯¹å€¼ç´¯åŠ ï¼‰
+    // æ¯”å¦‚ï¼šè¿›å¼¯æ—¶æ˜¯ 0ï¼Œå‡ºå¼¯æ—¶åº”è¯¥æ˜¯ 180
+    float total_yaw; 
+    
+    float ix, iy, iz; 
+    float kp, ki;
+    float sample_freq;
+} mahony_t;
+
+extern mahony_t m_imu;
+
+void mahony_init(mahony_t *m, float freq, float kp, float ki);
+void mahony_update(mahony_t *m, float ax, float ay, float az, float gx, float gy, float gz);
+
+#endif

@@ -1,42 +1,42 @@
-/*
- * @file    filter.h
- * @brief   ³£ÓÃĞÅºÅ´¦Àí¹¤¾ß
- *
- * °üº¬¹¦ÄÜ£º
- * 1. Ò»½×µÍÍ¨ÂË²¨£¨LPF£©
- * 2. ÏŞ·ùº¯Êı
- * 3. ËÀÇø´¦Àí
- *
- * Ö÷ÒªÓÃÓÚ£º
- * - IMU Ô­Ê¼Êı¾İÂË²¨
- * - ¿ØÖÆÁ¿Æ½»¬
- */
-
-#ifndef _FILTER_H_
-#define _FILTER_H_
-
-#include "zf_common_headfile.h"
-
-// Ò»½×µÍÍ¨ÂË²¨Æ÷½á¹¹Ìå
-typedef struct
-{
-    float alpha;   // ÂË²¨ÏµÊı (0.0 ~ 1.0)
-                   // alpha Ô½´ó£¬¾ÉÖµÈ¨ÖØÔ½´ó£¬ÂË²¨Ô½Ç¿£¬ÖÍºóÔ½´ó
-    float y;       // µ±Ç°Êä³öÖµ (ÉÏÒ»Ê±¿ÌµÄÂË²¨½á¹û)
-    uint8 inited;  // ³õÊ¼»¯±êÖ¾
-} lpf1_t;
-
-
-// Ò»½×µÍÍ¨³õÊ¼»¯
-void lpf1_init(lpf1_t *f, float alpha, float init_val);
-
-// Ò»½×µÍÍ¨¼ÆËã
-float lpf1_update(lpf1_t *f, float x);
-
-// Í¨ÓÃÏŞ·ùº¯Êı
-float limit_f(float x, float minv, float maxv);
-
-// Í¨ÓÃËÀÇøº¯Êı
-float deadzone_f(float x, float dz);
-
-#endif
+/*
+ * @file    filter.h
+ * @brief   å¸¸ç”¨ä¿¡å·å¤„ç†å·¥å…·
+ *
+ * åŒ…å«åŠŸèƒ½ï¼š
+ * 1. ä¸€é˜¶ä½é€šæ»¤æ³¢ï¼ˆLPFï¼‰
+ * 2. é™å¹…å‡½æ•°
+ * 3. æ­»åŒºå¤„ç†
+ *
+ * ä¸»è¦ç”¨äºï¼š
+ * - IMU åŸå§‹æ•°æ®æ»¤æ³¢
+ * - æ§åˆ¶é‡å¹³æ»‘
+ */
+
+#ifndef _FILTER_H_
+#define _FILTER_H_
+
+#include "zf_common_headfile.h"
+
+// ä¸€é˜¶ä½é€šæ»¤æ³¢å™¨ç»“æ„ä½“
+typedef struct
+{
+    float alpha;   // æ»¤æ³¢ç³»æ•° (0.0 ~ 1.0)
+                   // alpha è¶Šå¤§ï¼Œæ—§å€¼æƒé‡è¶Šå¤§ï¼Œæ»¤æ³¢è¶Šå¼ºï¼Œæ»åè¶Šå¤§
+    float y;       // å½“å‰è¾“å‡ºå€¼ (ä¸Šä¸€æ—¶åˆ»çš„æ»¤æ³¢ç»“æœ)
+    uint8 inited;  // åˆå§‹åŒ–æ ‡å¿—
+} lpf1_t;
+
+
+// ä¸€é˜¶ä½é€šåˆå§‹åŒ–
+void lpf1_init(lpf1_t *f, float alpha, float init_val);
+
+// ä¸€é˜¶ä½é€šè®¡ç®—
+float lpf1_update(lpf1_t *f, float x);
+
+// é€šç”¨é™å¹…å‡½æ•°
+float limit_f(float x, float minv, float maxv);
+
+// é€šç”¨æ­»åŒºå‡½æ•°
+float deadzone_f(float x, float dz);
+
+#endif

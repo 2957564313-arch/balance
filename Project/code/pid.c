@@ -1,81 +1,81 @@
-#include "pid.h"
-#include "param.h" 
-#include "filter.h" // ĞèÒª limit_f º¯Êı
-
-static float velocity_integral = 0;
-
-// ×î´óÄ¿±êÇã½Ç (¶È)
-// ÏŞÖÆËÙ¶È»·×î¶àÖ»ÄÜÈÃ³µÇãĞ±¶àÉÙ¶È£¬·ÀÖ¹·É³µ
-#define MAX_TARGET_ANGLE  12.0f 
-
-void PID_Init(void)
-{
-    velocity_integral = 0;
-}
-
-void PID_Clear_Integral(void)
-{
-    velocity_integral = 0;
-}
-
-// ====================================================================
-// ´®¼¶ PID£ºÖ±Á¢»· (ÄÚ»·)
-// ×÷ÓÃ£ºÎ¬³Ö³µÉíÔÚ "Ä¿±ê½Ç¶È" ÉÏ
-// ====================================================================
-// angle: µ±Ç°ÕæÊµ½Ç¶È
-// gyro_y: µ±Ç°½ÇËÙ¶È
-// target_angle: ÓÉËÙ¶È»·¼ÆËã³öµÄÆÚÍûÇã½Ç (µş¼ÓÔÚ»úĞµÁãµãÉÏ)
-int16 PID_Vertical(float angle, float gyro_y, float target_angle)
-{
-    float pwm_out;
-    
-    // ´®¼¶ºËĞÄ¹«Ê½£º
-    // Îó²î = µ±Ç°½Ç¶È - (»úĞµÖĞÖµ + ËÙ¶È»·ÒªÇóµÄÇã½Ç)
-    // ÕâÑù£¬µ±ËÙ¶È»·ÏëÒª¼ÓËÙÊ±£¬Ëü»á¸ø³öÒ»¸ö¸ºµÄ½Ç¶È(Ç°Çã)£¬
-    // Ö±Á¢»·ÎªÁËÏû³ıÎó²î£¬¾Í»á¿ØÖÆµç»úÏòÇ°×ª¡£
-    float final_target = g_sys_param.mech_zero_pitch + target_angle;
-    
-    // PD ¿ØÖÆ
-    pwm_out = g_sys_param.balance_kp * (angle - final_target) + g_sys_param.balance_kd * gyro_y;
-    
-    return (int16)pwm_out;
-}
-
-// ====================================================================
-// ´®¼¶ PID£ºËÙ¶È»· (Íâ»·)
-// ×÷ÓÃ£º¸ù¾İËÙ¶ÈÎó²î£¬¼ÆËã³ö³µÉíÓ¦¸Ã "ÇãĞ±¶àÉÙ¶È"
-// ====================================================================
-// ·µ»ØÖµ£ºfloat ÀàĞÍµÄÄ¿±ê½Ç¶È
-float PID_Velocity(int16 target_speed, int16 current_speed)
-{
-    int16 error;
-    float angle_out;
-    
-    // 1. ¼ÆËãÎó²î
-    error = target_speed - current_speed;
-    
-    // 2. »ı·Ö (´øÏŞ·ù)
-    // ×¢Òâ£ºÕâÀïµÄ»ı·ÖÏŞ·ùÖµÒªĞ¡ºÜ¶à£¬ÒòÎªÊä³öÊÇ½Ç¶È
-    velocity_integral += error * g_sys_param.velocity_ki; // ½«Ki³ËÔÚ»ı·ÖÀï¸ü·½±ã¿ØÖÆ
-    
-    // »ı·ÖÏŞ·ù£º·ÀÖ¹»ı³ö¼¸Ê®¶ÈµÄÇã½Ç
-    velocity_integral = limit_f(velocity_integral, -MAX_TARGET_ANGLE, MAX_TARGET_ANGLE);
-    
-    // 3. PI ¼ÆËã
-    // Êä³öµÄÊÇ½Ç¶È£¬²»ÊÇPWM£¡
-    angle_out = error * g_sys_param.velocity_kp + velocity_integral;
-    
-    // 4. ×ÜÊä³öÏŞ·ù
-    // ÕâÒ»²½·Ç³£ÖØÒª£¡¾ö¶¨ÁË³µ×Ó×î¿ìÄÜÅÜ¶à¿ì(ÓÉ×î´óÇã½Ç¾ö¶¨)
-    angle_out = limit_f(angle_out, -MAX_TARGET_ANGLE, MAX_TARGET_ANGLE);
-    
-    return angle_out;
-}
-
-// ×ªÏò»· (±£³Ö²»±ä)
-int16 PID_Turn(int16 target_turn, int16 gyro_z)
-{
-    float pwm_out;
-    pwm_out = (float)target_turn + g_sys_param.turn_kd * gyro_z;
-    return (int16)pwm_out;
-}
+#include "pid.h"
+#include "param.h" 
+#include "filter.h" // éœ€è¦ limit_f å‡½æ•°
+
+static float velocity_integral = 0;
+
+// æœ€å¤§ç›®æ ‡å€¾è§’ (åº¦)
+// é™åˆ¶é€Ÿåº¦ç¯æœ€å¤šåªèƒ½è®©è½¦å€¾æ–œå¤šå°‘åº¦ï¼Œé˜²æ­¢é£è½¦
+#define MAX_TARGET_ANGLE  12.0f 
+
+void PID_Init(void)
+{
+    velocity_integral = 0;
+}
+
+void PID_Clear_Integral(void)
+{
+    velocity_integral = 0;
+}
+
+// ====================================================================
+// ä¸²çº§ PIDï¼šç›´ç«‹ç¯ (å†…ç¯)
+// ä½œç”¨ï¼šç»´æŒè½¦èº«åœ¨ "ç›®æ ‡è§’åº¦" ä¸Š
+// ====================================================================
+// angle: å½“å‰çœŸå®è§’åº¦
+// gyro_y: å½“å‰è§’é€Ÿåº¦
+// target_angle: ç”±é€Ÿåº¦ç¯è®¡ç®—å‡ºçš„æœŸæœ›å€¾è§’ (å åŠ åœ¨æœºæ¢°é›¶ç‚¹ä¸Š)
+int16 PID_Vertical(float angle, float gyro_y, float target_angle)
+{
+    float pwm_out;
+    
+    // ä¸²çº§æ ¸å¿ƒå…¬å¼ï¼š
+    // è¯¯å·® = å½“å‰è§’åº¦ - (æœºæ¢°ä¸­å€¼ + é€Ÿåº¦ç¯è¦æ±‚çš„å€¾è§’)
+    // è¿™æ ·ï¼Œå½“é€Ÿåº¦ç¯æƒ³è¦åŠ é€Ÿæ—¶ï¼Œå®ƒä¼šç»™å‡ºä¸€ä¸ªè´Ÿçš„è§’åº¦(å‰å€¾)ï¼Œ
+    // ç›´ç«‹ç¯ä¸ºäº†æ¶ˆé™¤è¯¯å·®ï¼Œå°±ä¼šæ§åˆ¶ç”µæœºå‘å‰è½¬ã€‚
+    float final_target = g_sys_param.mech_zero_pitch + target_angle;
+    
+    // PD æ§åˆ¶
+    pwm_out = g_sys_param.balance_kp * (angle - final_target) + g_sys_param.balance_kd * gyro_y;
+    
+    return (int16)pwm_out;
+}
+
+// ====================================================================
+// ä¸²çº§ PIDï¼šé€Ÿåº¦ç¯ (å¤–ç¯)
+// ä½œç”¨ï¼šæ ¹æ®é€Ÿåº¦è¯¯å·®ï¼Œè®¡ç®—å‡ºè½¦èº«åº”è¯¥ "å€¾æ–œå¤šå°‘åº¦"
+// ====================================================================
+// è¿”å›å€¼ï¼šfloat ç±»å‹çš„ç›®æ ‡è§’åº¦
+float PID_Velocity(int16 target_speed, int16 current_speed)
+{
+    int16 error;
+    float angle_out;
+    
+    // 1. è®¡ç®—è¯¯å·®
+    error = target_speed - current_speed;
+    
+    // 2. ç§¯åˆ† (å¸¦é™å¹…)
+    // æ³¨æ„ï¼šè¿™é‡Œçš„ç§¯åˆ†é™å¹…å€¼è¦å°å¾ˆå¤šï¼Œå› ä¸ºè¾“å‡ºæ˜¯è§’åº¦
+    velocity_integral += error * g_sys_param.velocity_ki; // å°†Kiä¹˜åœ¨ç§¯åˆ†é‡Œæ›´æ–¹ä¾¿æ§åˆ¶
+    
+    // ç§¯åˆ†é™å¹…ï¼šé˜²æ­¢ç§¯å‡ºå‡ ååº¦çš„å€¾è§’
+    velocity_integral = limit_f(velocity_integral, -MAX_TARGET_ANGLE, MAX_TARGET_ANGLE);
+    
+    // 3. PI è®¡ç®—
+    // è¾“å‡ºçš„æ˜¯è§’åº¦ï¼Œä¸æ˜¯PWMï¼
+    angle_out = error * g_sys_param.velocity_kp + velocity_integral;
+    
+    // 4. æ€»è¾“å‡ºé™å¹…
+    // è¿™ä¸€æ­¥éå¸¸é‡è¦ï¼å†³å®šäº†è½¦å­æœ€å¿«èƒ½è·‘å¤šå¿«(ç”±æœ€å¤§å€¾è§’å†³å®š)
+    angle_out = limit_f(angle_out, -MAX_TARGET_ANGLE, MAX_TARGET_ANGLE);
+    
+    return angle_out;
+}
+
+// è½¬å‘ç¯ (ä¿æŒä¸å˜)
+int16 PID_Turn(int16 target_turn, int16 gyro_z)
+{
+    float pwm_out;
+    pwm_out = (float)target_turn + g_sys_param.turn_kd * gyro_z;
+    return (int16)pwm_out;
+}

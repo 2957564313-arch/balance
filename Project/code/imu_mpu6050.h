@@ -1,43 +1,43 @@
-#ifndef _imu_mpu6050_h_
-#define _imu_mpu6050_h_
-
-#include "zf_common_headfile.h"
-
-#define MPU6050_USE_SOFT_IIC        (1)
-
-#if MPU6050_USE_SOFT_IIC
-    #define MPU6050_SOFT_IIC_DELAY  (0)
-    // Èí¼şI2CÒı½Å¶¨Òå (Çë¸ù¾İÊµ¼ÊÔ­ÀíÍ¼È·ÈÏ!)
-    #define MPU6050_SCL_PIN         (IO_P40)
-    #define MPU6050_SDA_PIN         (IO_P41)
-#endif
-
-#define MPU6050_TIMEOUT_COUNT       (0x00FF)
-#define MPU6050_DEV_ADDR            (0xD0 >> 1) 
-
-// ¼Ä´æÆ÷µØÖ·
-#define MPU6050_SMPLRT_DIV          (0x19)
-#define MPU6050_CONFIG              (0x1A)
-#define MPU6050_GYRO_CONFIG         (0x1B)
-#define MPU6050_ACCEL_CONFIG        (0x1C)
-#define MPU6050_ACCEL_XOUT_H        (0x3B)
-#define MPU6050_GYRO_XOUT_H         (0x43)
-#define MPU6050_PWR_MGMT_1          (0x6B)
-#define MPU6050_WHO_AM_I            (0x75)
-
-// Á¿³ÌÉèÖÃ
-#define MPU6050_ACC_SAMPLE          (0x10) // ¡À8g
-#define MPU6050_GYR_SAMPLE          (0x18) // ¡À2000dps
-
-// È«¾Ö±äÁ¿ÉùÃ÷ (È·±£ÕâÀïÊÇ mpu6050_xxx ¶ø²»ÊÇ imu660ra_xxx)
-extern int16 mpu6050_gyro_x, mpu6050_gyro_y, mpu6050_gyro_z;
-extern int16 mpu6050_acc_x, mpu6050_acc_y, mpu6050_acc_z;
-
-// º¯ÊıÉùÃ÷
-uint8 mpu6050_init(void);
-void  mpu6050_get_acc(void);
-void  mpu6050_get_gyro(void);
-float mpu6050_acc_transition(int16 acc_value);
-float mpu6050_gyro_transition(int16 gyro_value);
-
-#endif
+#ifndef _imu_mpu6050_h_
+#define _imu_mpu6050_h_
+
+#include "zf_common_headfile.h"
+
+#define MPU6050_USE_SOFT_IIC        (1)
+
+#if MPU6050_USE_SOFT_IIC
+    #define MPU6050_SOFT_IIC_DELAY  (0)
+    // è½¯ä»¶I2Cå¼•è„šå®šä¹‰ (è¯·æ ¹æ®å®é™…åŸç†å›¾ç¡®è®¤!)
+    #define MPU6050_SCL_PIN         (IO_P40)
+    #define MPU6050_SDA_PIN         (IO_P41)
+#endif
+
+#define MPU6050_TIMEOUT_COUNT       (0x00FF)
+#define MPU6050_DEV_ADDR            (0xD0 >> 1) 
+
+// å¯„å­˜å™¨åœ°å€
+#define MPU6050_SMPLRT_DIV          (0x19)
+#define MPU6050_CONFIG              (0x1A)
+#define MPU6050_GYRO_CONFIG         (0x1B)
+#define MPU6050_ACCEL_CONFIG        (0x1C)
+#define MPU6050_ACCEL_XOUT_H        (0x3B)
+#define MPU6050_GYRO_XOUT_H         (0x43)
+#define MPU6050_PWR_MGMT_1          (0x6B)
+#define MPU6050_WHO_AM_I            (0x75)
+
+// é‡ç¨‹è®¾ç½®
+#define MPU6050_ACC_SAMPLE          (0x10) // Â±8g
+#define MPU6050_GYR_SAMPLE          (0x18) // Â±2000dps
+
+// å…¨å±€å˜é‡å£°æ˜ (ç¡®ä¿è¿™é‡Œæ˜¯ mpu6050_xxx è€Œä¸æ˜¯ imu660ra_xxx)
+extern int16 mpu6050_gyro_x, mpu6050_gyro_y, mpu6050_gyro_z;
+extern int16 mpu6050_acc_x, mpu6050_acc_y, mpu6050_acc_z;
+
+// å‡½æ•°å£°æ˜
+uint8 mpu6050_init(void);
+void  mpu6050_get_acc(void);
+void  mpu6050_get_gyro(void);
+float mpu6050_acc_transition(int16 acc_value);
+float mpu6050_gyro_transition(int16 gyro_value);
+
+#endif

@@ -1,37 +1,38 @@
 {
-  "version": 4,
-  "configurations": [
-    {
-      "name": "windows-gcc-x64",
-      "intelliSenseMode": "windows-gcc-x64",
-      "compilerPath": "C:/Users/29575/Desktop/Dev-Cpp/MinGW64/bin/gcc.exe",
-      "cStandard": "${default}",
-      "cppStandard": "${default}",
-      "includePath": [
-        "${workspaceFolder}/**"
-      ],
-      "defines": [
-        "__C251__",
-        "__STC__",
-        "far=",
-        "data=",
-        "idata=",
-        "pdata=",
-        "xdata=",
-        "code=",
-        "reentrant=",
-        "interrupt=",
-        "using="
-      ],
-      "browse": {
-        "path": [
-          "${workspaceFolder}/Project/code",
-          "${workspaceFolder}/Project/user",
-          "${workspaceFolder}/Libraries",
-          "${workspaceFolder}/.vscode/keil_stub"
-        ],
-        "limitSymbolsToIncludedHeaders": true
-      }
-    }
-  ]
+    "version": 4,
+    "configurations": [
+        {
+            "name": "windows-gcc-x64",
+            "intelliSenseMode": "windows-gcc-x64",
+            "compilerPath": "D:/mingw64/bin/gcc.exe",
+            "cStandard": "${default}",
+            "cppStandard": "${default}",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/.vscode/keil_stub"
+            ],
+            "defines": [
+                "__C251__",
+                "__STC__",
+                "far=",
+                "data=",
+                "idata=",
+                "pdata=",
+                "xdata=",
+                "code=",
+                "reentrant=",
+                "interrupt=",
+                "using="
+            ],
+            "browse": {
+                "path": [
+                    "${workspaceFolder}/Project/code",
+                    "${workspaceFolder}/Project/user",
+                    "${workspaceFolder}/Libraries",
+                    "${workspaceFolder}/.vscode/keil_stub"
+                ],
+                "limitSymbolsToIncludedHeaders": true
+            }
+        }
+    ]
 }

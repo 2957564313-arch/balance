@@ -1,88 +1,88 @@
-#ifndef __ZF_DRIVER_GPIO_H
-#define __ZF_DRIVER_GPIO_H
-
-#include "zf_common_typedef.h"
-
-
-typedef enum
-{
-    IO_P00 = 0x10, IO_P01, IO_P02, IO_P03, IO_P04, IO_P05, IO_P06, IO_P07,
-    IO_P10 = 0x20, IO_P11, IO_P12, IO_P13, IO_P14, IO_P15, IO_P16, IO_P17,
-    IO_P20 = 0x30, IO_P21, IO_P22, IO_P23, IO_P24, IO_P25, IO_P26, IO_P27,
-    IO_P30 = 0x40, IO_P31, IO_P32, IO_P33, IO_P34, IO_P35, IO_P36, IO_P37,
-    IO_P40 = 0x50, IO_P41, IO_P42, IO_P43, IO_P44, IO_P45, IO_P46, IO_P47,
-    IO_P50 = 0x60, IO_P51, IO_P52, IO_P53, IO_P54, IO_P55, IO_P56, IO_P57,
-    IO_P60 = 0x70, IO_P61, IO_P62, IO_P63, IO_P64, IO_P65, IO_P66, IO_P67,
-    IO_P70 = 0x80, IO_P71, IO_P72, IO_P73, IO_P74, IO_P75, IO_P76, IO_P77,
-	IO_NULL = 0xFF,
-} gpio_pin_enum;
-
-
-typedef enum
-{
-    // ÊäÈë
-	GPI_IMPEDANCE       = 0x00,			// ¸ß×èÊäÈë
-    GPI_FLOATING_IN     = 0x01,         // ¸¡¿ÕÊäÈëÄ£Ê½
-    GPI_PULL_DOWN       = 0x02,         // ÏÂÀ­ÊäÈë
-    GPI_PULL_UP         = 0x03,         // ÉÏÀ­ÊäÈë
-	
-	
-    // Êä³ö
-    GPO_PUSH_PULL       = 0x10,         // Í¨ÓÃÍÆÍìÊä³öÄ£Ê½
-    GPO_OPEN_DTAIN      = 0x11,         // Í¨ÓÃ¿ªÂ©Êä³öÄ£Ê½
-	
-	// Ë«ÏòGPIO£¬¼È¿ÉÒÔÊäÈëÒ²¿ÉÒÔÊä³ö
-	GPIO_NO_PULL   		= 0x20,			// GPIOÎŞÉÏÏÂÀ­¡£
-}gpio_mode_enum;
-
-typedef enum
-{
-    //pnm1 pnm0
-
-	GPI  = 0,				// ÊäÈë£¬½ö¸ß×èÊäÈë
-	GPO  = 1,				// Êä³ö£¬ÍÆÍìÊä³ö£¬»òÕß¿ªÂ©
-	GPIO = 2,				// ×¼Ë«Ïò¿Ú(ÈõÉÏÀ­)
-}gpio_dir_enum;
-
-
-typedef enum
-{
-    GPIO_LOW  = 0,  		//  µÍµçÆ½
-    GPIO_HIGH = 1,  		//  ¸ßµçÆ½
-}gpio_level_enum;
-
-
-typedef enum
-{
-    GPIO_SPEED_LOW  = 1,  	// µçÆ½×ª»»ËÙ¶È¿ì£¬ÏàÓ¦µÄÉÏÏÂ³å±È½Ï´ó
-    GPIO_SPEED_FAST = 0,  	// µçÆ½×ª»»ËÙ¶ÈÂı£¬ÏàÓ¦µÄÉÏÏÂ³å±È½ÏĞ¡
-}gpio_speed_enum;
-
-
-//-------------------------------------------------------------------------------------------------------------------
-// º¯Êı¼ò½é     ¶ÔÓ¦ IO ¸´Î»ÎªµÍµçÆ½
-// ²ÎÊıËµÃ÷     x           Ñ¡ÔñµÄÒı½Å (¿ÉÑ¡Ôñ·¶Î§ÓÉ zf_driver_gpio.h ÄÚ gpio_pin_enum Ã¶¾ÙÖµÈ·¶¨)
-// ·µ»Ø²ÎÊı     void
-// Ê¹ÓÃÊ¾Àı     gpio_low(D5);
-// ±¸×¢ĞÅÏ¢
-//-------------------------------------------------------------------------------------------------------------------
-#define gpio_low(x)            	gpio_set_level(x, 0)
-
-//-------------------------------------------------------------------------------------------------------------------
-// º¯Êı¼ò½é     ¶ÔÓ¦ IO ÖÃÎ»Îª¸ßµçÆ½
-// ²ÎÊıËµÃ÷     x           Ñ¡ÔñµÄÒı½Å (¿ÉÑ¡Ôñ·¶Î§ÓÉ zf_driver_gpio.h ÄÚ gpio_pin_enum Ã¶¾ÙÖµÈ·¶¨)
-// ·µ»Ø²ÎÊı     void
-// Ê¹ÓÃÊ¾Àı     gpio_high(D5);
-// ±¸×¢ĞÅÏ¢
-//-------------------------------------------------------------------------------------------------------------------
-#define gpio_high(x)            gpio_set_level(x, 1)
-
-void 	gpio_set_level_speed	(gpio_pin_enum pin, gpio_speed_enum speed);
-
-void    gpio_set_level          (gpio_pin_enum pin, uint8 dat);
-uint8   gpio_get_level          (gpio_pin_enum pin);
-void    gpio_toggle_level       (gpio_pin_enum pin);
-void    gpio_init               (gpio_pin_enum pin, gpio_dir_enum dir, const uint8 dat, gpio_mode_enum mode);
-
-
-#endif
+#ifndef __ZF_DRIVER_GPIO_H
+#define __ZF_DRIVER_GPIO_H
+
+#include "zf_common_typedef.h"
+
+
+typedef enum
+{
+    IO_P00 = 0x10, IO_P01, IO_P02, IO_P03, IO_P04, IO_P05, IO_P06, IO_P07,
+    IO_P10 = 0x20, IO_P11, IO_P12, IO_P13, IO_P14, IO_P15, IO_P16, IO_P17,
+    IO_P20 = 0x30, IO_P21, IO_P22, IO_P23, IO_P24, IO_P25, IO_P26, IO_P27,
+    IO_P30 = 0x40, IO_P31, IO_P32, IO_P33, IO_P34, IO_P35, IO_P36, IO_P37,
+    IO_P40 = 0x50, IO_P41, IO_P42, IO_P43, IO_P44, IO_P45, IO_P46, IO_P47,
+    IO_P50 = 0x60, IO_P51, IO_P52, IO_P53, IO_P54, IO_P55, IO_P56, IO_P57,
+    IO_P60 = 0x70, IO_P61, IO_P62, IO_P63, IO_P64, IO_P65, IO_P66, IO_P67,
+    IO_P70 = 0x80, IO_P71, IO_P72, IO_P73, IO_P74, IO_P75, IO_P76, IO_P77,
+	IO_NULL = 0xFF,
+} gpio_pin_enum;
+
+
+typedef enum
+{
+    // è¾“å…¥
+	GPI_IMPEDANCE       = 0x00,			// é«˜é˜»è¾“å…¥
+    GPI_FLOATING_IN     = 0x01,         // æµ®ç©ºè¾“å…¥æ¨¡å¼
+    GPI_PULL_DOWN       = 0x02,         // ä¸‹æ‹‰è¾“å…¥
+    GPI_PULL_UP         = 0x03,         // ä¸Šæ‹‰è¾“å…¥
+	
+	
+    // è¾“å‡º
+    GPO_PUSH_PULL       = 0x10,         // é€šç”¨æ¨æŒ½è¾“å‡ºæ¨¡å¼
+    GPO_OPEN_DTAIN      = 0x11,         // é€šç”¨å¼€æ¼è¾“å‡ºæ¨¡å¼
+	
+	// åŒå‘GPIOï¼Œæ—¢å¯ä»¥è¾“å…¥ä¹Ÿå¯ä»¥è¾“å‡º
+	GPIO_NO_PULL   		= 0x20,			// GPIOæ— ä¸Šä¸‹æ‹‰ã€‚
+}gpio_mode_enum;
+
+typedef enum
+{
+    //pnm1 pnm0
+
+	GPI  = 0,				// è¾“å…¥ï¼Œä»…é«˜é˜»è¾“å…¥
+	GPO  = 1,				// è¾“å‡ºï¼Œæ¨æŒ½è¾“å‡ºï¼Œæˆ–è€…å¼€æ¼
+	GPIO = 2,				// å‡†åŒå‘å£(å¼±ä¸Šæ‹‰)
+}gpio_dir_enum;
+
+
+typedef enum
+{
+    GPIO_LOW  = 0,  		//  ä½ç”µå¹³
+    GPIO_HIGH = 1,  		//  é«˜ç”µå¹³
+}gpio_level_enum;
+
+
+typedef enum
+{
+    GPIO_SPEED_LOW  = 1,  	// ç”µå¹³è½¬æ¢é€Ÿåº¦å¿«ï¼Œç›¸åº”çš„ä¸Šä¸‹å†²æ¯”è¾ƒå¤§
+    GPIO_SPEED_FAST = 0,  	// ç”µå¹³è½¬æ¢é€Ÿåº¦æ…¢ï¼Œç›¸åº”çš„ä¸Šä¸‹å†²æ¯”è¾ƒå°
+}gpio_speed_enum;
+
+
+//-------------------------------------------------------------------------------------------------------------------
+// å‡½æ•°ç®€ä»‹     å¯¹åº” IO å¤ä½ä¸ºä½ç”µå¹³
+// å‚æ•°è¯´æ˜     x           é€‰æ‹©çš„å¼•è„š (å¯é€‰æ‹©èŒƒå›´ç”± zf_driver_gpio.h å†… gpio_pin_enum æšä¸¾å€¼ç¡®å®š)
+// è¿”å›å‚æ•°     void
+// ä½¿ç”¨ç¤ºä¾‹     gpio_low(D5);
+// å¤‡æ³¨ä¿¡æ¯
+//-------------------------------------------------------------------------------------------------------------------
+#define gpio_low(x)            	gpio_set_level(x, 0)
+
+//-------------------------------------------------------------------------------------------------------------------
+// å‡½æ•°ç®€ä»‹     å¯¹åº” IO ç½®ä½ä¸ºé«˜ç”µå¹³
+// å‚æ•°è¯´æ˜     x           é€‰æ‹©çš„å¼•è„š (å¯é€‰æ‹©èŒƒå›´ç”± zf_driver_gpio.h å†… gpio_pin_enum æšä¸¾å€¼ç¡®å®š)
+// è¿”å›å‚æ•°     void
+// ä½¿ç”¨ç¤ºä¾‹     gpio_high(D5);
+// å¤‡æ³¨ä¿¡æ¯
+//-------------------------------------------------------------------------------------------------------------------
+#define gpio_high(x)            gpio_set_level(x, 1)
+
+void 	gpio_set_level_speed	(gpio_pin_enum pin, gpio_speed_enum speed);
+
+void    gpio_set_level          (gpio_pin_enum pin, uint8 dat);
+uint8   gpio_get_level          (gpio_pin_enum pin);
+void    gpio_toggle_level       (gpio_pin_enum pin);
+void    gpio_init               (gpio_pin_enum pin, gpio_dir_enum dir, const uint8 dat, gpio_mode_enum mode);
+
+
+#endif

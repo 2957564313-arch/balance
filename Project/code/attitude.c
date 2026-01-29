@@ -1,92 +1,92 @@
-#include "attitude.h"
-#include <math.h>
-
-mahony_t m_imu;
-
-// ¿ìËÙÆ½·½¸ùµ¹Êı
-static float inv_sqrt(float x) {
-    float half = 0.5f * x;
-    float y = x;
-    long i = *(long*)&y;
-    i = 0x5f3759df - (i >> 1);
-    y = *(float*)&i;
-    y = y * (1.5f - half * y * y);
-    return y;
-}
-
-void mahony_init(mahony_t *m, float freq, float kp, float ki)
-{
-    m->q0 = 1.0f; m->q1 = 0.0f; m->q2 = 0.0f; m->q3 = 0.0f;
-    m->kp = kp; m->ki = ki;
-    m->ix = 0.0f; m->iy = 0.0f; m->iz = 0.0f;
-    m->sample_freq = freq;
-    m->pitch = 0.0f; m->roll = 0.0f; m->yaw = 0.0f;
-    
-    // ³õÊ¼»¯ÀÛ»ı½Ç¶È
-    m->total_yaw = 0.0f; 
-}
-
-// gx, gy, gz µ¥Î»ÊÇ »¡¶È/Ãë (rad/s)
-void mahony_update(mahony_t *m, float ax, float ay, float az, float gx, float gy, float gz)
-{
-    float recipNorm;
-    float halfvx, halfvy, halfvz;
-    float halfex, halfey, halfez;
-    float qa, qb, qc;
-
-    // === ĞÂÔö£º¼ÆËãÀÛ»ıº½Ïò½Ç (Total Yaw) ===
-    // »ı·Ö¹«Ê½£º½Ç¶È += ½ÇËÙ¶È * dt
-    // 57.29578 ÊÇ 180/PI (»¡¶È×ª½Ç¶È)
-    float gz_deg = gz * 57.29578f;
-    
-    // ¼òµ¥µÄËÀÇø¹ıÂË£¬·ÀÖ¹¾²Ö¹Ê±Æ¯ÒÆ
-    if(gz_deg > 0.5f || gz_deg < -0.5f) {
-        m->total_yaw += gz_deg * (1.0f / m->sample_freq);
-    }
-    // =====================================
-
-    // Èç¹ûÃ»ÓĞ¼ÓËÙ¶ÈÊı¾İ£¬Ö»¸üĞÂÍÓÂİÒÇ»ı·Ö
-    if(!((ax == 0.0f) && (ay == 0.0f) && (az == 0.0f)))
-    {
-        recipNorm = inv_sqrt(ax * ax + ay * ay + az * az);
-        ax *= recipNorm; ay *= recipNorm; az *= recipNorm;
-
-        halfvx = m->q1 * m->q3 - m->q0 * m->q2;
-        halfvy = m->q0 * m->q1 + m->q2 * m->q3;
-        halfvz = m->q0 * m->q0 - 0.5f + m->q3 * m->q3;
-
-        halfex = (ay * halfvz - az * halfvy);
-        halfey = (az * halfvx - ax * halfvz);
-        halfez = (ax * halfvy - ay * halfvx);
-
-        if(m->ki > 0.0f) {
-            m->ix += m->ki * halfex * (1.0f / m->sample_freq);
-            m->iy += m->ki * halfey * (1.0f / m->sample_freq);
-            m->iz += m->ki * halfez * (1.0f / m->sample_freq);
-            gx += m->ix; gy += m->iy; gz += m->iz;
-        } else {
-            m->ix = 0.0f; m->iy = 0.0f; m->iz = 0.0f;
-        }
-
-        gx += m->kp * halfex;
-        gy += m->kp * halfey;
-        gz += m->kp * halfez;
-    }
-
-    gx *= (0.5f * (1.0f / m->sample_freq));
-    gy *= (0.5f * (1.0f / m->sample_freq));
-    gz *= (0.5f * (1.0f / m->sample_freq));
-    
-    qa = m->q0; qb = m->q1; qc = m->q2;
-    m->q0 += (-qb * gx - qc * gy - m->q3 * gz);
-    m->q1 += (qa * gx + qc * gz - m->q3 * gy);
-    m->q2 += (qa * gy - qb * gz + m->q3 * gx);
-    m->q3 += (qa * gz + qb * gy - qc * gx);
-
-    recipNorm = inv_sqrt(m->q0 * m->q0 + m->q1 * m->q1 + m->q2 * m->q2 + m->q3 * m->q3);
-    m->q0 *= recipNorm; m->q1 *= recipNorm; m->q2 *= recipNorm; m->q3 *= recipNorm;
-    
-    // ÕâÀïµÄ Pitch ±ØĞë·Ç³£×¼£¬Èç¹û½Ç¶È·´ÁËÇë¼Ó¸ººÅ
-    m->pitch = atan2(2.0f * (m->q0 * m->q1 + m->q2 * m->q3), 1.0f - 2.0f * (m->q1 * m->q1 + m->q2 * m->q2)) * 57.29578f;
-    // roll, yaw ¼ÆËã±£Áô£¬ËäÈ»²»ÓÃ
-}
+#include "attitude.h"
+#include <math.h>
+
+mahony_t m_imu;
+
+// å¿«é€Ÿå¹³æ–¹æ ¹å€’æ•°
+static float inv_sqrt(float x) {
+    float half = 0.5f * x;
+    float y = x;
+    long i = *(long*)&y;
+    i = 0x5f3759df - (i >> 1);
+    y = *(float*)&i;
+    y = y * (1.5f - half * y * y);
+    return y;
+}
+
+void mahony_init(mahony_t *m, float freq, float kp, float ki)
+{
+    m->q0 = 1.0f; m->q1 = 0.0f; m->q2 = 0.0f; m->q3 = 0.0f;
+    m->kp = kp; m->ki = ki;
+    m->ix = 0.0f; m->iy = 0.0f; m->iz = 0.0f;
+    m->sample_freq = freq;
+    m->pitch = 0.0f; m->roll = 0.0f; m->yaw = 0.0f;
+    
+    // åˆå§‹åŒ–ç´¯ç§¯è§’åº¦
+    m->total_yaw = 0.0f; 
+}
+
+// gx, gy, gz å•ä½æ˜¯ å¼§åº¦/ç§’ (rad/s)
+void mahony_update(mahony_t *m, float ax, float ay, float az, float gx, float gy, float gz)
+{
+    float recipNorm;
+    float halfvx, halfvy, halfvz;
+    float halfex, halfey, halfez;
+    float qa, qb, qc;
+
+    // === æ–°å¢ï¼šè®¡ç®—ç´¯ç§¯èˆªå‘è§’ (Total Yaw) ===
+    // ç§¯åˆ†å…¬å¼ï¼šè§’åº¦ += è§’é€Ÿåº¦ * dt
+    // 57.29578 æ˜¯ 180/PI (å¼§åº¦è½¬è§’åº¦)
+    float gz_deg = gz * 57.29578f;
+    
+    // ç®€å•çš„æ­»åŒºè¿‡æ»¤ï¼Œé˜²æ­¢é™æ­¢æ—¶æ¼‚ç§»
+    if(gz_deg > 0.5f || gz_deg < -0.5f) {
+        m->total_yaw += gz_deg * (1.0f / m->sample_freq);
+    }
+    // =====================================
+
+    // å¦‚æœæ²¡æœ‰åŠ é€Ÿåº¦æ•°æ®ï¼Œåªæ›´æ–°é™€èºä»ªç§¯åˆ†
+    if(!((ax == 0.0f) && (ay == 0.0f) && (az == 0.0f)))
+    {
+        recipNorm = inv_sqrt(ax * ax + ay * ay + az * az);
+        ax *= recipNorm; ay *= recipNorm; az *= recipNorm;
+
+        halfvx = m->q1 * m->q3 - m->q0 * m->q2;
+        halfvy = m->q0 * m->q1 + m->q2 * m->q3;
+        halfvz = m->q0 * m->q0 - 0.5f + m->q3 * m->q3;
+
+        halfex = (ay * halfvz - az * halfvy);
+        halfey = (az * halfvx - ax * halfvz);
+        halfez = (ax * halfvy - ay * halfvx);
+
+        if(m->ki > 0.0f) {
+            m->ix += m->ki * halfex * (1.0f / m->sample_freq);
+            m->iy += m->ki * halfey * (1.0f / m->sample_freq);
+            m->iz += m->ki * halfez * (1.0f / m->sample_freq);
+            gx += m->ix; gy += m->iy; gz += m->iz;
+        } else {
+            m->ix = 0.0f; m->iy = 0.0f; m->iz = 0.0f;
+        }
+
+        gx += m->kp * halfex;
+        gy += m->kp * halfey;
+        gz += m->kp * halfez;
+    }
+
+    gx *= (0.5f * (1.0f / m->sample_freq));
+    gy *= (0.5f * (1.0f / m->sample_freq));
+    gz *= (0.5f * (1.0f / m->sample_freq));
+    
+    qa = m->q0; qb = m->q1; qc = m->q2;
+    m->q0 += (-qb * gx - qc * gy - m->q3 * gz);
+    m->q1 += (qa * gx + qc * gz - m->q3 * gy);
+    m->q2 += (qa * gy - qb * gz + m->q3 * gx);
+    m->q3 += (qa * gz + qb * gy - qc * gx);
+
+    recipNorm = inv_sqrt(m->q0 * m->q0 + m->q1 * m->q1 + m->q2 * m->q2 + m->q3 * m->q3);
+    m->q0 *= recipNorm; m->q1 *= recipNorm; m->q2 *= recipNorm; m->q3 *= recipNorm;
+    
+    // è¿™é‡Œçš„ Pitch å¿…é¡»éå¸¸å‡†ï¼Œå¦‚æœè§’åº¦åäº†è¯·åŠ è´Ÿå·
+    m->pitch = atan2(2.0f * (m->q0 * m->q1 + m->q2 * m->q3), 1.0f - 2.0f * (m->q1 * m->q1 + m->q2 * m->q2)) * 57.29578f;
+    // roll, yaw è®¡ç®—ä¿ç•™ï¼Œè™½ç„¶ä¸ç”¨
+}
