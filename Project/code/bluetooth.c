@@ -1,170 +1,231 @@
+#include "zf_common_headfile.h"
 #include "bluetooth.h"
-#include <stdarg.h>
-#include <stdio.h> 
+#include <string.h>
 
-// =================================================================
-// 全局变量定义
-// =================================================================
-int16 remote_speed = 0;
-int16 remote_turn = 0;
+// ========================= 对外导出变量 =========================
+int16 remote_speed = 0;                 // LV：前后
+int16 remote_turn  = 0;                 // LH：左右
+volatile uint8  last_byte = 0;
+volatile uint32 rx_count  = 0;
 
-// 接收相关变量
-uint8 bt_rx_buffer[BT_RX_MAX_LEN]; 
-uint8 bt_rx_index = 0;             
-uint8 bt_packet_started = 0;       
+// ========================= 配置 =========================
+#define BT_ECHO_ENABLE       (1)     // 1=回显（联调），0=关闭
+#define BT_PARSE_MAX_BYTES   (96)    // 每次最多处理字节数
+#define BT_MAX_FRAME_LEN     (96)    // 一帧最大长度（不含[]）
+#define BT_JOY_DEADZONE      (0)     // 死区
 
-void BT_Init(void)
+// ========================= 内部解析状态 =========================
+static uint8  xdata bt_frame_buf[BT_MAX_FRAME_LEN];
+static uint8  bt_frame_len = 0;
+static uint8  bt_in_frame  = 0;
+
+// ========================= 工具 =========================
+static int16 bt_abs_i16(int16 v)
 {
-    // 初始化 UART4, 9600波特率
-    uart_init(BT_UART_INDEX, BT_BAUD_RATE, BT_TX_PIN, BT_RX_PIN);
-    
-    // 清空缓冲区
+    return (v < 0) ? (int16)(-v) : v;
+}
+
+static int16 bt_read_int(const uint8 *s, uint8 *idx, uint8 *ok)
+{
+    int16 sign = 1;
+    int16 val  = 0;
+    uint8 i = *idx;
+
+    *ok = 0;
+
+    while(s[i] != '\0')
     {
-        uint8 i;
-        for(i=0; i<BT_RX_MAX_LEN; i++) bt_rx_buffer[i] = 0;
+        if(s[i] == '-') break;
+        if(s[i] >= '0' && s[i] <= '9') break;
+        i++;
     }
-    
-    bt_rx_index = 0;
-    bt_packet_started = 0;
-    
-    remote_speed = 0;
-    remote_turn = 0;
-}
+    if(s[i] == '\0') { *idx = i; return 0; }
 
-void BT_Send_Byte(uint8 dat)
-{
-    uart_write_byte(BT_UART_INDEX, dat);
-}
+    if(s[i] == '-') { sign = -1; i++; }
+    if(!(s[i] >= '0' && s[i] <= '9')) { *idx = i; return 0; }
 
-void BT_Send_Str(char *str)
-{
-    while(*str)
+    *ok = 1;
+    while(s[i] >= '0' && s[i] <= '9')
     {
-        uart_write_byte(BT_UART_INDEX, *str++);
-    }
-}
-
-// 格式化打印函数，方便调试
-void BT_Printf(const char *fmt, ...)
-{
-    char buff[128];
-    va_list args;
-    
-    va_start(args, fmt);
-    vsprintf(buff, fmt, args);
-    va_end(args);
-    
-    BT_Send_Str(buff);
-}
-
-// =================================================================
-// 手写简易解析工具：从字符串中提取整数
-// 替代标准库的 atoi/strtok，更轻量
-// =================================================================
-int My_Atoi(char *str, uint8 *p_idx)
-{
-    int res = 0;
-    int sign = 1;
-    uint8 i = *p_idx;
-    
-    // 1. 跳过非数字字符 (逗号、空格、字母等)
-    // 注意：不要跳过负号 '-'
-    while(str[i] != '\0' && (str[i] < '0' || str[i] > '9') && str[i] != '-') {
+        val = (int16)(val * 10 + (s[i] - '0'));
         i++;
     }
-    
-    // 2. 检测负号
-    if(str[i] == '-') {
-        sign = -1;
-        i++;
-    }
-    
-    // 3. 提取连续数字
-    while(str[i] >= '0' && str[i] <= '9') {
-        res = res * 10 + (str[i] - '0');
-        i++;
-    }
-    
-    *p_idx = i; // 更新外部索引指针
-    return res * sign;
+
+    *idx = i;
+    return (int16)(val * sign);
 }
 
-// =================================================================
-// 核心：解析江协小程序数据包
-// 格式: [joystick,LH,LV,RH,RV]  例: [joystick,0,100,0,0]
-// =================================================================
-void BT_Parse_Packet(char *packet)
+static void bt_parse_frame(uint8 *frame)
 {
     uint8 i = 0;
-    int lh, lv, rh, rv;
-    
-    // 1. 头部匹配 "joy"
-    if(packet[0] == 'j' && packet[1] == 'o' && packet[2] == 'y')
+    uint8 ok;
+    int16 lh, lv, rh, rv;
+
+    while(frame[i] == ' ' || frame[i] == '\t') i++;
+    if(frame[i] == '\0') return;
+
+    // [joystick,lh,lv,rh,rv] / [j,lh,lv,rh,rv]
+    if(frame[i] != 'j' && frame[i] != 'J') return;
+
+    lh = bt_read_int(frame, &i, &ok); if(!ok) return;
+    lv = bt_read_int(frame, &i, &ok); if(!ok) return;
+    rh = bt_read_int(frame, &i, &ok); if(!ok) return;
+    rv = bt_read_int(frame, &i, &ok); if(!ok) return;
+
+    (void)rh;
+    (void)rv;
+
+    remote_turn  = lh;
+    remote_speed = lv;
+
+    if(BT_JOY_DEADZONE > 0)
     {
-        // 2. 跳过 "joystick" (8个字符)
-        i = 8; 
-        
-        // 3. 依次提取 4 个摇杆值
-        lh = My_Atoi(packet, &i); // 左横
-        lv = My_Atoi(packet, &i); // 左纵 (速度)
-        rh = My_Atoi(packet, &i); // 右横 (转向)
-        rv = My_Atoi(packet, &i); // 右纵
-        
-        // 4. 映射到控制变量
-        // LV (左摇杆纵向) -> 速度 (放大 2 倍)
-        remote_speed = lv * 2; 
-        
-        // RH (右摇杆横向) -> 转向 (放大 5 倍，转向需要灵敏点)
-        remote_turn = rh * 5;  
-        
-        // 5. 死区过滤 (防止归位误差导致车子慢飘)
-        if(remote_speed > -15 && remote_speed < 15) remote_speed = 0;
-        if(remote_turn > -15 && remote_turn < 15) remote_turn = 0;
+        if(bt_abs_i16(remote_turn)  < BT_JOY_DEADZONE) remote_turn = 0;
+        if(bt_abs_i16(remote_speed) < BT_JOY_DEADZONE) remote_speed = 0;
     }
 }
 
-// =================================================================
-// 接收状态机 (在主循环调用)
-// =================================================================
-void BT_Check_Rx(void)
+static void bt_feed_byte(uint8 ch)
+{
+    if(!bt_in_frame)
+    {
+        if(ch == '[')
+        {
+            bt_in_frame = 1;
+            bt_frame_len = 0;
+        }
+        return;
+    }
+
+    if(ch == ']')
+    {
+        if(bt_frame_len >= BT_MAX_FRAME_LEN) bt_frame_len = (BT_MAX_FRAME_LEN - 1);
+        bt_frame_buf[bt_frame_len] = '\0';
+        bt_parse_frame(bt_frame_buf);
+
+        bt_in_frame = 0;
+        bt_frame_len = 0;
+        return;
+    }
+
+    if(bt_frame_len < (BT_MAX_FRAME_LEN - 1))
+    {
+        bt_frame_buf[bt_frame_len++] = ch;
+    }
+    else
+    {
+        bt_in_frame = 0;
+        bt_frame_len = 0;
+    }
+}
+
+// ========================= UART4：原始初始化=========================
+static void bt_uart4_set_map_p0(void)
+{
+    uint8 ea_save = EA;
+    uint8 psw2_save = P_SW2;
+
+    EA = 0;
+
+    // 开 EAXFR
+    P_SW2 = psw2_save | 0x80;
+
+    // UART4 -> P0.2/P0.3（清 bit2）
+    P_SW2 &= (uint8)(~0x04);
+
+    // P0.2 RX：高阻输入(10)，P0.3 TX：推挽输出(01)
+    P0M1 = (P0M1 & (uint8)(~0x0C)) | 0x04;
+    P0M0 = (P0M0 & (uint8)(~0x0C)) | 0x08;
+
+    // 关 EAXFR（保留其它位，只强制 bit7=0，bit2=0）
+    P_SW2 = (uint8)((psw2_save & (uint8)(~0x80)) & (uint8)(~0x04));
+
+    EA = ea_save;
+}
+
+static void bt_uart4_set_baud(uint32 baud)
+{
+    uint16 brt;
+
+    // brt = 65536 - system_clock/(baud+2)/4
+    brt = (uint16)(65536 - (system_clock / (baud + 2) / 4));
+
+    // REN4=1
+    S4CON |= 0x10;
+
+    // Timer2 装载
+    T2L = (uint8)brt;
+    T2H = (uint8)(brt >> 8);
+
+    // Timer2 1T + run
+    AUXR |= 0x14;
+
+    // 清 RI4/TI4
+    S4CON &= (uint8)(~0x03);
+}
+
+static void bt_uart4_raw_init(uint32 baud)
+{
+    bt_uart4_set_map_p0();
+    bt_uart4_set_baud(baud);
+}
+
+static uint8 bt_uart4_read_byte(uint8 *dat)
+{
+    if(S4CON & 0x01)               // RI4
+    {
+        S4CON &= (uint8)(~0x01);   // 清 RI4
+        *dat = S4BUF;
+        return 1;
+    }
+    return 0;
+}
+
+// 回显发送加超时，防止 TI4 异常卡死
+static void bt_uart4_write_byte_timeout(uint8 dat)
+{
+    uint16 t;
+
+    S4BUF = dat;
+
+    t = 60000;
+    while(!(S4CON & 0x02))
+    {
+        if(--t == 0) break;
+    }
+    S4CON &= (uint8)(~0x02);
+}
+
+// ========================= API =========================
+void BT_Init(void)
+{
+    bt_in_frame = 0;
+    bt_frame_len = 0;
+
+    remote_speed = 0;
+    remote_turn  = 0;
+    last_byte    = 0;
+    rx_count     = 0;
+
+    bt_uart4_raw_init((uint32)BT_BAUD_RATE);
+}
+
+void BT_Parse_Task(void)
 {
     uint8 dat;
-    
-    // 查询方式读取串口数据
-    while(uart_query_byte(BT_UART_INDEX, &dat))
+    uint16 n = 0;
+
+    while(n < BT_PARSE_MAX_BYTES)
     {
-        // 1. 等待包头 '['
-        if (dat == '[') 
-        {
-            bt_packet_started = 1;
-            bt_rx_index = 0;
-            bt_rx_buffer[0] = '\0'; 
-        }
-        // 2. 接收中
-        else if (bt_packet_started)
-        {
-            // 3. 等待包尾 ']'
-            if (dat == ']') 
-            {
-                bt_packet_started = 0;
-                bt_rx_buffer[bt_rx_index] = '\0'; // 补上结束符
-                
-                // 解析完整包
-                BT_Parse_Packet((char *)bt_rx_buffer);
-            }
-            // 4. 存入缓冲区
-            else 
-            {
-                if (bt_rx_index < BT_RX_MAX_LEN - 1)
-                {
-                    bt_rx_buffer[bt_rx_index++] = dat;
-                }
-                else // 溢出保护
-                {
-                    bt_packet_started = 0;
-                    bt_rx_index = 0;
-                }
-            }
-        }
+        if(!bt_uart4_read_byte(&dat)) break;
+
+        last_byte = dat;
+        rx_count++;
+
+#if BT_ECHO_ENABLE
+        bt_uart4_write_byte_timeout(dat);
+#endif
+        bt_feed_byte(dat);
+        n++;
     }
 }

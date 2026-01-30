@@ -1,123 +1,190 @@
 #include "zf_common_headfile.h"
+#include "OLED.h"
+#include "motor.h"
+#include "param.h"
+#include "imu_mpu6050.h"
+#include "filter.h"
 
-// =================================================================
-// 寄存器直接配置定时器 (适配 STC32G @ 35MHz)
-// =================================================================
+// main 里显式声明（即便 motor.h 里没写，也不会再 L127）
+extern void Motor_Stop(void);
 
-void Init_Timer0_100us(void)
+// ======================= 控制周期 =======================
+#define CTRL_HZ                 (200)
+#define CTRL_DT_MS              (5)
+
+// ======================= 安全解锁/保护 ===================
+#define ARM_ANGLE_DEG           (10.0f)
+#define ARM_STABLE_MS           (500)
+#define FALL_ANGLE_DEG          (35.0f)
+#define PWM_LIMIT               (9000)
+
+// ======================= 方向/符号(救命开关) =============
+#define BAL_PWM_DIR             ( 1)        // 越倒越快就改 -1
+#define PITCH_DIR               ( 1.0f)     // pitch 方向反就改 -1
+#define GYRO_Y_DIR              ( 1.0f)
+
+static float absf(float x) { return (x < 0.0f) ? -x : x; }
+
+// 直立 PD（不依赖 pid.c）
+static int16 balance_pd(float pitch_deg, float gyro_y_dps, float target_deg)
 {
-    // Timer0: 16位自动重装载, 1T模式
-    // 35MHz下，100us = 3500个时钟周期
-    // 初值 = 65536 - 3500 = 62036 (0xF254)
-    
-    AUXR |= 0x80;    // 定时器0为1T模式
-    TMOD &= 0xF0;    // 设置定时器0为模式0(16位自动重装载)
-    
-    TL0 = 0x54;      // 低8位 (0xF254)
-    TH0 = 0xF2;      // 高8位
-    
-    TF0 = 0;         // 清标志
-    TR0 = 1;         // 启动计时
-    ET0 = 1;         // 开中断
+    float err;
+    float out;
+
+    err = pitch_deg - (g_sys_param.mech_zero_pitch + target_deg);
+    out = g_sys_param.balance_kp * err + g_sys_param.balance_kd * gyro_y_dps;
+
+    return (int16)out;
 }
 
-void Init_Timer2_5ms(void)
-{
-    // Timer2: 16位自动重装载
-    // 35MHz 1T模式下无法延时5ms (最大约1.87ms)
-    // 必须开启 12T 模式！频率 = 35M/12 = 2.9166MHz
-    // 5ms = (35M/12) * 0.005 ≈ 14583
-    // 初值 = 65536 - 14583 = 50953 (0xC709)
-    // 误差极小，可忽略
-    
-    AUXR &= ~(1<<2); // Bit2=0: 定时器2为12T模式 (分频)
-    
-    T2L = 0x09;      // 低8位 (0xC709)
-    T2H = 0xC7;      // 高8位
-    
-    AUXR |= (1<<4);  // Bit4=1: 启动定时器2 (T2R)
-    IE2  |= (1<<2);  // Bit2=1: 开定时器2中断 (ET2)
-}
-
-// =================================================================
-// 中断服务函数
-// =================================================================
-
-// 1. 定时器0中断 (100us) -> 软件编码器扫描
-void timer0_isr(void) interrupt 1 
-{
-    Soft_Encoder_Scan(); 
-}
-
-// 2. 定时器2中断 (5ms) -> 平衡核心任务
-void timer2_isr(void) interrupt 12
-{
-    // STC32G 硬件自动清除中断标志，无需软件干预
-    
-    Balance_Task(); // 核心平衡控制
-    Key_Tick();     // 按键扫描
-    
-    // 注意：不要在这里放 printf 或 OLED_Show，会卡死中断！
-}
-
-// =================================================================
-// 主函数
-// =================================================================
 void main(void)
 {
-    // 1. 系统时钟初始化 (改为 35MHz)
-    // 如果 zf_common_clock.h 里没有 SYSTEM_CLOCK_35M，
-    // 请尝试直接写 clock_init(35000000);
+    uint8  imu_fail;
+    uint16 stable_ms;
+    uint8  armed;
+    uint8  ui_div;
+
+    float gx, gy, gz, ax, ay, az;
+    float pitch_now, gyro_y;
+    float target_angle;
+    int16 pwm_balance, pwm_l, pwm_r;
+
     clock_init(SYSTEM_CLOCK_35M);
-    
-    // 2. 调试串口初始化 (打印调试信息用)
-    debug_init(); 
 
-    // 3. 硬件底层初始化
-    LED_Init();    // 心跳灯
-    Buzzer_Init(); // 蜂鸣器
-    Motor_Init();  // 电机 & 编码器
-    BT_Init();     // 蓝牙
-    OLED_Init();   // 屏幕
-    Key_Init();    // 按键
-    
-    // 4. 应用层初始化
-    Param_Init();  // 读取 Flash 参数 (必须先于 PID)
-    Mode_Init();   // 循迹算法 & 灰度传感器
-    Balance_Init();// PID & IMU (必须最后，确保参数已就绪)
-    
-    // 提示音：初始化完成
-    Buzzer_Beep(200);
-    
-    // 5. 开启定时器 (开始干活)
-    Init_Timer0_100us();
-    Init_Timer2_5ms();
-    
-    // 6. 开启全局中断
-    EA = 1; 
+    // 立车阶段先关总中断，减少冲突
+    interrupt_global_disable();
 
-    // 7. 主循环 (处理低优先级事务)
+    OLED_Init();
+    OLED_Clear();
+    OLED_ShowString(1, 1, "BOOT...");
+
+    // Param 现在是“只读失败则默认”，不会再因为首次保存卡死
+    Param_Init();
+
+    // Motor 现在不初始化编码器，不会 assert 卡死
+    Motor_Init();
+
+    OLED_ShowString(2, 1, "IMU INIT");
+    imu_fail = mpu6050_init();
+    if(imu_fail)
+    {
+        OLED_ShowString(3, 1, "MPU FAIL");
+        while(1)
+        {
+            Motor_Stop();
+        }
+    }
+
+    OLED_ShowString(3, 1, "IMU CAL...");
+    mpu6050_calibration();
+    OLED_ShowString(3, 1, "IMU OK   ");
+    system_delay_ms(200);
+
+    Filter_Init((float)CTRL_HZ);
+
+    stable_ms = 0;
+    armed = 0;
+    ui_div = 0;
+    pwm_balance = 0;
+
+    OLED_Clear();
+    OLED_ShowString(1, 1, "SAFE P:");
+    OLED_ShowString(2, 1, "PWM  :");
+    OLED_ShowString(3, 1, "KP/KD:");
+    OLED_ShowString(4, 1, "ZERO:");
+
     while(1)
     {
-        // 接收蓝牙数据 (如果有数据会更新全局变量)
-        BT_Check_Rx();
-        
-        // 简单的按键处理 (给 Mode 4 用)
-        // 这里的 Key_Check 是非阻塞的
-        {
-			// 使用我新加的这个专门给 main 用的简单函数
-			// 它会自动检测任意按键的【单击】事件
-			uint8 key = Key_Check_Simple(); 
+        // IMU
+        mpu6050_get_gyro();
+        mpu6050_get_acc();
 
-			if(key) Mode_Path_Key_Handler(key);
+        gx = mpu6050_gyro_transition(mpu6050_gyro_x);
+        gy = mpu6050_gyro_transition(mpu6050_gyro_y);
+        gz = mpu6050_gyro_transition(mpu6050_gyro_z);
+
+        ax = mpu6050_acc_transition(mpu6050_acc_x);
+        ay = mpu6050_acc_transition(mpu6050_acc_y);
+        az = mpu6050_acc_transition(mpu6050_acc_z);
+
+        Filter_Update(gx, gy, gz, ax, ay, az);
+
+        {
+            float roll, yaw;
+            Filter_GetEuler(&pitch_now, &roll, &yaw);
         }
-        
-        // 屏幕刷新 (建议不要刷太快，影响蓝牙接收)
-        // Menu_Show(); 
-        
-        // 心跳灯：每 500ms 翻转一次
-        // 这里的 system_delay_ms 是阻塞的，如果影响蓝牙，建议用计数器代替
-        // 为了蓝牙流畅，暂时注释掉阻塞延时
-        // LED_TOGGLE(); system_delay_ms(500); 
+
+        pitch_now = pitch_now * PITCH_DIR;
+        gyro_y    = gy * GYRO_Y_DIR;
+
+        // SAFE/ARM
+        if(!armed)
+        {
+            Motor_Stop();
+            pwm_balance = 0;
+
+            if(absf(pitch_now - g_sys_param.mech_zero_pitch) < ARM_ANGLE_DEG)
+            {
+                stable_ms += CTRL_DT_MS;
+                if(stable_ms >= ARM_STABLE_MS)
+                {
+                    armed = 1;
+                    stable_ms = 0;
+                }
+            }
+            else
+            {
+                stable_ms = 0;
+            }
+        }
+        else
+        {
+            if(absf(pitch_now - g_sys_param.mech_zero_pitch) > FALL_ANGLE_DEG)
+            {
+                armed = 0;
+                Motor_Stop();
+                pwm_balance = 0;
+            }
+            else
+            {
+                target_angle = 0.0f;
+
+                pwm_balance = balance_pd(pitch_now, gyro_y, target_angle);
+                pwm_balance = (int16)(pwm_balance * BAL_PWM_DIR);
+
+                if(pwm_balance >  PWM_LIMIT) pwm_balance =  PWM_LIMIT;
+                if(pwm_balance < -PWM_LIMIT) pwm_balance = -PWM_LIMIT;
+
+                pwm_l = pwm_balance;
+                pwm_r = pwm_balance;
+
+                Motor_Set_L(pwm_l);
+                Motor_Set_R(pwm_r);
+            }
+        }
+
+        // OLED 每 50ms 刷新
+        ui_div++;
+        if(ui_div >= 10)
+        {
+            int16 pitch_x10;
+            ui_div = 0;
+
+            pitch_x10 = (int16)(pitch_now * 10.0f);
+
+            if(armed) OLED_ShowString(1, 1, "ARM  P:");
+            else      OLED_ShowString(1, 1, "SAFE P:");
+
+            OLED_Show_Int_Fast(1, 8, (int32)pitch_x10);
+            OLED_Show_Int_Fast(2, 7, (int32)pwm_balance);
+
+            OLED_Show_Int_Fast(3, 6, (int32)g_sys_param.balance_kp);
+            OLED_ShowChar(3, 10, '/');
+            OLED_Show_Int_Fast(3, 12, (int32)g_sys_param.balance_kd);
+
+            OLED_Show_Int_Fast(4, 6, (int32)(g_sys_param.mech_zero_pitch * 10.0f));
+        }
+
+        system_delay_ms(CTRL_DT_MS);
     }
 }

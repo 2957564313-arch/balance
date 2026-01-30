@@ -60,12 +60,11 @@
 
 #include "seekfree_assistant_interface.h"
 
-//鍔犱簡浠�涔堟枃浠跺氨鎶奾鏂囦欢鍐欒繖閲?
+//写了什么文件就把.h加到下面
 #include "Key.h"
 #include "OLED.h"
 #include "Menu.h"
 #include "imu_mpu6050.h"
-#include "filter.h"
 #include "attitude.h"
 #include "param.h"
 #include "motor.h"
@@ -76,5 +75,6 @@
 #include "bluetooth.h"
 #include "LED.h"
 #include "Buzzer.h"
+#include "filter.h"
 
 #endif

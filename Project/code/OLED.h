@@ -1,37 +1,23 @@
-#ifndef _zf_device_oled_h_
-#define _zf_device_oled_h_
+#ifndef __OLED_H
+#define __OLED_H
 
 #include "zf_common_headfile.h"
-#include "oledfont.h"
-
-// ====== æ¥çº¿å®šä¹‰ ======
-#define OLED_SCL_PIN           IO_P25
-#define OLED_SDA_PIN           IO_P23
-
-// è½¯I2Cå»¶æ—¶ (30MHzä¸»é¢‘ä¸‹ï¼Œ10å·¦å³å³å¯)
-#define OLED_IIC_DELAY         10
-
-// å±å¹•å¤§å° (SSD1306 128x64)
-#define OLED_W                 128
-#define OLED_H                 64
-
-// ====== API å‡½æ•°å£°æ˜ ======
 
 void OLED_Init(void);
-void OLED_Clear(void);  // æ¸…ç©ºç¼“å†²åŒº
-void OLED_Update(void); // å°†ç¼“å†²åŒºæ•°æ®åˆ·åˆ°å±å¹•
+void OLED_Clear(void);
 
-// åŸºç¡€æ˜¾ç¤ºå‡½æ•°
-// Line: 1~4, Column: 1~16
-void OLED_ShowChar(uint8 Line, uint8 Column, char Char);    
+// »ù´¡ÏÔÊ¾
+void OLED_ShowChar(uint8 Line, uint8 Column, char Char);
 void OLED_ShowString(uint8 Line, uint8 Column, char *String);
 
-// æ•°å­—æ˜¾ç¤ºå‡½æ•°
-// Length: æ•°å­—é•¿åº¦
-void OLED_ShowNum(uint8 Line, uint8 Column, uint32 Number, uint8 Length);
-void OLED_ShowSignedNum(uint8 Line, uint8 Column, int32 Number, uint8 Length);
-void OLED_ShowHexNum(uint8 Line, uint8 Column, uint32 Number, uint8 Length);
-void OLED_ShowBinNum(uint8 Line, uint8 Column, uint32 Number, uint8 Length);
-void OLED_ShowFloat(uint8 Line, uint8 Column, float Number, uint8 IntLength, uint8 FracLength);
+// Ô­ÓĞµÄ»ùÓÚ sprintf µÄ¸¡µãÏÔÊ¾ (±È½ÏÂı£¬¿ÉÒÔÁô×Å±¸ÓÃ)
+void OLED_Show_Float(uint8 Line, uint8 Column, float dat, uint8 num, uint8 pointnum);
+
+// === ĞÂÔö£º¼«ËÙÎŞÑÓ³ÙÏÔÊ¾º¯Êı ===
+// 1. ¿ìËÙÏÔÊ¾ÕûÊı (²»Ê¹ÓÃ sprintf)
+void OLED_Show_Int_Fast(uint8 row, uint8 col, int32 num);
+
+// 2. ¿ìËÙÏÔÊ¾¸¡µã (ÕûÊıÔËËã£¬·À¿¨¶Ù£¬¹Ì¶¨¸ñÊ½ -999.99)
+void OLED_Show_Float_Safe(uint8 row, uint8 col, float val);
 
 #endif
