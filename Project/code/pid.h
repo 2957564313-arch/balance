@@ -3,19 +3,19 @@
 
 #include "zf_common_headfile.h"
 
-// º¯ÊıÉùÃ÷
+// å‡½æ•°å£°æ˜
 void PID_Init(void);
 void PID_Clear_Integral(void);
 
-// === ´®¼¶ PID ºËĞÄ ===
+// === ä¸²çº§ PID æ ¸å¿ƒ ===
 
-// 1. Ö±Á¢»· (ÄÚ»·)£ºÊäÈëµ±Ç°½Ç¶ÈºÍÄ¿±ê½Ç¶È£¬Êä³öµç»ú PWM
+// 1. ç›´ç«‹ç¯ (å†…ç¯)ï¼šè¾“å…¥å½“å‰è§’åº¦å’Œç›®æ ‡è§’åº¦ï¼Œè¾“å‡ºç”µæœº PWM
 int16 PID_Vertical(float angle, float gyro_y, float target_angle);
 
-// 2. ËÙ¶È»· (Íâ»·)£ºÊäÈëÄ¿±êËÙ¶È£¬Êä³öÄ¿±ê½Ç¶È (float)
+// 2. é€Ÿåº¦ç¯ (å¤–ç¯)ï¼šè¾“å…¥ç›®æ ‡é€Ÿåº¦ï¼Œè¾“å‡ºç›®æ ‡è§’åº¦ (float)
 float PID_Velocity(int16 target_speed, int16 current_speed);
 
-// 3. ×ªÏò»·£º±£³Ö²»±ä
+// 3. è½¬å‘ç¯ï¼šä¿æŒä¸å˜
 int16 PID_Turn(int16 target_turn, int16 gyro_z);
 
 #endif

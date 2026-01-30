@@ -4,8 +4,9 @@
 SysParam_t g_sys_param;
 
 // =================================================================
-// ¼Ä´æÆ÷¶¨Òå (ÊÊÅä STC32G)
+// å¯„å­˜å™¨å®šä¹‰ (é€‚é… STC32G)
 // =================================================================
+
 #define IAP_TPS_VAL     35      // 35MHz
 #define CMD_IDLE        0       
 #define CMD_READ        1       
@@ -13,16 +14,17 @@ SysParam_t g_sys_param;
 #define CMD_ERASE       3       
 #define ENABLE_IAP      0x80    
 
-// Ê¹ÓÃ 60KB ´¦ (Sector 120)
+// ä½¿ç”¨ 60KB å¤„ (Sector 120)
 #define PARAM_FLASH_SECTOR  120
 #define PARAM_FLASH_ADDR    (PARAM_FLASH_SECTOR * 512UL) 
 
 // =================================================================
-// ÄÚ²¿ IAP Çý¶¯ (STC32G ×¨ÓÃ)
+// å†…éƒ¨ IAP é©±åŠ¨ (STC32G ä¸“ç”¨)
 // =================================================================
 
 void IapIdle(void)
 {
+
     IAP_CONTR = 0;      
     IAP_CMD = 0;        
     IAP_TRIG = 0;       
@@ -36,14 +38,14 @@ uint8 IapReadByte(uint32 addr)
     IAP_CONTR = ENABLE_IAP; 
     IAP_TPS = IAP_TPS_VAL;  
     IAP_CMD = CMD_READ;     
-    
+
     IAP_ADDRL = addr;       
     IAP_ADDRH = addr >> 8;  
-    
+
     IAP_TRIG = 0x5A;        
     IAP_TRIG = 0xA5;
     _nop_();
-    
+
     dat = IAP_DATA;         
     IapIdle();              
     return dat;
@@ -51,14 +53,15 @@ uint8 IapReadByte(uint32 addr)
 
 void IapProgramByte(uint32 addr, uint8 dat)
 {
+
     IAP_CONTR = ENABLE_IAP; 
     IAP_TPS = IAP_TPS_VAL;  
     IAP_CMD = CMD_PROGRAM;  
-    
+
     IAP_ADDRL = addr;
     IAP_ADDRH = addr >> 8;
     IAP_DATA = dat;         
-    
+
     IAP_TRIG = 0x5A;
     IAP_TRIG = 0xA5;
     _nop_();
@@ -67,13 +70,14 @@ void IapProgramByte(uint32 addr, uint8 dat)
 
 void IapEraseSector(uint32 addr)
 {
+
     IAP_CONTR = ENABLE_IAP;
     IAP_TPS = IAP_TPS_VAL;
     IAP_CMD = CMD_ERASE;
-    
+
     IAP_ADDRL = addr;
     IAP_ADDRH = addr >> 8;
-    
+
     IAP_TRIG = 0x5A;
     IAP_TRIG = 0xA5;
     _nop_();
@@ -81,11 +85,12 @@ void IapEraseSector(uint32 addr)
 }
 
 // =================================================================
-// ÒµÎñÂß¼­
+// ä¸šåŠ¡é€»è¾‘
 // =================================================================
 
 void Param_SetDefaults(void) 
 {
+
     g_sys_param.flag = 0x55AA;
     g_sys_param.balance_kp = 180.0f; 
     g_sys_param.balance_kd = 1.0f;
@@ -99,15 +104,17 @@ void Param_SetDefaults(void)
 
 void Param_Init(void) 
 {
+
     uint16 i;
     uint8 *p = (uint8*)&g_sys_param;
-    
+
     for(i = 0; i < sizeof(SysParam_t); i++)
     {
         *p++ = IapReadByte(PARAM_FLASH_ADDR + i);
     }
-    
-    if(g_sys_param.flag != 0x55AA) {
+
+    if(g_sys_param.flag != 0x55AA)
+    {
         Param_SetDefaults(); 
         Param_Save();        
     }
@@ -115,11 +122,12 @@ void Param_Init(void)
 
 void Param_Save(void) 
 {
+
     uint16 i;
     uint8 *p = (uint8*)&g_sys_param;
-    
+
     IapEraseSector(PARAM_FLASH_ADDR);
-    
+
     for(i = 0; i < sizeof(SysParam_t); i++)
     {
         IapProgramByte(PARAM_FLASH_ADDR + i, *p++);

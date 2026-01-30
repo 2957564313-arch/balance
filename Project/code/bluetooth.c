@@ -1,170 +1,173 @@
-#include "bluetooth.h"
-#include <stdarg.h>
-#include <stdio.h> 
+#include "zf_bluetooth.h"
 
-// =================================================================
-// 全局变量定义
-// =================================================================
-int16 remote_speed = 0;
-int16 remote_turn = 0;
+// 全局变量（逐飞库风格，C251兼容）
+char    Serial_RxPacket[100] = {0};
+uint8   Serial_RxFlag = 0;
 
-// 接收相关变量
-uint8 bt_rx_buffer[BT_RX_MAX_LEN]; 
-uint8 bt_rx_index = 0;             
-uint8 bt_packet_started = 0;       
+// 静态变量（中断接收状态机）
+static uint8   RxState = 0;
+static uint8   pRxPacket = 0;
 
-void BT_Init(void)
+//-------------------------------------------------------------------------------------------------------------------
+// 函数简介     蓝牙串口初始化（HC-04，UART4，P02/P03，9600波特率）
+// 参数说明     void
+// 返回参数     void
+// 使用示例     bluetooth_init();
+// 备注信息     适配C251编译器，逐飞库原生接口
+//-------------------------------------------------------------------------------------------------------------------
+void bluetooth_init(void)
 {
-    // 初始化 UART4, 9600波特率
-    uart_init(BT_UART_INDEX, BT_BAUD_RATE, BT_TX_PIN, BT_RX_PIN);
+    // 初始化UART4：TX=P03，RX=P02，波特率9600（逐飞库标准接口）
+    uart_init(UART_4, 9600, UART4_TX_P03, UART4_RX_P02);
     
-    // 清空缓冲区
+    // 开启UART4 DMA接收+中断（逐飞库原生接口）
+    uart_rx_start_buff(UART_4);         // 启动DMA接收缓冲
+    uart_rx_interrupt(UART_4, 1);       // 1=开启接收中断，0=关闭
+    
+    // 发送初始化提示
+    uart_write_string(UART_4, "HC-04 Bluetooth Init OK!\r\n");
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// 函数简介     发送单个字节
+// 参数说明     dat        要发送的字节
+// 返回参数     void
+// 使用示例     bluetooth_send_byte(0x55);
+//-------------------------------------------------------------------------------------------------------------------
+void bluetooth_send_byte(uint8 dat)
+{
+    uart_write_byte(UART_4, dat);
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// 函数简介     发送指定长度数组
+// 参数说明     buff       数组首地址
+// 参数说明     len        数组长度
+// 返回参数     void
+// 使用示例     bluetooth_send_array(buff, 10);
+//-------------------------------------------------------------------------------------------------------------------
+void bluetooth_send_array(uint8 *buff, uint16 len)
+{
+    uart_write_buffer(UART_4, buff, len);
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// 函数简介     发送字符串
+// 参数说明     str        字符串首地址
+// 返回参数     void
+// 使用示例     bluetooth_send_string("Hello STC32G!");
+//-------------------------------------------------------------------------------------------------------------------
+void bluetooth_send_string(char *str)
+{
+    uart_write_string(UART_4, str);
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// 函数简介     幂运算（用于数字转字符串）
+// 参数说明     X          底数
+// 参数说明     Y          指数
+// 返回参数     uint32     运算结果
+// 使用示例     bluetooth_pow(10, 3); // 返回1000
+//-------------------------------------------------------------------------------------------------------------------
+uint32 bluetooth_pow(uint32 X, uint8 Y)
+{
+    uint32 Result = 1;
+    while (Y--)
     {
-        uint8 i;
-        for(i=0; i<BT_RX_MAX_LEN; i++) bt_rx_buffer[i] = 0;
+        Result *= X;
     }
-    
-    bt_rx_index = 0;
-    bt_packet_started = 0;
-    
-    remote_speed = 0;
-    remote_turn = 0;
+    return Result;
 }
 
-void BT_Send_Byte(uint8 dat)
+//-------------------------------------------------------------------------------------------------------------------
+// 函数简介     发送数字（指定位数）
+// 参数说明     num        要发送的数字
+// 参数说明     len        数字位数
+// 返回参数     void
+// 使用示例     bluetooth_send_number(123, 3); // 发送"123"
+//-------------------------------------------------------------------------------------------------------------------
+void bluetooth_send_number(uint32 num, uint8 len)
 {
-    uart_write_byte(BT_UART_INDEX, dat);
-}
-
-void BT_Send_Str(char *str)
-{
-    while(*str)
+    uint8 i;
+    for (i = 0; i < len; i++)
     {
-        uart_write_byte(BT_UART_INDEX, *str++);
+        bluetooth_send_byte(num / bluetooth_pow(10, len - i - 1) % 10 + '0');
     }
 }
 
-// 格式化打印函数，方便调试
-void BT_Printf(const char *fmt, ...)
+//-------------------------------------------------------------------------------------------------------------------
+// 函数简介     格式化打印适配（支持printf）
+// 参数说明     ch         输出字符
+// 参数说明     f          文件指针（C251兼容，无实际意义）
+// 返回参数     int        输出的字符
+// 备注信息     重定向printf到蓝牙串口
+//-------------------------------------------------------------------------------------------------------------------
+int fputc(int ch, FILE *f)
 {
-    char buff[128];
-    va_list args;
-    
-    va_start(args, fmt);
-    vsprintf(buff, fmt, args);
-    va_end(args);
-    
-    BT_Send_Str(buff);
+    bluetooth_send_byte(ch);
+    return ch;
 }
 
-// =================================================================
-// 手写简易解析工具：从字符串中提取整数
-// 替代标准库的 atoi/strtok，更轻量
-// =================================================================
-int My_Atoi(char *str, uint8 *p_idx)
+//-------------------------------------------------------------------------------------------------------------------
+// 函数简介     格式化打印函数（逐飞库风格）
+// 参数说明     format     格式化字符串
+// 参数说明     ...        可变参数
+// 返回参数     void
+// 使用示例     bluetooth_printf("Encoder: %d\r\n", 123);
+//-------------------------------------------------------------------------------------------------------------------
+void bluetooth_printf(char *format, ...)
 {
-    int res = 0;
-    int sign = 1;
-    uint8 i = *p_idx;
-    
-    // 1. 跳过非数字字符 (逗号、空格、字母等)
-    // 注意：不要跳过负号 '-'
-    while(str[i] != '\0' && (str[i] < '0' || str[i] > '9') && str[i] != '-') {
-        i++;
-    }
-    
-    // 2. 检测负号
-    if(str[i] == '-') {
-        sign = -1;
-        i++;
-    }
-    
-    // 3. 提取连续数字
-    while(str[i] >= '0' && str[i] <= '9') {
-        res = res * 10 + (str[i] - '0');
-        i++;
-    }
-    
-    *p_idx = i; // 更新外部索引指针
-    return res * sign;
+    char    str[100] = {0};
+    va_list arg;
+    va_start(arg, format);
+    vsprintf(str, format, arg);
+    va_end(arg);
+    bluetooth_send_string(str);
 }
 
-// =================================================================
-// 核心：解析江协小程序数据包
-// 格式: [joystick,LH,LV,RH,RV]  例: [joystick,0,100,0,0]
-// =================================================================
-void BT_Parse_Packet(char *packet)
+//-------------------------------------------------------------------------------------------------------------------
+// 函数简介     UART4中断处理函数（解析[数据包]）
+// 参数说明     void
+// 返回参数     void
+// 备注信息     需在isr.c中注册该函数（逐飞库中断规范）
+//-------------------------------------------------------------------------------------------------------------------
+void uart4_isr_handler(void)
 {
-    uint8 i = 0;
-    int lh, lv, rh, rv;
+    uint8 RxData = 0;
     
-    // 1. 头部匹配 "joy"
-    if(packet[0] == 'j' && packet[1] == 'o' && packet[2] == 'y')
+    // 查询UART4接收数据（逐飞库原生接口，C251兼容）
+    if(uart_query_byte(UART_4, &RxData))
     {
-        // 2. 跳过 "joystick" (8个字符)
-        i = 8; 
-        
-        // 3. 依次提取 4 个摇杆值
-        lh = My_Atoi(packet, &i); // 左横
-        lv = My_Atoi(packet, &i); // 左纵 (速度)
-        rh = My_Atoi(packet, &i); // 右横 (转向)
-        rv = My_Atoi(packet, &i); // 右纵
-        
-        // 4. 映射到控制变量
-        // LV (左摇杆纵向) -> 速度 (放大 2 倍)
-        remote_speed = lv * 2; 
-        
-        // RH (右摇杆横向) -> 转向 (放大 5 倍，转向需要灵敏点)
-        remote_turn = rh * 5;  
-        
-        // 5. 死区过滤 (防止归位误差导致车子慢飘)
-        if(remote_speed > -15 && remote_speed < 15) remote_speed = 0;
-        if(remote_turn > -15 && remote_turn < 15) remote_turn = 0;
-    }
-}
-
-// =================================================================
-// 接收状态机 (在主循环调用)
-// =================================================================
-void BT_Check_Rx(void)
-{
-    uint8 dat;
-    
-    // 查询方式读取串口数据
-    while(uart_query_byte(BT_UART_INDEX, &dat))
-    {
-        // 1. 等待包头 '['
-        if (dat == '[') 
+        // 状态机解析[数据包]（和STM32逻辑一致，适配C251）
+        if (RxState == 0)
         {
-            bt_packet_started = 1;
-            bt_rx_index = 0;
-            bt_rx_buffer[0] = '\0'; 
-        }
-        // 2. 接收中
-        else if (bt_packet_started)
-        {
-            // 3. 等待包尾 ']'
-            if (dat == ']') 
+            // 检测数据包起始符 '['
+            if (RxData == '[' && Serial_RxFlag == 0)
             {
-                bt_packet_started = 0;
-                bt_rx_buffer[bt_rx_index] = '\0'; // 补上结束符
-                
-                // 解析完整包
-                BT_Parse_Packet((char *)bt_rx_buffer);
-            }
-            // 4. 存入缓冲区
-            else 
-            {
-                if (bt_rx_index < BT_RX_MAX_LEN - 1)
-                {
-                    bt_rx_buffer[bt_rx_index++] = dat;
-                }
-                else // 溢出保护
-                {
-                    bt_packet_started = 0;
-                    bt_rx_index = 0;
-                }
+                RxState = 1;
+                pRxPacket = 0;
+                memset(Serial_RxPacket, 0, sizeof(Serial_RxPacket)); // 清空缓存
             }
         }
+        else if (RxState == 1)
+        {
+            // 检测数据包结束符 ']'
+            if (RxData == ']')
+            {
+                RxState = 0;
+                Serial_RxPacket[pRxPacket] = '\0';
+                Serial_RxFlag = 1; // 标记数据包接收完成
+            }
+            else
+            {
+                // 存储数据（防止数组越界）
+                if(pRxPacket < (sizeof(Serial_RxPacket) - 1))
+                {
+                    Serial_RxPacket[pRxPacket] = RxData;
+                    pRxPacket++;
+                }
+            }
+        }
     }
 }
+

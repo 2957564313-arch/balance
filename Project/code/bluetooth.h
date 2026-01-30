@@ -1,26 +1,74 @@
-#ifndef _BLUETOOTH_H_
-#define _BLUETOOTH_H_
+#ifndef __ZF_BLUETOOTH_H
+#define __ZF_BLUETOOTH_H
 
+// 引入逐飞库核心头文件（C251兼容）
 #include "zf_common_headfile.h"
 
-// =================================================================
-// 蓝牙硬件配置
-// =================================================================
-#define BT_UART_INDEX   UART_4
-#define BT_TX_PIN       UART4_TX_P03
-#define BT_RX_PIN       UART4_RX_P02
+// 全局变量声明（逐飞库风格）
+extern char    Serial_RxPacket[100];
+extern uint8   Serial_RxFlag;
 
-// 波特率 (HC-05/HC-08 默认通常为 9600)
-#define BT_BAUD_RATE    9600 
-#define BT_RX_MAX_LEN   64   // 缓冲区大小，64字节足够存下摇杆包了
+//-------------------------------------------------------------------------------------------------------------------
+// 函数声明（逐飞库风格，C251兼容）
+//-------------------------------------------------------------------------------------------------------------------
+/**
+ * @brief 蓝牙串口初始化（HC-04，UART4，P02/P03，9600波特率）
+ * @param 无
+ * @return 无
+ */
+void bluetooth_init(void);
 
-// 全局控制变量 (供 mode.c 读取)
-extern int16 remote_speed; // 遥控速度
-extern int16 remote_turn;  // 遥控转向
+/**
+ * @brief 发送单个字节
+ * @param dat 要发送的字节
+ * @return 无
+ */
+void bluetooth_send_byte(uint8 dat);
 
-// API 函数声明
-void BT_Init(void);
-void BT_Check_Rx(void); // 放在主循环里调用
-void BT_Printf(const char *fmt, ...); // 调试打印用
+/**
+ * @brief 发送指定长度数组
+ * @param buff 数组首地址
+ * @param len  数组长度
+ * @return 无
+ */
+void bluetooth_send_array(uint8 *buff, uint16 len);
 
-#endif
+/**
+ * @brief 发送字符串
+ * @param str 字符串首地址
+ * @return 无
+ */
+void bluetooth_send_string(char *str);
+
+/**
+ * @brief 幂运算（用于数字转字符串）
+ * @param X 底数
+ * @param Y 指数
+ * @return 运算结果
+ */
+uint32 bluetooth_pow(uint32 X, uint8 Y);
+
+/**
+ * @brief 发送数字（指定位数）
+ * @param num 要发送的数字
+ * @param len 数字位数
+ * @return 无
+ */
+void bluetooth_send_number(uint32 num, uint8 len);
+
+/**
+ * @brief 格式化打印函数（支持printf风格）
+ * @param format 格式化字符串
+ * @param ...    可变参数
+ * @return 无
+ */
+void bluetooth_printf(char *format, ...);
+
+/**
+ * @brief UART4中断处理函数（解析[数据包]）
+ * @param 无
+ * @return 无
+ */
+void uart4_isr_handler(void);
+
+#endif // __ZF_BLUETOOTH_H

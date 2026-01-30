@@ -1,143 +1,143 @@
-/*********************************************************************************************************************
-* STC32G Opensourec Library ¼´£¨STC32G ¿ªÔ´¿â£©ÊÇÒ»¸ö»ùÓÚ¹Ù·½ SDK ½Ó¿ÚµÄµÚÈý·½¿ªÔ´¿â
-* Copyright (c) 2022 SEEKFREE Öð·É¿Æ¼¼
-*
-* ±¾ÎÄ¼þÊÇSTC ¿ªÔ´¿âµÄÒ»²¿·Ö
-*
-* STC32G ¿ªÔ´¿â ÊÇÃâ·ÑÈí¼þ
-* Äú¿ÉÒÔ¸ù¾Ý×ÔÓÉÈí¼þ»ù½ð»á·¢²¼µÄ GPL£¨GNU General Public License£¬¼´ GNUÍ¨ÓÃ¹«¹²Ðí¿ÉÖ¤£©µÄÌõ¿î
-* ¼´ GPL µÄµÚ3°æ£¨¼´ GPL3.0£©»ò£¨ÄúÑ¡ÔñµÄ£©ÈÎºÎºóÀ´µÄ°æ±¾£¬ÖØÐÂ·¢²¼ºÍ/»òÐÞ¸ÄËü
-*
-* ±¾¿ªÔ´¿âµÄ·¢²¼ÊÇÏ£ÍûËüÄÜ·¢»Ó×÷ÓÃ£¬µ«²¢Î´¶ÔÆä×÷ÈÎºÎµÄ±£Ö¤
-* ÉõÖÁÃ»ÓÐÒþº¬µÄÊÊÏúÐÔ»òÊÊºÏÌØ¶¨ÓÃÍ¾µÄ±£Ö¤
-* ¸ü¶àÏ¸½ÚÇë²Î¼û GPL
-*
-* ÄúÓ¦¸ÃÔÚÊÕµ½±¾¿ªÔ´¿âµÄÍ¬Ê±ÊÕµ½Ò»·Ý GPL µÄ¸±±¾
-* Èç¹ûÃ»ÓÐ£¬Çë²ÎÔÄ<https://www.gnu.org/licenses/>
-*
-* ¶îÍâ×¢Ã÷£º
-* ±¾¿ªÔ´¿âÊ¹ÓÃ GPL3.0 ¿ªÔ´Ðí¿ÉÖ¤Ð­Òé ÒÔÉÏÐí¿ÉÉêÃ÷ÎªÒëÎÄ°æ±¾
-* Ðí¿ÉÉêÃ÷Ó¢ÎÄ°æÔÚ libraries/doc ÎÄ¼þ¼ÐÏÂµÄ GPL3_permission_statement.txt ÎÄ¼þÖÐ
-* Ðí¿ÉÖ¤¸±±¾ÔÚ libraries ÎÄ¼þ¼ÐÏÂ ¼´¸ÃÎÄ¼þ¼ÐÏÂµÄ LICENSE ÎÄ¼þ
-* »¶Ó­¸÷Î»Ê¹ÓÃ²¢´«²¥±¾³ÌÐò µ«ÐÞ¸ÄÄÚÈÝÊ±±ØÐë±£ÁôÖð·É¿Æ¼¼µÄ°æÈ¨ÉùÃ÷£¨¼´±¾ÉùÃ÷£©
-*
-* ÎÄ¼þÃû³Æ          
-* ¹«Ë¾Ãû³Æ          ³É¶¼Öð·É¿Æ¼¼ÓÐÏÞ¹«Ë¾
-* °æ±¾ÐÅÏ¢          ²é¿´ libraries/doc ÎÄ¼þ¼ÐÄÚ version ÎÄ¼þ °æ±¾ËµÃ÷
-* ¿ª·¢»·¾³          MDK FOR C251
-* ÊÊÓÃÆ½Ì¨          STC32G
-* µêÆÌÁ´½Ó          https://seekfree.taobao.com/
-*
-* ÐÞ¸Ä¼ÇÂ¼
-* ÈÕÆÚ              ×÷Õß           ±¸×¢
-* 2024-08-01        ´óW            first version
-********************************************************************************************************************/
-/*********************************************************************************************************************
-* ½ÓÏß¶¨Òå£º
-*                   ------------------------------------
-*                   Ä£¿é¹Ü½Å            µ¥Æ¬»ú¹Ü½Å
-*                   // Ó²¼þ SPI Òý½Å
-*                   SCL/SPC           ²é¿´ zf_device_imu660rb.h ÖÐ IMU660RB_SPC_PIN ºê¶¨Òå
-*                   SDA/DSI           ²é¿´ zf_device_imu660rb.h ÖÐ IMU660RB_SDI_PIN ºê¶¨Òå
-*                   SA0/SDO           ²é¿´ zf_device_imu660rb.h ÖÐ IMU660RB_SDO_PIN ºê¶¨Òå
-*                   CS                ²é¿´ zf_device_imu660rb.h ÖÐ IMU660RB_CS_PIN ºê¶¨Òå
-*                   VCC               3.3VµçÔ´
-*                   GND               µçÔ´µØ
-*                   ÆäÓàÒý½ÅÐü¿Õ
-*
-*                   // Èí¼þ IIC Òý½Å
-*                   SCL/SPC           ²é¿´ zf_device_imu660rb.h ÖÐ IMU660RB_SCL_PIN ºê¶¨Òå
-*                   SDA/DSI           ²é¿´ zf_device_imu660rb.h ÖÐ IMU660RB_SDA_PIN ºê¶¨Òå
-*                   VCC               3.3VµçÔ´
-*                   GND               µçÔ´µØ
-*                   ÆäÓàÒý½ÅÐü¿Õ
-*                   ------------------------------------
-********************************************************************************************************************/
-
-#ifndef _zf_device_imu660rb_h_
-#define _zf_device_imu660rb_h_
-
-#include "zf_common_typedef.h"
-#include "zf_device_type.h"
-
-#define IMU660RB_USE_INTERFACE       SOFT_SPI                        	// Ä¬ÈÏÊ¹ÓÃÈí¼þ SPI ·½Ê½Çý¶¯
-#if (IMU660RB_USE_INTERFACE==HARDWARE_SPI)
-//====================================================Ó²¼þ SPI Çý¶¯====================================================
-	#define IMU660RB_SPI_SPEED          ((uint32)10 * 1000 * 1000U)  	// Ó²¼þ SPI ËÙÂÊ
-	#define IMU660RB_SPI                SPI_0                        	// Ó²¼þ SPI ºÅ
-	#define IMU660RB_SPC_PIN            SPI0_CH3_SCLK_P43             	// Ó²¼þ SPI SCK Òý½Å
-	#define IMU660RB_SDI_PIN            SPI0_CH3_MOSI_P40             	// Ó²¼þ SPI MOSI Òý½Å
-	#define IMU660RB_SDO_PIN            SPI0_CH3_MISO_P41              	// Ó²¼þ SPI MISO Òý½Å
-	#define IMU660RB_CS_PIN             (IO_P42)                       	// CS Æ¬Ñ¡Òý½Å
-	#define IMU660RB_CS(x)              (P42 = x)
-//====================================================Ó²¼þ SPI Çý¶¯====================================================
-#elif (IMU660RB_USE_INTERFACE==SOFT_SPI)
-//====================================================Èí¼þ SPI Çý¶¯====================================================
-	#define IMU660RB_SPC_PIN            (P40)                           // Èí¼þ SPI SCK  Òý½Å
-	#define IMU660RB_SDI_PIN            (P41)                           // Èí¼þ SPI MOSI Òý½Å
-	#define IMU660RB_SDO_PIN            (P42)                           // Èí¼þ SPI MISO Òý½Å
-	#define IMU660RB_CS_PIN             (P43)                        	// Èí¼þ SPI CS   Òý½Å
-//====================================================Èí¼þ SPI Çý¶¯====================================================
-#elif (IMU660RB_USE_INTERFACE==SOFT_IIC)
-//====================================================Èí¼þ IIC Çý¶¯====================================================
-	#define IMU660RB_SOFT_IIC_DELAY     (0)                             // Èí¼þ IIC µÄÊ±ÖÓÑÓÊ±ÖÜÆÚ ÊýÖµÔ½Ð¡ IIC Í¨ÐÅËÙÂÊÔ½¿ì
-	#define IMU660RB_SCL_PIN            (IO_P40)                        // Èí¼þ IIC SCL Òý½Å Á¬½Ó IMU660RB µÄ SCL Òý½Å
-	#define IMU660RB_SDA_PIN            (IO_P41)                        // Èí¼þ IIC SDA Òý½Å Á¬½Ó IMU660RB µÄ SDA Òý½Å
-//====================================================Èí¼þ IIC Çý¶¯====================================================
-#endif
-
-#define IMU660RB_TIMEOUT_COUNT      (0x00FF)                            // IMU660 ³¬Ê±¼ÆÊý
-
-//================================================¶¨Òå imu660rb ÄÚ²¿µØÖ·================================================
-#define IMU660RB_DEV_ADDR           (0x6B)                              // SA0½ÓµØ£º0x68 SA0ÉÏÀ­£º0x69 Ä£¿éÄ¬ÈÏÉÏÀ­
-#define IMU660RB_SPI_W              (0x00)
-#define IMU660RB_SPI_R              (0x80)
-
-#define IMU660RB_CHIP_ID            (0x0F)
-
-#define IMU660RB_INT1_CTRL          (0x0D)
-#define IMU660RB_CTRL1_XL           (0x10)
-#define IMU660RB_CTRL2_G            (0x11)
-#define IMU660RB_CTRL3_C            (0x12)
-#define IMU660RB_CTRL4_C            (0x13)
-#define IMU660RB_CTRL5_C            (0x14)
-#define IMU660RB_CTRL6_C            (0x15)
-#define IMU660RB_CTRL7_G            (0x16)
-#define IMU660RB_CTRL9_XL           (0x18)
-
-#define IMU660RB_ACC_ADDRESS        (0x28)
-#define IMU660RB_GYRO_ADDRESS       (0x22)
-
-#define IMU660RB_ACC_SAMPLE         (0x3C)                      // ¼ÓËÙ¶È¼ÆÁ¿³Ì
-// ÉèÖÃÎª:0x30 ¼ÓËÙ¶ÈÁ¿³ÌÎª:¡À2G      »ñÈ¡µ½µÄ¼ÓËÙ¶È¼ÆÊý¾Ý ³ýÒÔ16393£¬¿ÉÒÔ×ª»¯Îª´øÎïÀíµ¥Î»µÄÊý¾Ý£¬µ¥Î»£ºg(m/s^2)
-// ÉèÖÃÎª:0x38 ¼ÓËÙ¶ÈÁ¿³ÌÎª:¡À4G      »ñÈ¡µ½µÄ¼ÓËÙ¶È¼ÆÊý¾Ý ³ýÒÔ8197£¬ ¿ÉÒÔ×ª»¯Îª´øÎïÀíµ¥Î»µÄÊý¾Ý£¬µ¥Î»£ºg(m/s^2)
-// ÉèÖÃÎª:0x3C ¼ÓËÙ¶ÈÁ¿³ÌÎª:¡À8G      »ñÈ¡µ½µÄ¼ÓËÙ¶È¼ÆÊý¾Ý ³ýÒÔ4098£¬ ¿ÉÒÔ×ª»¯Îª´øÎïÀíµ¥Î»µÄÊý¾Ý£¬µ¥Î»£ºg(m/s^2)
-// ÉèÖÃÎª:0x34 ¼ÓËÙ¶ÈÁ¿³ÌÎª:¡À16G     »ñÈ¡µ½µÄ¼ÓËÙ¶È¼ÆÊý¾Ý ³ýÒÔ2049£¬ ¿ÉÒÔ×ª»¯Îª´øÎïÀíµ¥Î»µÄÊý¾Ý£¬µ¥Î»£ºg(m/s^2)
-
-#define IMU660RB_GYR_SAMPLE         (0x5C)                      // ÍÓÂÝÒÇÁ¿³Ì
-// ÉèÖÃÎª:0x52 ÍÓÂÝÒÇÁ¿³ÌÎª:¡À125dps  »ñÈ¡µ½µÄÍÓÂÝÒÇÊý¾Ý³ýÒÔ228.6£¬   ¿ÉÒÔ×ª»¯Îª´øÎïÀíµ¥Î»µÄÊý¾Ý£¬µ¥Î»Îª£º¡ã/s
-// ÉèÖÃÎª:0x50 ÍÓÂÝÒÇÁ¿³ÌÎª:¡À250dps  »ñÈ¡µ½µÄÍÓÂÝÒÇÊý¾Ý³ýÒÔ114.3£¬   ¿ÉÒÔ×ª»¯Îª´øÎïÀíµ¥Î»µÄÊý¾Ý£¬µ¥Î»Îª£º¡ã/s
-// ÉèÖÃÎª:0x54 ÍÓÂÝÒÇÁ¿³ÌÎª:¡À500dps  »ñÈ¡µ½µÄÍÓÂÝÒÇÊý¾Ý³ýÒÔ57.1£¬    ¿ÉÒÔ×ª»¯Îª´øÎïÀíµ¥Î»µÄÊý¾Ý£¬µ¥Î»Îª£º¡ã/s
-// ÉèÖÃÎª:0x58 ÍÓÂÝÒÇÁ¿³ÌÎª:¡À1000dps »ñÈ¡µ½µÄÍÓÂÝÒÇÊý¾Ý³ýÒÔ28.6£¬    ¿ÉÒÔ×ª»¯Îª´øÎïÀíµ¥Î»µÄÊý¾Ý£¬µ¥Î»Îª£º¡ã/s
-// ÉèÖÃÎª:0x5C ÍÓÂÝÒÇÁ¿³ÌÎª:¡À2000dps »ñÈ¡µ½µÄÍÓÂÝÒÇÊý¾Ý³ýÒÔ14.3£¬    ¿ÉÒÔ×ª»¯Îª´øÎïÀíµ¥Î»µÄÊý¾Ý£¬µ¥Î»Îª£º¡ã/s
-// ÉèÖÃÎª:0x51 ÍÓÂÝÒÇÁ¿³ÌÎª:¡À4000dps »ñÈ¡µ½µÄÍÓÂÝÒÇÊý¾Ý³ýÒÔ7.1£¬     ¿ÉÒÔ×ª»¯Îª´øÎïÀíµ¥Î»µÄÊý¾Ý£¬µ¥Î»Îª£º¡ã/s
-
-
-
-//================================================ÉùÃ÷ IMU963RB È«¾Ö±äÁ¿================================================
-extern int16 imu660rb_gyro_x, imu660rb_gyro_y, imu660rb_gyro_z;                   // ÈýÖáÍÓÂÝÒÇÊý¾Ý      gyro (ÍÓÂÝÒÇ)
-extern int16 imu660rb_acc_x, imu660rb_acc_y, imu660rb_acc_z;                      // ÈýÖá¼ÓËÙ¶È¼ÆÊý¾Ý     acc (accelerometer ¼ÓËÙ¶È¼Æ)
-//================================================ÉùÃ÷ IMU963RB È«¾Ö±äÁ¿================================================
-
-
-//================================================ÉùÃ÷ IMU963RB »ù´¡º¯Êý================================================
-void  imu660rb_get_acc            (void);                                         // »ñÈ¡ IMU660RB ¼ÓËÙ¶È¼ÆÊý¾Ý
-void  imu660rb_get_gyro           (void);                                         // »ñÈ¡ IMU660RB ÍÓÂÝÒÇÊý¾Ý
-float imu660rb_acc_transition     (int16 acc_value);                              // ½« IMU660RB ¼ÓËÙ¶È¼ÆÊý¾Ý×ª»»ÎªÊµ¼ÊÎïÀíÊý¾Ý
-float imu660rb_gyro_transition    (int16 gyro_value);                             // ½« IMU660RB ÍÓÂÝÒÇÊý¾Ý×ª»»ÎªÊµ¼ÊÎïÀíÊý¾Ý
-uint8 imu660rb_init               (void);                                         // ³õÊ¼»¯ IMU660RB
-//================================================ÉùÃ÷ IMU963RB »ù´¡º¯Êý================================================
-
-
-#endif
-
+/*********************************************************************************************************************
+* STC32G Opensourec Library å³ï¼ˆSTC32G å¼€æºåº“ï¼‰æ˜¯ä¸€ä¸ªåŸºäºŽå®˜æ–¹ SDK æŽ¥å£çš„ç¬¬ä¸‰æ–¹å¼€æºåº“
+* Copyright (c) 2022 SEEKFREE é€é£žç§‘æŠ€
+*
+* æœ¬æ–‡ä»¶æ˜¯STC å¼€æºåº“çš„ä¸€éƒ¨åˆ†
+*
+* STC32G å¼€æºåº“ æ˜¯å…è´¹è½¯ä»¶
+* æ‚¨å¯ä»¥æ ¹æ®è‡ªç”±è½¯ä»¶åŸºé‡‘ä¼šå‘å¸ƒçš„ GPLï¼ˆGNU General Public Licenseï¼Œå³ GNUé€šç”¨å…¬å…±è®¸å¯è¯ï¼‰çš„æ¡æ¬¾
+* å³ GPL çš„ç¬¬3ç‰ˆï¼ˆå³ GPL3.0ï¼‰æˆ–ï¼ˆæ‚¨é€‰æ‹©çš„ï¼‰ä»»ä½•åŽæ¥çš„ç‰ˆæœ¬ï¼Œé‡æ–°å‘å¸ƒå’Œ/æˆ–ä¿®æ”¹å®ƒ
+*
+* æœ¬å¼€æºåº“çš„å‘å¸ƒæ˜¯å¸Œæœ›å®ƒèƒ½å‘æŒ¥ä½œç”¨ï¼Œä½†å¹¶æœªå¯¹å…¶ä½œä»»ä½•çš„ä¿è¯
+* ç”šè‡³æ²¡æœ‰éšå«çš„é€‚é”€æ€§æˆ–é€‚åˆç‰¹å®šç”¨é€”çš„ä¿è¯
+* æ›´å¤šç»†èŠ‚è¯·å‚è§ GPL
+*
+* æ‚¨åº”è¯¥åœ¨æ”¶åˆ°æœ¬å¼€æºåº“çš„åŒæ—¶æ”¶åˆ°ä¸€ä»½ GPL çš„å‰¯æœ¬
+* å¦‚æžœæ²¡æœ‰ï¼Œè¯·å‚é˜…<https://www.gnu.org/licenses/>
+*
+* é¢å¤–æ³¨æ˜Žï¼š
+* æœ¬å¼€æºåº“ä½¿ç”¨ GPL3.0 å¼€æºè®¸å¯è¯åè®® ä»¥ä¸Šè®¸å¯ç”³æ˜Žä¸ºè¯‘æ–‡ç‰ˆæœ¬
+* è®¸å¯ç”³æ˜Žè‹±æ–‡ç‰ˆåœ¨ libraries/doc æ–‡ä»¶å¤¹ä¸‹çš„ GPL3_permission_statement.txt æ–‡ä»¶ä¸­
+* è®¸å¯è¯å‰¯æœ¬åœ¨ libraries æ–‡ä»¶å¤¹ä¸‹ å³è¯¥æ–‡ä»¶å¤¹ä¸‹çš„ LICENSE æ–‡ä»¶
+* æ¬¢è¿Žå„ä½ä½¿ç”¨å¹¶ä¼ æ’­æœ¬ç¨‹åº ä½†ä¿®æ”¹å†…å®¹æ—¶å¿…é¡»ä¿ç•™é€é£žç§‘æŠ€çš„ç‰ˆæƒå£°æ˜Žï¼ˆå³æœ¬å£°æ˜Žï¼‰
+*
+* æ–‡ä»¶åç§°          
+* å…¬å¸åç§°          æˆéƒ½é€é£žç§‘æŠ€æœ‰é™å…¬å¸
+* ç‰ˆæœ¬ä¿¡æ¯          æŸ¥çœ‹ libraries/doc æ–‡ä»¶å¤¹å†… version æ–‡ä»¶ ç‰ˆæœ¬è¯´æ˜Ž
+* å¼€å‘çŽ¯å¢ƒ          MDK FOR C251
+* é€‚ç”¨å¹³å°          STC32G
+* åº—é“ºé“¾æŽ¥          https://seekfree.taobao.com/
+*
+* ä¿®æ”¹è®°å½•
+* æ—¥æœŸ              ä½œè€…           å¤‡æ³¨
+* 2024-08-01        å¤§W            first version
+********************************************************************************************************************/
+/*********************************************************************************************************************
+* æŽ¥çº¿å®šä¹‰ï¼š
+*                   ------------------------------------
+*                   æ¨¡å—ç®¡è„š            å•ç‰‡æœºç®¡è„š
+*                   // ç¡¬ä»¶ SPI å¼•è„š
+*                   SCL/SPC           æŸ¥çœ‹ zf_device_imu660rb.h ä¸­ IMU660RB_SPC_PIN å®å®šä¹‰
+*                   SDA/DSI           æŸ¥çœ‹ zf_device_imu660rb.h ä¸­ IMU660RB_SDI_PIN å®å®šä¹‰
+*                   SA0/SDO           æŸ¥çœ‹ zf_device_imu660rb.h ä¸­ IMU660RB_SDO_PIN å®å®šä¹‰
+*                   CS                æŸ¥çœ‹ zf_device_imu660rb.h ä¸­ IMU660RB_CS_PIN å®å®šä¹‰
+*                   VCC               3.3Vç”µæº
+*                   GND               ç”µæºåœ°
+*                   å…¶ä½™å¼•è„šæ‚¬ç©º
+*
+*                   // è½¯ä»¶ IIC å¼•è„š
+*                   SCL/SPC           æŸ¥çœ‹ zf_device_imu660rb.h ä¸­ IMU660RB_SCL_PIN å®å®šä¹‰
+*                   SDA/DSI           æŸ¥çœ‹ zf_device_imu660rb.h ä¸­ IMU660RB_SDA_PIN å®å®šä¹‰
+*                   VCC               3.3Vç”µæº
+*                   GND               ç”µæºåœ°
+*                   å…¶ä½™å¼•è„šæ‚¬ç©º
+*                   ------------------------------------
+********************************************************************************************************************/
+
+#ifndef _zf_device_imu660rb_h_
+#define _zf_device_imu660rb_h_
+
+#include "zf_common_typedef.h"
+#include "zf_device_type.h"
+
+#define IMU660RB_USE_INTERFACE       SOFT_SPI                        	// é»˜è®¤ä½¿ç”¨è½¯ä»¶ SPI æ–¹å¼é©±åŠ¨
+#if (IMU660RB_USE_INTERFACE==HARDWARE_SPI)
+//====================================================ç¡¬ä»¶ SPI é©±åŠ¨====================================================
+	#define IMU660RB_SPI_SPEED          ((uint32)10 * 1000 * 1000U)  	// ç¡¬ä»¶ SPI é€ŸçŽ‡
+	#define IMU660RB_SPI                SPI_0                        	// ç¡¬ä»¶ SPI å·
+	#define IMU660RB_SPC_PIN            SPI0_CH3_SCLK_P43             	// ç¡¬ä»¶ SPI SCK å¼•è„š
+	#define IMU660RB_SDI_PIN            SPI0_CH3_MOSI_P40             	// ç¡¬ä»¶ SPI MOSI å¼•è„š
+	#define IMU660RB_SDO_PIN            SPI0_CH3_MISO_P41              	// ç¡¬ä»¶ SPI MISO å¼•è„š
+	#define IMU660RB_CS_PIN             (IO_P42)                       	// CS ç‰‡é€‰å¼•è„š
+	#define IMU660RB_CS(x)              (P42 = x)
+//====================================================ç¡¬ä»¶ SPI é©±åŠ¨====================================================
+#elif (IMU660RB_USE_INTERFACE==SOFT_SPI)
+//====================================================è½¯ä»¶ SPI é©±åŠ¨====================================================
+	#define IMU660RB_SPC_PIN            (P40)                           // è½¯ä»¶ SPI SCK  å¼•è„š
+	#define IMU660RB_SDI_PIN            (P41)                           // è½¯ä»¶ SPI MOSI å¼•è„š
+	#define IMU660RB_SDO_PIN            (P42)                           // è½¯ä»¶ SPI MISO å¼•è„š
+	#define IMU660RB_CS_PIN             (P43)                        	// è½¯ä»¶ SPI CS   å¼•è„š
+//====================================================è½¯ä»¶ SPI é©±åŠ¨====================================================
+#elif (IMU660RB_USE_INTERFACE==SOFT_IIC)
+//====================================================è½¯ä»¶ IIC é©±åŠ¨====================================================
+	#define IMU660RB_SOFT_IIC_DELAY     (0)                             // è½¯ä»¶ IIC çš„æ—¶é’Ÿå»¶æ—¶å‘¨æœŸ æ•°å€¼è¶Šå° IIC é€šä¿¡é€ŸçŽ‡è¶Šå¿«
+	#define IMU660RB_SCL_PIN            (IO_P40)                        // è½¯ä»¶ IIC SCL å¼•è„š è¿žæŽ¥ IMU660RB çš„ SCL å¼•è„š
+	#define IMU660RB_SDA_PIN            (IO_P41)                        // è½¯ä»¶ IIC SDA å¼•è„š è¿žæŽ¥ IMU660RB çš„ SDA å¼•è„š
+//====================================================è½¯ä»¶ IIC é©±åŠ¨====================================================
+#endif
+
+#define IMU660RB_TIMEOUT_COUNT      (0x00FF)                            // IMU660 è¶…æ—¶è®¡æ•°
+
+//================================================å®šä¹‰ imu660rb å†…éƒ¨åœ°å€================================================
+#define IMU660RB_DEV_ADDR           (0x6B)                              // SA0æŽ¥åœ°ï¼š0x68 SA0ä¸Šæ‹‰ï¼š0x69 æ¨¡å—é»˜è®¤ä¸Šæ‹‰
+#define IMU660RB_SPI_W              (0x00)
+#define IMU660RB_SPI_R              (0x80)
+
+#define IMU660RB_CHIP_ID            (0x0F)
+
+#define IMU660RB_INT1_CTRL          (0x0D)
+#define IMU660RB_CTRL1_XL           (0x10)
+#define IMU660RB_CTRL2_G            (0x11)
+#define IMU660RB_CTRL3_C            (0x12)
+#define IMU660RB_CTRL4_C            (0x13)
+#define IMU660RB_CTRL5_C            (0x14)
+#define IMU660RB_CTRL6_C            (0x15)
+#define IMU660RB_CTRL7_G            (0x16)
+#define IMU660RB_CTRL9_XL           (0x18)
+
+#define IMU660RB_ACC_ADDRESS        (0x28)
+#define IMU660RB_GYRO_ADDRESS       (0x22)
+
+#define IMU660RB_ACC_SAMPLE         (0x3C)                      // åŠ é€Ÿåº¦è®¡é‡ç¨‹
+// è®¾ç½®ä¸º:0x30 åŠ é€Ÿåº¦é‡ç¨‹ä¸º:Â±2G      èŽ·å–åˆ°çš„åŠ é€Ÿåº¦è®¡æ•°æ® é™¤ä»¥16393ï¼Œå¯ä»¥è½¬åŒ–ä¸ºå¸¦ç‰©ç†å•ä½çš„æ•°æ®ï¼Œå•ä½ï¼šg(m/s^2)
+// è®¾ç½®ä¸º:0x38 åŠ é€Ÿåº¦é‡ç¨‹ä¸º:Â±4G      èŽ·å–åˆ°çš„åŠ é€Ÿåº¦è®¡æ•°æ® é™¤ä»¥8197ï¼Œ å¯ä»¥è½¬åŒ–ä¸ºå¸¦ç‰©ç†å•ä½çš„æ•°æ®ï¼Œå•ä½ï¼šg(m/s^2)
+// è®¾ç½®ä¸º:0x3C åŠ é€Ÿåº¦é‡ç¨‹ä¸º:Â±8G      èŽ·å–åˆ°çš„åŠ é€Ÿåº¦è®¡æ•°æ® é™¤ä»¥4098ï¼Œ å¯ä»¥è½¬åŒ–ä¸ºå¸¦ç‰©ç†å•ä½çš„æ•°æ®ï¼Œå•ä½ï¼šg(m/s^2)
+// è®¾ç½®ä¸º:0x34 åŠ é€Ÿåº¦é‡ç¨‹ä¸º:Â±16G     èŽ·å–åˆ°çš„åŠ é€Ÿåº¦è®¡æ•°æ® é™¤ä»¥2049ï¼Œ å¯ä»¥è½¬åŒ–ä¸ºå¸¦ç‰©ç†å•ä½çš„æ•°æ®ï¼Œå•ä½ï¼šg(m/s^2)
+
+#define IMU660RB_GYR_SAMPLE         (0x5C)                      // é™€èžºä»ªé‡ç¨‹
+// è®¾ç½®ä¸º:0x52 é™€èžºä»ªé‡ç¨‹ä¸º:Â±125dps  èŽ·å–åˆ°çš„é™€èžºä»ªæ•°æ®é™¤ä»¥228.6ï¼Œ   å¯ä»¥è½¬åŒ–ä¸ºå¸¦ç‰©ç†å•ä½çš„æ•°æ®ï¼Œå•ä½ä¸ºï¼šÂ°/s
+// è®¾ç½®ä¸º:0x50 é™€èžºä»ªé‡ç¨‹ä¸º:Â±250dps  èŽ·å–åˆ°çš„é™€èžºä»ªæ•°æ®é™¤ä»¥114.3ï¼Œ   å¯ä»¥è½¬åŒ–ä¸ºå¸¦ç‰©ç†å•ä½çš„æ•°æ®ï¼Œå•ä½ä¸ºï¼šÂ°/s
+// è®¾ç½®ä¸º:0x54 é™€èžºä»ªé‡ç¨‹ä¸º:Â±500dps  èŽ·å–åˆ°çš„é™€èžºä»ªæ•°æ®é™¤ä»¥57.1ï¼Œ    å¯ä»¥è½¬åŒ–ä¸ºå¸¦ç‰©ç†å•ä½çš„æ•°æ®ï¼Œå•ä½ä¸ºï¼šÂ°/s
+// è®¾ç½®ä¸º:0x58 é™€èžºä»ªé‡ç¨‹ä¸º:Â±1000dps èŽ·å–åˆ°çš„é™€èžºä»ªæ•°æ®é™¤ä»¥28.6ï¼Œ    å¯ä»¥è½¬åŒ–ä¸ºå¸¦ç‰©ç†å•ä½çš„æ•°æ®ï¼Œå•ä½ä¸ºï¼šÂ°/s
+// è®¾ç½®ä¸º:0x5C é™€èžºä»ªé‡ç¨‹ä¸º:Â±2000dps èŽ·å–åˆ°çš„é™€èžºä»ªæ•°æ®é™¤ä»¥14.3ï¼Œ    å¯ä»¥è½¬åŒ–ä¸ºå¸¦ç‰©ç†å•ä½çš„æ•°æ®ï¼Œå•ä½ä¸ºï¼šÂ°/s
+// è®¾ç½®ä¸º:0x51 é™€èžºä»ªé‡ç¨‹ä¸º:Â±4000dps èŽ·å–åˆ°çš„é™€èžºä»ªæ•°æ®é™¤ä»¥7.1ï¼Œ     å¯ä»¥è½¬åŒ–ä¸ºå¸¦ç‰©ç†å•ä½çš„æ•°æ®ï¼Œå•ä½ä¸ºï¼šÂ°/s
+
+
+
+//================================================å£°æ˜Ž IMU963RB å…¨å±€å˜é‡================================================
+extern int16 imu660rb_gyro_x, imu660rb_gyro_y, imu660rb_gyro_z;                   // ä¸‰è½´é™€èžºä»ªæ•°æ®      gyro (é™€èžºä»ª)
+extern int16 imu660rb_acc_x, imu660rb_acc_y, imu660rb_acc_z;                      // ä¸‰è½´åŠ é€Ÿåº¦è®¡æ•°æ®     acc (accelerometer åŠ é€Ÿåº¦è®¡)
+//================================================å£°æ˜Ž IMU963RB å…¨å±€å˜é‡================================================
+
+
+//================================================å£°æ˜Ž IMU963RB åŸºç¡€å‡½æ•°================================================
+void  imu660rb_get_acc            (void);                                         // èŽ·å– IMU660RB åŠ é€Ÿåº¦è®¡æ•°æ®
+void  imu660rb_get_gyro           (void);                                         // èŽ·å– IMU660RB é™€èžºä»ªæ•°æ®
+float imu660rb_acc_transition     (int16 acc_value);                              // å°† IMU660RB åŠ é€Ÿåº¦è®¡æ•°æ®è½¬æ¢ä¸ºå®žé™…ç‰©ç†æ•°æ®
+float imu660rb_gyro_transition    (int16 gyro_value);                             // å°† IMU660RB é™€èžºä»ªæ•°æ®è½¬æ¢ä¸ºå®žé™…ç‰©ç†æ•°æ®
+uint8 imu660rb_init               (void);                                         // åˆå§‹åŒ– IMU660RB
+//================================================å£°æ˜Ž IMU963RB åŸºç¡€å‡½æ•°================================================
+
+
+#endif
+

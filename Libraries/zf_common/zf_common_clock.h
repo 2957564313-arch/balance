@@ -1,30 +1,30 @@
-#ifndef __BOARD_H
-#define __BOARD_H
-#include "zf_common_typedef.h"
-#include "zf_driver_uart.h"
-
-
-#define SYSTEM_CLOCK_22_1184M 	22118400
-#define SYSTEM_CLOCK_24M      	24000000
-#define SYSTEM_CLOCK_27M      	27000000
-#define SYSTEM_CLOCK_30M      	30000000
-#define SYSTEM_CLOCK_33_1776M 	33177600
-#define SYSTEM_CLOCK_35M      	35000000
-
-
-#define EXTERNAL_CRYSTA_ENABLE 	0			// Ê¹ÓÃÍâ²¿¾§Õñ£¬0Îª²»Ê¹ÓÃ£¬1ÎªÊ¹ÓÃ£¨½¨ÒéÊ¹ÓÃÄÚ²¿¾§Õñ£©
-
-#define FOSC					0			// FOSCµÄÖµÉèÖÃÎª0£¬ÔòÄÚºËÆµÂÊÍ¨¹ı¼Ä´æÆ÷Ç¿ÖÆÉèÖÃ¡£
-											// ²»¹ÜSTC-ISPÈí¼şÏÂÔØÊ±ºòÑ¡Ôñ¶àÉÙ£¬Ëû¶¼ÊÇÉèÖÃµÄÆµÂÊ¡£
-											
-//#define FOSC      	SYSTEM_CLOCK_30M	// FOSCµÄÖµÉèÖÃÎª30Mhz,
-											// Ê¹ÓÃSTC-ISPÈí¼şÏÂÔØµÄÊ±ºò£¬
-											// ´ËÆµÂÊĞèÒª¸úSTC-ISPÈí¼şÖĞµÄ <ÊäÈëÓÃ»§³ÌĞòÔËĞĞÊ±µÄIRCÆµÂÊ>Ñ¡ÏîµÄÆµÂÊÒ»ÖÂ¡£
-
-extern int32 system_clock;
-
-void clock_init (uint32 clock);                                               // ºËĞÄÊ±ÖÓ³õÊ¼»¯
-
-
-#endif
-
+#ifndef __BOARD_H
+#define __BOARD_H
+#include "zf_common_typedef.h"
+#include "zf_driver_uart.h"
+
+
+#define SYSTEM_CLOCK_22_1184M 	22118400
+#define SYSTEM_CLOCK_24M      	24000000
+#define SYSTEM_CLOCK_27M      	27000000
+#define SYSTEM_CLOCK_30M      	30000000
+#define SYSTEM_CLOCK_33_1776M 	33177600
+#define SYSTEM_CLOCK_35M      	35000000
+
+
+#define EXTERNAL_CRYSTA_ENABLE 	0			// ä½¿ç”¨å¤–éƒ¨æ™¶æŒ¯ï¼Œ0ä¸ºä¸ä½¿ç”¨ï¼Œ1ä¸ºä½¿ç”¨ï¼ˆå»ºè®®ä½¿ç”¨å†…éƒ¨æ™¶æŒ¯ï¼‰
+
+#define FOSC					0			// FOSCçš„å€¼è®¾ç½®ä¸º0ï¼Œåˆ™å†…æ ¸é¢‘ç‡é€šè¿‡å¯„å­˜å™¨å¼ºåˆ¶è®¾ç½®ã€‚
+											// ä¸ç®¡STC-ISPè½¯ä»¶ä¸‹è½½æ—¶å€™é€‰æ‹©å¤šå°‘ï¼Œä»–éƒ½æ˜¯è®¾ç½®çš„é¢‘ç‡ã€‚
+											
+//#define FOSC      	SYSTEM_CLOCK_30M	// FOSCçš„å€¼è®¾ç½®ä¸º30Mhz,
+											// ä½¿ç”¨STC-ISPè½¯ä»¶ä¸‹è½½çš„æ—¶å€™ï¼Œ
+											// æ­¤é¢‘ç‡éœ€è¦è·ŸSTC-ISPè½¯ä»¶ä¸­çš„ <è¾“å…¥ç”¨æˆ·ç¨‹åºè¿è¡Œæ—¶çš„IRCé¢‘ç‡>é€‰é¡¹çš„é¢‘ç‡ä¸€è‡´ã€‚
+
+extern int32 system_clock;
+
+void clock_init (uint32 clock);                                               // æ ¸å¿ƒæ—¶é’Ÿåˆå§‹åŒ–
+
+
+#endif
+
