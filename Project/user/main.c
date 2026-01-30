@@ -1,123 +1,63 @@
 #include "zf_common_headfile.h"
+#include "OLED.h"
+#include "imu_mpu6050.h" 
+#include "balance.h" 
 
-// =================================================================
-// 寄存器直接配置定时器 (适配 STC32G @ 35MHz)
-// =================================================================
+// 适配补丁
+#ifndef pit_timer_ms
+    #define pit_timer_ms(tim, ms)  pit_init(tim, (uint32)(ms) * (system_clock / 1000))
+#endif
 
-void Init_Timer0_100us(void)
+extern mahony_t m_imu; 
+
+void TIM2_IRQHandler(void) interrupt 12
 {
-    // Timer0: 16位自动重装载, 1T模式
-    // 35MHz下，100us = 3500个时钟周期
-    // 初值 = 65536 - 3500 = 62036 (0xF254)
-    
-    AUXR |= 0x80;    // 定时器0为1T模式
-    TMOD &= 0xF0;    // 设置定时器0为模式0(16位自动重装载)
-    
-    TL0 = 0x54;      // 低8位 (0xF254)
-    TH0 = 0xF2;      // 高8位
-    
-    TF0 = 0;         // 清标志
-    TR0 = 1;         // 启动计时
-    ET0 = 1;         // 开中断
+    Balance_Task(); 
 }
 
-void Init_Timer2_5ms(void)
-{
-    // Timer2: 16位自动重装载
-    // 35MHz 1T模式下无法延时5ms (最大约1.87ms)
-    // 必须开启 12T 模式！频率 = 35M/12 = 2.9166MHz
-    // 5ms = (35M/12) * 0.005 ≈ 14583
-    // 初值 = 65536 - 14583 = 50953 (0xC709)
-    // 误差极小，可忽略
-    
-    AUXR &= ~(1<<2); // Bit2=0: 定时器2为12T模式 (分频)
-    
-    T2L = 0x09;      // 低8位 (0xC709)
-    T2H = 0xC7;      // 高8位
-    
-    AUXR |= (1<<4);  // Bit4=1: 启动定时器2 (T2R)
-    IE2  |= (1<<2);  // Bit2=1: 开定时器2中断 (ET2)
-}
-
-// =================================================================
-// 中断服务函数
-// =================================================================
-
-// 1. 定时器0中断 (100us) -> 软件编码器扫描
-void timer0_isr(void) interrupt 1 
-{
-    Soft_Encoder_Scan(); 
-}
-
-// 2. 定时器2中断 (5ms) -> 平衡核心任务
-void timer2_isr(void) interrupt 12
-{
-    // STC32G 硬件自动清除中断标志，无需软件干预
-    
-    Balance_Task(); // 核心平衡控制
-    Key_Tick();     // 按键扫描
-    
-    // 注意：不要在这里放 printf 或 OLED_Show，会卡死中断！
-}
-
-// =================================================================
-// 主函数
-// =================================================================
 void main(void)
 {
-    // 1. 系统时钟初始化 (改为 35MHz)
-    // 如果 zf_common_clock.h 里没有 SYSTEM_CLOCK_35M，
-    // 请尝试直接写 clock_init(35000000);
-    clock_init(SYSTEM_CLOCK_35M);
+    uint8 mpu_status = 0;
     
-    // 2. 调试串口初始化 (打印调试信息用)
-    debug_init(); 
+    // --- 硬件初始化 ---
+    clock_init(SYSTEM_CLOCK_35M); 
+    debug_init();                 
+    
+    OLED_Init();                  
+    
+    mahony_init(&m_imu, 200.0f, 0.5f, 0.0f);
+    
+    OLED_ShowString(1, 1, "Init MPU...");
+    mpu_status = mpu6050_init(); 
+    
+    if(mpu_status == 0)
+    {
+        OLED_ShowString(2, 1, "MPU OK!     ");
+        pit_timer_ms(TIM_2, 5); 
+        interrupt_global_enable(); 
+    }
+    else
+    {
+        OLED_ShowString(2, 1, "MPU Error!  ");
+        while(1); 
+    }
+    
+    // --- 静态UI ---
+    OLED_Clear(); 
+    OLED_ShowString(1, 1, "=== BALANCE ===");
+    OLED_ShowString(2, 1, "Pit:");
+    OLED_ShowString(3, 1, "Rol:");
+    OLED_ShowString(4, 1, "Yaw:");
 
-    // 3. 硬件底层初始化
-    LED_Init();    // 心跳灯
-    Buzzer_Init(); // 蜂鸣器
-    Motor_Init();  // 电机 & 编码器
-    BT_Init();     // 蓝牙
-    OLED_Init();   // 屏幕
-    Key_Init();    // 按键
-    
-    // 4. 应用层初始化
-    Param_Init();  // 读取 Flash 参数 (必须先于 PID)
-    Mode_Init();   // 循迹算法 & 灰度传感器
-    Balance_Init();// PID & IMU (必须最后，确保参数已就绪)
-    
-    // 提示音：初始化完成
-    Buzzer_Beep(200);
-    
-    // 5. 开启定时器 (开始干活)
-    Init_Timer0_100us();
-    Init_Timer2_5ms();
-    
-    // 6. 开启全局中断
-    EA = 1; 
-
-    // 7. 主循环 (处理低优先级事务)
+    // --- 主循环 ---
     while(1)
     {
-        // 接收蓝牙数据 (如果有数据会更新全局变量)
-        BT_Check_Rx();
-        
-        // 简单的按键处理 (给 Mode 4 用)
-        // 这里的 Key_Check 是非阻塞的
-        {
-			// 使用我新加的这个专门给 main 用的简单函数
-			// 它会自动检测任意按键的【单击】事件
-			uint8 key = Key_Check_Simple(); 
 
-			if(key) Mode_Path_Key_Handler(key);
-        }
+        system_delay_ms(5); 
         
-        // 屏幕刷新 (建议不要刷太快，影响蓝牙接收)
-        // Menu_Show(); 
-        
-        // 心跳灯：每 500ms 翻转一次
-        // 这里的 system_delay_ms 是阻塞的，如果影响蓝牙，建议用计数器代替
-        // 为了蓝牙流畅，暂时注释掉阻塞延时
-        // LED_TOGGLE(); system_delay_ms(500); 
+        // 刷新显示
+        OLED_Show_Float(2, 6, m_imu.pitch,     8, 1);
+        OLED_Show_Float(3, 6, m_imu.roll,      8, 1);
+        OLED_Show_Float(4, 6, m_imu.total_yaw, 8, 1);
     }
 }

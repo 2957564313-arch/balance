@@ -3,7 +3,9 @@
 
 mahony_t m_imu;
 
-// 快速平方根倒数
+// 快速平方根倒数(用于归一化)
+// 加速度向量归一化：让 (ax,ay,az) 变成单位向量  //
+// 四元数归一化：让 q 保持单位长度，避免数值漂移 //
 static float inv_sqrt(float x) {
     float half = 0.5f * x;
     float y = x;
@@ -16,9 +18,9 @@ static float inv_sqrt(float x) {
 
 void mahony_init(mahony_t *m, float freq, float kp, float ki)
 {
-    m->q0 = 1.0f; m->q1 = 0.0f; m->q2 = 0.0f; m->q3 = 0.0f;
+    m->q0 = 1.0f; m->q1 = 0.0f; m->q2 = 0.0f; m->q3 = 0.0f;		 // 初始姿态：无旋转
     m->kp = kp; m->ki = ki;
-    m->ix = 0.0f; m->iy = 0.0f; m->iz = 0.0f;
+    m->ix = 0.0f; m->iy = 0.0f; m->iz = 0.0f;					 // 积分项清零
     m->sample_freq = freq;
     m->pitch = 0.0f; m->roll = 0.0f; m->yaw = 0.0f;
     
