@@ -1,291 +1,254 @@
-/*********************************************************************************************************************
-* CH32V307VCT6 Opensourec Library ¼´£¨CH32V307VCT6 ¿ªÔ´¿â£©ÊÇÒ»¸ö»ùÓÚ¹Ù·½ SDK ½Ó¿ÚµÄµÚÈı·½¿ªÔ´¿â
-* Copyright (c) 2022 SEEKFREE Öğ·É¿Æ¼¼
-*
-* ±¾ÎÄ¼şÊÇCH32V307VCT6 ¿ªÔ´¿âµÄÒ»²¿·Ö
-*
-* CH32V307VCT6 ¿ªÔ´¿â ÊÇÃâ·ÑÈí¼ş
-* Äú¿ÉÒÔ¸ù¾İ×ÔÓÉÈí¼ş»ù½ğ»á·¢²¼µÄ GPL£¨GNU General Public License£¬¼´ GNUÍ¨ÓÃ¹«¹²Ğí¿ÉÖ¤£©µÄÌõ¿î
-* ¼´ GPL µÄµÚ3°æ£¨¼´ GPL3.0£©»ò£¨ÄúÑ¡ÔñµÄ£©ÈÎºÎºóÀ´µÄ°æ±¾£¬ÖØĞÂ·¢²¼ºÍ/»òĞŞ¸ÄËü
-*
-* ±¾¿ªÔ´¿âµÄ·¢²¼ÊÇÏ£ÍûËüÄÜ·¢»Ó×÷ÓÃ£¬µ«²¢Î´¶ÔÆä×÷ÈÎºÎµÄ±£Ö¤
-* ÉõÖÁÃ»ÓĞÒşº¬µÄÊÊÏúĞÔ»òÊÊºÏÌØ¶¨ÓÃÍ¾µÄ±£Ö¤
-* ¸ü¶àÏ¸½ÚÇë²Î¼û GPL
-*
-* ÄúÓ¦¸ÃÔÚÊÕµ½±¾¿ªÔ´¿âµÄÍ¬Ê±ÊÕµ½Ò»·İ GPL µÄ¸±±¾
-* Èç¹ûÃ»ÓĞ£¬Çë²ÎÔÄ<https://www.gnu.org/licenses/>
-*
-* ¶îÍâ×¢Ã÷£º
-* ±¾¿ªÔ´¿âÊ¹ÓÃ GPL3.0 ¿ªÔ´Ğí¿ÉÖ¤Ğ­Òé ÒÔÉÏĞí¿ÉÉêÃ÷ÎªÒëÎÄ°æ±¾
-* Ğí¿ÉÉêÃ÷Ó¢ÎÄ°æÔÚ libraries/doc ÎÄ¼ş¼ĞÏÂµÄ GPL3_permission_statement.txt ÎÄ¼şÖĞ
-* Ğí¿ÉÖ¤¸±±¾ÔÚ libraries ÎÄ¼ş¼ĞÏÂ ¼´¸ÃÎÄ¼ş¼ĞÏÂµÄ LICENSE ÎÄ¼ş
-* »¶Ó­¸÷Î»Ê¹ÓÃ²¢´«²¥±¾³ÌĞò µ«ĞŞ¸ÄÄÚÈİÊ±±ØĞë±£ÁôÖğ·É¿Æ¼¼µÄ°æÈ¨ÉùÃ÷£¨¼´±¾ÉùÃ÷£©
-*
-* ÎÄ¼şÃû³Æ          zf_driver_flash
-* ¹«Ë¾Ãû³Æ          ³É¶¼Öğ·É¿Æ¼¼ÓĞÏŞ¹«Ë¾
-* °æ±¾ĞÅÏ¢          ²é¿´ libraries/doc ÎÄ¼ş¼ĞÄÚ version ÎÄ¼ş °æ±¾ËµÃ÷
-* ¿ª·¢»·¾³          MounRiver Studio V1.8.1
-* ÊÊÓÃÆ½Ì¨          CH32V307VCT6
-* µêÆÌÁ´½Ó          https://seekfree.taobao.com/
-*
-* ĞŞ¸Ä¼ÇÂ¼
-* ÈÕÆÚ                                      ×÷Õß                             ±¸×¢
-* 2022-09-15        ´óW            first version
-********************************************************************************************************************/
-
-
-
-#include "zf_common_debug.h"
-#include "zf_common_interrupt.h"
-#include "zf_common_clock.h"
-
-#include "zf_driver_flash.h"
-
-flash_data_union flash_union_buffer[FLASH_DATA_BUFFER_SIZE];               // FLASH ²Ù×÷µÄÊı¾İ»º³åÇø
-
-//-------------------------------------------------------------------------------------------------------------------
-// º¯Êı¼ò½é     Ğ£Ñé FLASH ÊÇ·ñÓĞÊı¾İ
-// ²ÎÊıËµÃ÷     sector_num      ĞèÒªĞ´ÈëµÄÉÈÇø±àºÅ ²ÎÊı·¶Î§ <0 - 63>
-// ²ÎÊıËµÃ÷     page_num        µ±Ç°ÉÈÇøÒ³µÄ±àºÅ   ²ÎÊı·¶Î§ <0 - 3>
-// ·µ»Ø²ÎÊı     uint8           1-ÓĞÊı¾İ 0-Ã»ÓĞÊı¾İ Èç¹ûĞèÒª¶ÔÓĞÊı¾İµÄÇøÓòĞ´ÈëĞÂµÄÊı¾İÔòÓ¦¸Ã¶ÔËùÔÚÉÈÇø½øĞĞ²Á³ı²Ù×÷
-// Ê¹ÓÃÊ¾Àı     flash_check(63, 3);
-// ±¸×¢ĞÅÏ¢
-//-------------------------------------------------------------------------------------------------------------------
-uint8 flash_check (uint32 sector_num, uint32 page_num)
-{
-    //zf_assert(sector_num <= FLASH_MAX_SECTION_INDEX);                                                   // ²ÎÊı·¶Î§ 0-63
-    //zf_assert(page_num <= FLASH_MAX_PAGE_INDEX);                                                        // ²ÎÊı·¶Î§ 0-3
-
-    uint8  return_state = 0;
-    uint16 temp_loop;
-    uint32 flash_addr = ((FLASH_BASE_ADDR+FLASH_SECTION_SIZE*sector_num+FLASH_PAGE_SIZE*page_num));     // ÌáÈ¡µ±Ç° Flash µØÖ·
-
-	interrupt_global_disable();
-
-    //clock_reset();                                  // ¸´Î»Ê±ÖÓ
-    //clock_set_freq(SYSTEM_CLOCK_120M);          // ÉèÖÃÏµÍ³ÆµÂÊÎª120Mhz
-
-    for(temp_loop = 0; temp_loop < FLASH_PAGE_SIZE; temp_loop+=4)                                       // Ñ­»·¶ÁÈ¡ Flash µÄÖµ
-    {
-        if( (*(__IO u32*) (flash_addr+temp_loop)) != 0xFFFFFFFF )                                       // ¸Ãµ¥Æ¬»ú²Á³ıºóÈç¹û²»ÊÇ 0xE339E339 ÄÇ¾ÍÊÇÓĞÖµ
-        {
-            return_state = 1;
-            break;
-        }
-    }
-
-    //clock_reset();                                  // ¸´Î»Ê±ÖÓ
-    //clock_set_freq(system_clock);       // ÉèÖÃ»ØÔ­À´µÄÏµÍ³ÆµÂÊ
-    interrupt_global_enable();
-
-    return return_state;
-}
-
-//-------------------------------------------------------------------------------------------------------------------
-// º¯Êı¼ò½é     ²Á³ıÒ»¸öÉÈÇøÊı¾İ(4KB)
-// ²ÎÊıËµÃ÷     sector_num      ĞèÒªĞ´ÈëµÄÉÈÇø±àºÅ ²ÎÊı·¶Î§ <0 - 63>
-// ²ÎÊıËµÃ÷     page_num        µ±Ç°ÉÈÇøÒ³µÄ±àºÅ   ²ÎÊı·¶Î§ <0 - 3>
-// ·µ»Ø²ÎÊı     uint8           1-±íÊ¾Ê§°Ü 0-±íÊ¾³É¹¦
-// Ê¹ÓÃÊ¾Àı     flash_erase_page(63, 3);
-// ±¸×¢ĞÅÏ¢
-//          ±ê×¼²Á³ıÖ»ÄÜÊÇ²ÁÒ»¸öÉÈÇøµÄÊı¾İ£¬4KB×Ö½Ú³¤¶È
-//-------------------------------------------------------------------------------------------------------------------
-uint8 flash_erase_sector (uint32 sector_num, uint32 page_num)
-{
-    //zf_assert(sector_num <= FLASH_MAX_SECTION_INDEX);                                                   // ²ÎÊı·¶Î§ 0-63
-    //zf_assert(page_num <= FLASH_MAX_PAGE_INDEX);                                                        // ²ÎÊı·¶Î§ 0-3
-
-    uint8 return_state = 0;
-
-    static volatile FLASH_Status gFlashStatus = FLASH_COMPLETE;
-    uint32 flash_addr = ((FLASH_BASE_ADDR+FLASH_SECTION_SIZE*sector_num+FLASH_PAGE_SIZE*page_num));     // ÌáÈ¡µ±Ç° Flash µØÖ·
-
-    uint32 primask = interrupt_global_disable();
-    //clock_reset();                      // ¸´Î»Ê±ÖÓ
-    //clock_set_freq(SYSTEM_CLOCK_120M);          // ÉèÖÃÏµÍ³ÆµÂÊÎª120Mhz
-
-    FLASH_Unlock();                                                                                     // ½âËø Flash
-    FLASH_ClearFlag(FLASH_FLAG_EOP | FLASH_FLAG_PGERR | FLASH_FLAG_WRPRTERR);                           // Çå³ı²Ù×÷±êÖ¾
-    gFlashStatus = FLASH_ErasePage(flash_addr);                                                         // ²Á³ı
-    FLASH_ClearFlag(FLASH_FLAG_EOP );                                                                   // Çå³ş²Ù×÷±êÖ¾
-    FLASH_Lock();                                                                                       // Ëø¶¨ Flash
-    if(gFlashStatus != FLASH_COMPLETE)          // ÅĞ¶Ï²Ù×÷ÊÇ·ñ³É¹¦
-    {
-        return_state = 1;
-    }
-
-    //clock_reset();                      // ¸´Î»Ê±ÖÓ
-    //clock_set_freq(system_clock);       // ÉèÖÃ»ØÔ­À´µÄÏµÍ³ÆµÂÊ
-    interrupt_global_enable(primask);
-    return return_state;
-}
-
-//-------------------------------------------------------------------------------------------------------------------
-// º¯Êı¼ò½é     ¶ÁÈ¡Ò»Ò³
-// ²ÎÊıËµÃ÷     sector_num      ĞèÒªĞ´ÈëµÄÉÈÇø±àºÅ ²ÎÊı·¶Î§ <0 - 63>
-// ²ÎÊıËµÃ÷     page_num        µ±Ç°ÉÈÇøÒ³µÄ±àºÅ   ²ÎÊı·¶Î§ <0 - 3>
-// ²ÎÊıËµÃ÷     buf             ĞèÒª¶ÁÈ¡µÄÊı¾İµØÖ·   ´«ÈëµÄÊı×éÀàĞÍ±ØĞëÎªuint32
-// ²ÎÊıËµÃ÷     len             ĞèÒªĞ´ÈëµÄÊı¾İ³¤¶È   ²ÎÊı·¶Î§ 1-256
-// ·µ»Ø²ÎÊı     void
-// Ê¹ÓÃÊ¾Àı     flash_read_page(63, 3, data_buffer, 256);
-// ±¸×¢ĞÅÏ¢
-//-------------------------------------------------------------------------------------------------------------------
-void flash_read_page (uint32 sector_num, uint32 page_num, uint32 *buf, uint16 len)
-{
-    //zf_assert(sector_num <= FLASH_MAX_SECTION_INDEX);                                                   // ²ÎÊı·¶Î§ 0-63
-    //zf_assert(page_num <= FLASH_MAX_PAGE_INDEX);                                                        // ²ÎÊı·¶Î§ 0-3
-    //zf_assert(len <= FLASH_DATA_BUFFER_SIZE);
-
-    uint16 temp_loop = 0;
-    uint32 flash_addr = 0;
-    flash_addr = ((FLASH_BASE_ADDR+FLASH_SECTION_SIZE*sector_num+FLASH_PAGE_SIZE*page_num));            // ÌáÈ¡µ±Ç° Flash µØÖ·
-
-    uint32 primask = interrupt_global_disable();
-    //clock_reset();                      // ¸´Î»Ê±ÖÓ
-    //clock_set_freq(SYSTEM_CLOCK_120M);          // ÉèÖÃÏµÍ³ÆµÂÊÎª120Mhz
-
-
-    for(temp_loop = 0; temp_loop < len; temp_loop++)                                                    // ¸ù¾İÖ¸¶¨³¤¶È¶ÁÈ¡
-    {
-        *buf++ = *(__IO uint32*)(flash_addr+temp_loop*4);                                               // Ñ­»·¶ÁÈ¡ Flash µÄÖµ
-    }
-                                                                                       // Ëø¶¨ Flash
-    //clock_reset();                      // ¸´Î»Ê±ÖÓ
-    //clock_set_freq(system_clock);       // ÉèÖÃ»ØÔ­À´µÄÏµÍ³ÆµÂÊ
-    interrupt_global_enable(primask);
-}
-
-//-------------------------------------------------------------------------------------------------------------------
-// º¯Êı¼ò½é     ±à³ÌÒ»Ò³
-// ²ÎÊıËµÃ÷     sector_num      ĞèÒªĞ´ÈëµÄÉÈÇø±àºÅ ²ÎÊı·¶Î§ <0 - 63>
-// ²ÎÊıËµÃ÷     page_num        µ±Ç°ÉÈÇøÒ³µÄ±àºÅ   ²ÎÊı·¶Î§ <0 - 3>
-// ²ÎÊıËµÃ÷     buf             ĞèÒªĞ´ÈëµÄÊı¾İµØÖ·   ´«ÈëµÄÊı×éÀàĞÍ±ØĞëÎª uint32
-// ²ÎÊıËµÃ÷     len             ĞèÒªĞ´ÈëµÄÊı¾İ³¤¶È   ²ÎÊı·¶Î§ 1-256
-// ·µ»Ø²ÎÊı     uint8           1-±íÊ¾Ê§°Ü 0-±íÊ¾³É¹¦
-// Ê¹ÓÃÊ¾Àı     flash_write_page(63, 3, data_buffer, 256);
-// ±¸×¢ĞÅÏ¢
-//-------------------------------------------------------------------------------------------------------------------
-uint8 flash_write_page (uint32 sector_num, uint32 page_num, const uint32 *buf, uint16 len)
-{
-    //zf_assert(sector_num <= FLASH_MAX_SECTION_INDEX);                                                   // ²ÎÊı·¶Î§ 0-63
-    //zf_assert(page_num <= FLASH_MAX_PAGE_INDEX);                                                        // ²ÎÊı·¶Î§ 0-3
-    //zf_assert(len <= FLASH_DATA_BUFFER_SIZE);
-    uint8 return_state = 0;
-    static volatile FLASH_Status gFlashStatus = FLASH_COMPLETE;
-    uint32 flash_addr = 0;
-    flash_addr = ((FLASH_BASE_ADDR+FLASH_SECTION_SIZE*sector_num+FLASH_PAGE_SIZE*page_num));            // ÌáÈ¡µ±Ç° Flash µØÖ·
-
-    if(flash_check(sector_num, page_num))                                                               // ÅĞ¶ÏÊÇ·ñÓĞÊı¾İ ÕâÀïÊÇÈßÓàµÄ±£»¤ ·ÀÖ¹ÓĞÈËÃ»²Á³ı¾ÍĞ´Èë
-    {
-        flash_erase_sector(sector_num, page_num);                                                       // ²Á³ıÕâÒ»ÉÈÇø
-    }
-
-    uint32 primask = interrupt_global_disable();
-    //clock_reset();                      // ¸´Î»Ê±ÖÓ
-    //clock_set_freq(SYSTEM_CLOCK_120M);          // ÉèÖÃÏµÍ³ÆµÂÊÎª120Mhz
-    FLASH_Unlock();                                                                                     // ½âËø Flash
-    while(len--)                                                                                        // ¸ù¾İ³¤¶È
-    {
-        gFlashStatus = FLASH_ProgramWord(flash_addr, *buf++);                                           // °´×Ö 32bit Ğ´ÈëÊı¾İ
-        if(gFlashStatus != FLASH_COMPLETE)                                                              // ·´¸´È·ÈÏ²Ù×÷ÊÇ·ñ³É¹¦
-        {
-            return_state = 1;
-            break;
-        }
-        flash_addr += 4;                                                                                // µØÖ·×ÔÔö
-    }
-    FLASH_Lock();                                                                                       // Ëø¶¨ Flash
-    //clock_reset();                      // ¸´Î»Ê±ÖÓ
-    //clock_set_freq(system_clock);       // ÉèÖÃ»ØÔ­À´µÄÏµÍ³ÆµÂÊ
-    interrupt_global_enable(primask);
-
-    return return_state;
-}
-
-
-//-------------------------------------------------------------------------------------------------------------------
-// º¯Êı¼ò½é     ´ÓÖ¸¶¨ FLASH µÄÉÈÇøµÄÖ¸¶¨Ò³Âë¶ÁÈ¡Êı¾İµ½»º³åÇø
-// ²ÎÊıËµÃ÷     sector_num      ĞèÒªĞ´ÈëµÄÉÈÇø±àºÅ ²ÎÊı·¶Î§ <0 - 63>
-// ²ÎÊıËµÃ÷     page_num        µ±Ç°ÉÈÇøÒ³µÄ±àºÅ   ²ÎÊı·¶Î§ <0 - 3>
-// ·µ»Ø²ÎÊı     void
-// Ê¹ÓÃÊ¾Àı     flash_read_page_to_buffer(63, 3);
-// ±¸×¢ĞÅÏ¢
-//-------------------------------------------------------------------------------------------------------------------
-void flash_read_page_to_buffer (uint32 sector_num, uint32 page_num)
-{
-    //zf_assert(sector_num <= FLASH_MAX_SECTION_INDEX);                                                   // ²ÎÊı·¶Î§ 0-63
-    //zf_assert(page_num <= FLASH_MAX_PAGE_INDEX);                                                        // ²ÎÊı·¶Î§ 0-3
-    uint16 temp_loop;
-    uint32 flash_addr = ((FLASH_BASE_ADDR + FLASH_SECTION_SIZE*sector_num + FLASH_PAGE_SIZE*page_num)); // ÌáÈ¡µ±Ç° Flash µØÖ·
-
-
-
-    for(temp_loop = 0; temp_loop < FLASH_DATA_BUFFER_SIZE; temp_loop++)                                 // ¸ù¾İÖ¸¶¨³¤¶È¶ÁÈ¡
-    {
-        flash_union_buffer[temp_loop].uint32_type = *(__IO uint32*)(flash_addr+temp_loop*4);            // Ñ­»·¶ÁÈ¡ Flash µÄÖµ
-    }
-
-
-}
-
-//-------------------------------------------------------------------------------------------------------------------
-// º¯Êı¼ò½é     ÏòÖ¸¶¨ FLASH µÄÉÈÇøµÄÖ¸¶¨Ò³ÂëĞ´Èë»º³åÇøµÄÊı¾İ
-// ²ÎÊıËµÃ÷     sector_num      ĞèÒªĞ´ÈëµÄÉÈÇø±àºÅ ²ÎÊı·¶Î§ <0 - 63>
-// ²ÎÊıËµÃ÷     page_num        µ±Ç°ÉÈÇøÒ³µÄ±àºÅ   ²ÎÊı·¶Î§ <0 - 3>
-// ·µ»Ø²ÎÊı     uint8           1-±íÊ¾Ê§°Ü 0-±íÊ¾³É¹¦
-// Ê¹ÓÃÊ¾Àı     flash_write_page_from_buffer(63, 3);
-// ±¸×¢ĞÅÏ¢
-//-------------------------------------------------------------------------------------------------------------------
-uint8 flash_write_page_from_buffer (uint32 sector_num, uint32 page_num)
-{
-    //zf_assert(sector_num <= FLASH_MAX_SECTION_INDEX);                                                   // ²ÎÊı·¶Î§ 0-63
-    //zf_assert(page_num <= FLASH_MAX_PAGE_INDEX);                                                        // ²ÎÊı·¶Î§ 0-3
-    uint8 return_state = 0;
-
-    static volatile FLASH_Status gFlashStatus = FLASH_COMPLETE;
-    uint32 flash_addr = 0;
-    uint16 len = 0;
-    flash_addr = ((FLASH_BASE_ADDR+FLASH_SECTION_SIZE*sector_num+FLASH_PAGE_SIZE*page_num));            // ÌáÈ¡µ±Ç° Flash µØÖ·
-
-    if(flash_check(sector_num, page_num))                                                               // ÅĞ¶ÏÊÇ·ñÓĞÊı¾İ ÕâÀïÊÇÈßÓàµÄ±£»¤ ·ÀÖ¹ÓĞÈËÃ»²Á³ı¾ÍĞ´Èë
-        flash_erase_sector(sector_num, page_num);                                                       // ²Á³ıÕâÒ»Ò³
-
-    uint32 primask = interrupt_global_disable();
-    //clock_reset();                      // ¸´Î»Ê±ÖÓ
-    //clock_set_freq(SYSTEM_CLOCK_120M);          // ÉèÖÃÏµÍ³ÆµÂÊÎª120Mhz
-
-    FLASH_Unlock();                                                                                     // ½âËø Flash
-    while(len < FLASH_DATA_BUFFER_SIZE)                                                                 // ¸ù¾İ³¤¶È
-    {
-        gFlashStatus = FLASH_ProgramWord(flash_addr, flash_union_buffer[len].uint32_type);              // °´×Ö 32bit Ğ´ÈëÊı¾İ
-        if(gFlashStatus != FLASH_COMPLETE)                                                              // ·´¸´È·ÈÏ²Ù×÷ÊÇ·ñ³É¹¦
-        {
-            return_state = 1;
-            break;
-        }
-
-        len++;                                                                                          // ³¤¶È×ÔÔö
-        flash_addr += 4;                                                                                // µØÖ·×ÔÔö
-    }
-    FLASH_Lock();                                                                                       // Ëø¶¨ Flash
-
-    //clock_reset();                      // ¸´Î»Ê±ÖÓ
-    //clock_set_freq(system_clock);       // ÉèÖÃ»ØÔ­À´µÄÏµÍ³ÆµÂÊ
-    interrupt_global_enable(primask);
-
-    return return_state;
-}
-
-
-//-------------------------------------------------------------------------------------------------------------------
-// º¯Êı¼ò½é     Çå¿ÕÊı¾İ»º³åÇø
-// ²ÎÊıËµÃ÷     void
-// ·µ»Ø²ÎÊı     void
-// Ê¹ÓÃÊ¾Àı     flash_buffer_clear();
-// ±¸×¢ĞÅÏ¢
-//-------------------------------------------------------------------------------------------------------------------
-void flash_buffer_clear (void)
-{
-    memset(flash_union_buffer, 0xFF, FLASH_PAGE_SIZE);
-}
-
+#include "zf_common_debug.h"
+#include "zf_common_interrupt.h"
+#include "zf_common_clock.h"
+
+#include "zf_driver_flash.h"
+
+flash_data_union flash_union_buffer[FLASH_DATA_BUFFER_SIZE];               // FLASH æ“ä½œçš„æ•°æ®ç¼“å†²åŒº
+
+//-------------------------------------------------------------------------------------------------------------------
+// å‡½æ•°ç®€ä»‹     æ ¡éªŒ FLASH æ˜¯å¦æœ‰æ•°æ®
+// å‚æ•°è¯´æ˜     sector_num      éœ€è¦å†™å…¥çš„æ‰‡åŒºç¼–å· å‚æ•°èŒƒå›´ <0 - 63>
+// å‚æ•°è¯´æ˜     page_num        å½“å‰æ‰‡åŒºé¡µçš„ç¼–å·   å‚æ•°èŒƒå›´ <0 - 3>
+// è¿”å›å‚æ•°     uint8           1-æœ‰æ•°æ® 0-æ²¡æœ‰æ•°æ® å¦‚æœéœ€è¦å¯¹æœ‰æ•°æ®çš„åŒºåŸŸå†™å…¥æ–°çš„æ•°æ®åˆ™åº”è¯¥å¯¹æ‰€åœ¨æ‰‡åŒºè¿›è¡Œæ“¦é™¤æ“ä½œ
+// ä½¿ç”¨ç¤ºä¾‹     flash_check(63, 3);
+// å¤‡æ³¨ä¿¡æ¯
+//-------------------------------------------------------------------------------------------------------------------
+uint8 flash_check (uint32 sector_num, uint32 page_num)
+{
+    //zf_assert(sector_num <= FLASH_MAX_SECTION_INDEX);                                                   // å‚æ•°èŒƒå›´ 0-63
+    //zf_assert(page_num <= FLASH_MAX_PAGE_INDEX);                                                        // å‚æ•°èŒƒå›´ 0-3
+
+    uint8  return_state = 0;
+    uint16 temp_loop;
+    uint32 flash_addr = ((FLASH_BASE_ADDR+FLASH_SECTION_SIZE*sector_num+FLASH_PAGE_SIZE*page_num));     // æå–å½“å‰ Flash åœ°å€
+
+	interrupt_global_disable();
+
+    //clock_reset();                                  // å¤ä½æ—¶é’Ÿ
+    //clock_set_freq(SYSTEM_CLOCK_120M);          // è®¾ç½®ç³»ç»Ÿé¢‘ç‡ä¸º120Mhz
+
+    for(temp_loop = 0; temp_loop < FLASH_PAGE_SIZE; temp_loop+=4)                                       // å¾ªç¯è¯»å– Flash çš„å€¼
+    {
+        if( (*(__IO u32*) (flash_addr+temp_loop)) != 0xFFFFFFFF )                                       // è¯¥å•ç‰‡æœºæ“¦é™¤åå¦‚æœä¸æ˜¯ 0xE339E339 é‚£å°±æ˜¯æœ‰å€¼
+        {
+            return_state = 1;
+            break;
+        }
+    }
+
+    //clock_reset();                                  // å¤ä½æ—¶é’Ÿ
+    //clock_set_freq(system_clock);       // è®¾ç½®å›åŸæ¥çš„ç³»ç»Ÿé¢‘ç‡
+    interrupt_global_enable();
+
+    return return_state;
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// å‡½æ•°ç®€ä»‹     æ“¦é™¤ä¸€ä¸ªæ‰‡åŒºæ•°æ®(4KB)
+// å‚æ•°è¯´æ˜     sector_num      éœ€è¦å†™å…¥çš„æ‰‡åŒºç¼–å· å‚æ•°èŒƒå›´ <0 - 63>
+// å‚æ•°è¯´æ˜     page_num        å½“å‰æ‰‡åŒºé¡µçš„ç¼–å·   å‚æ•°èŒƒå›´ <0 - 3>
+// è¿”å›å‚æ•°     uint8           1-è¡¨ç¤ºå¤±è´¥ 0-è¡¨ç¤ºæˆåŠŸ
+// ä½¿ç”¨ç¤ºä¾‹     flash_erase_page(63, 3);
+// å¤‡æ³¨ä¿¡æ¯
+//          æ ‡å‡†æ“¦é™¤åªèƒ½æ˜¯æ“¦ä¸€ä¸ªæ‰‡åŒºçš„æ•°æ®ï¼Œ4KBå­—èŠ‚é•¿åº¦
+//-------------------------------------------------------------------------------------------------------------------
+uint8 flash_erase_sector (uint32 sector_num, uint32 page_num)
+{
+    //zf_assert(sector_num <= FLASH_MAX_SECTION_INDEX);                                                   // å‚æ•°èŒƒå›´ 0-63
+    //zf_assert(page_num <= FLASH_MAX_PAGE_INDEX);                                                        // å‚æ•°èŒƒå›´ 0-3
+
+    uint8 return_state = 0;
+
+    static volatile FLASH_Status gFlashStatus = FLASH_COMPLETE;
+    uint32 flash_addr = ((FLASH_BASE_ADDR+FLASH_SECTION_SIZE*sector_num+FLASH_PAGE_SIZE*page_num));     // æå–å½“å‰ Flash åœ°å€
+
+    uint32 primask = interrupt_global_disable();
+    //clock_reset();                      // å¤ä½æ—¶é’Ÿ
+    //clock_set_freq(SYSTEM_CLOCK_120M);          // è®¾ç½®ç³»ç»Ÿé¢‘ç‡ä¸º120Mhz
+
+    FLASH_Unlock();                                                                                     // è§£é” Flash
+    FLASH_ClearFlag(FLASH_FLAG_EOP | FLASH_FLAG_PGERR | FLASH_FLAG_WRPRTERR);                           // æ¸…é™¤æ“ä½œæ ‡å¿—
+    gFlashStatus = FLASH_ErasePage(flash_addr);                                                         // æ“¦é™¤
+    FLASH_ClearFlag(FLASH_FLAG_EOP );                                                                   // æ¸…æ¥šæ“ä½œæ ‡å¿—
+    FLASH_Lock();                                                                                       // é”å®š Flash
+    if(gFlashStatus != FLASH_COMPLETE)          // åˆ¤æ–­æ“ä½œæ˜¯å¦æˆåŠŸ
+    {
+        return_state = 1;
+    }
+
+    //clock_reset();                      // å¤ä½æ—¶é’Ÿ
+    //clock_set_freq(system_clock);       // è®¾ç½®å›åŸæ¥çš„ç³»ç»Ÿé¢‘ç‡
+    interrupt_global_enable(primask);
+    return return_state;
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// å‡½æ•°ç®€ä»‹     è¯»å–ä¸€é¡µ
+// å‚æ•°è¯´æ˜     sector_num      éœ€è¦å†™å…¥çš„æ‰‡åŒºç¼–å· å‚æ•°èŒƒå›´ <0 - 63>
+// å‚æ•°è¯´æ˜     page_num        å½“å‰æ‰‡åŒºé¡µçš„ç¼–å·   å‚æ•°èŒƒå›´ <0 - 3>
+// å‚æ•°è¯´æ˜     buf             éœ€è¦è¯»å–çš„æ•°æ®åœ°å€   ä¼ å…¥çš„æ•°ç»„ç±»å‹å¿…é¡»ä¸ºuint32
+// å‚æ•°è¯´æ˜     len             éœ€è¦å†™å…¥çš„æ•°æ®é•¿åº¦   å‚æ•°èŒƒå›´ 1-256
+// è¿”å›å‚æ•°     void
+// ä½¿ç”¨ç¤ºä¾‹     flash_read_page(63, 3, data_buffer, 256);
+// å¤‡æ³¨ä¿¡æ¯
+//-------------------------------------------------------------------------------------------------------------------
+void flash_read_page (uint32 sector_num, uint32 page_num, uint32 *buf, uint16 len)
+{
+    //zf_assert(sector_num <= FLASH_MAX_SECTION_INDEX);                                                   // å‚æ•°èŒƒå›´ 0-63
+    //zf_assert(page_num <= FLASH_MAX_PAGE_INDEX);                                                        // å‚æ•°èŒƒå›´ 0-3
+    //zf_assert(len <= FLASH_DATA_BUFFER_SIZE);
+
+    uint16 temp_loop = 0;
+    uint32 flash_addr = 0;
+    flash_addr = ((FLASH_BASE_ADDR+FLASH_SECTION_SIZE*sector_num+FLASH_PAGE_SIZE*page_num));            // æå–å½“å‰ Flash åœ°å€
+
+    uint32 primask = interrupt_global_disable();
+    //clock_reset();                      // å¤ä½æ—¶é’Ÿ
+    //clock_set_freq(SYSTEM_CLOCK_120M);          // è®¾ç½®ç³»ç»Ÿé¢‘ç‡ä¸º120Mhz
+
+
+    for(temp_loop = 0; temp_loop < len; temp_loop++)                                                    // æ ¹æ®æŒ‡å®šé•¿åº¦è¯»å–
+    {
+        *buf++ = *(__IO uint32*)(flash_addr+temp_loop*4);                                               // å¾ªç¯è¯»å– Flash çš„å€¼
+    }
+                                                                                       // é”å®š Flash
+    //clock_reset();                      // å¤ä½æ—¶é’Ÿ
+    //clock_set_freq(system_clock);       // è®¾ç½®å›åŸæ¥çš„ç³»ç»Ÿé¢‘ç‡
+    interrupt_global_enable(primask);
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// å‡½æ•°ç®€ä»‹     ç¼–ç¨‹ä¸€é¡µ
+// å‚æ•°è¯´æ˜     sector_num      éœ€è¦å†™å…¥çš„æ‰‡åŒºç¼–å· å‚æ•°èŒƒå›´ <0 - 63>
+// å‚æ•°è¯´æ˜     page_num        å½“å‰æ‰‡åŒºé¡µçš„ç¼–å·   å‚æ•°èŒƒå›´ <0 - 3>
+// å‚æ•°è¯´æ˜     buf             éœ€è¦å†™å…¥çš„æ•°æ®åœ°å€   ä¼ å…¥çš„æ•°ç»„ç±»å‹å¿…é¡»ä¸º uint32
+// å‚æ•°è¯´æ˜     len             éœ€è¦å†™å…¥çš„æ•°æ®é•¿åº¦   å‚æ•°èŒƒå›´ 1-256
+// è¿”å›å‚æ•°     uint8           1-è¡¨ç¤ºå¤±è´¥ 0-è¡¨ç¤ºæˆåŠŸ
+// ä½¿ç”¨ç¤ºä¾‹     flash_write_page(63, 3, data_buffer, 256);
+// å¤‡æ³¨ä¿¡æ¯
+//-------------------------------------------------------------------------------------------------------------------
+uint8 flash_write_page (uint32 sector_num, uint32 page_num, const uint32 *buf, uint16 len)
+{
+    //zf_assert(sector_num <= FLASH_MAX_SECTION_INDEX);                                                   // å‚æ•°èŒƒå›´ 0-63
+    //zf_assert(page_num <= FLASH_MAX_PAGE_INDEX);                                                        // å‚æ•°èŒƒå›´ 0-3
+    //zf_assert(len <= FLASH_DATA_BUFFER_SIZE);
+    uint8 return_state = 0;
+    static volatile FLASH_Status gFlashStatus = FLASH_COMPLETE;
+    uint32 flash_addr = 0;
+    flash_addr = ((FLASH_BASE_ADDR+FLASH_SECTION_SIZE*sector_num+FLASH_PAGE_SIZE*page_num));            // æå–å½“å‰ Flash åœ°å€
+
+    if(flash_check(sector_num, page_num))                                                               // åˆ¤æ–­æ˜¯å¦æœ‰æ•°æ® è¿™é‡Œæ˜¯å†—ä½™çš„ä¿æŠ¤ é˜²æ­¢æœ‰äººæ²¡æ“¦é™¤å°±å†™å…¥
+    {
+        flash_erase_sector(sector_num, page_num);                                                       // æ“¦é™¤è¿™ä¸€æ‰‡åŒº
+    }
+
+    uint32 primask = interrupt_global_disable();
+    //clock_reset();                      // å¤ä½æ—¶é’Ÿ
+    //clock_set_freq(SYSTEM_CLOCK_120M);          // è®¾ç½®ç³»ç»Ÿé¢‘ç‡ä¸º120Mhz
+    FLASH_Unlock();                                                                                     // è§£é” Flash
+    while(len--)                                                                                        // æ ¹æ®é•¿åº¦
+    {
+        gFlashStatus = FLASH_ProgramWord(flash_addr, *buf++);                                           // æŒ‰å­— 32bit å†™å…¥æ•°æ®
+        if(gFlashStatus != FLASH_COMPLETE)                                                              // åå¤ç¡®è®¤æ“ä½œæ˜¯å¦æˆåŠŸ
+        {
+            return_state = 1;
+            break;
+        }
+        flash_addr += 4;                                                                                // åœ°å€è‡ªå¢
+    }
+    FLASH_Lock();                                                                                       // é”å®š Flash
+    //clock_reset();                      // å¤ä½æ—¶é’Ÿ
+    //clock_set_freq(system_clock);       // è®¾ç½®å›åŸæ¥çš„ç³»ç»Ÿé¢‘ç‡
+    interrupt_global_enable(primask);
+
+    return return_state;
+}
+
+
+//-------------------------------------------------------------------------------------------------------------------
+// å‡½æ•°ç®€ä»‹     ä»æŒ‡å®š FLASH çš„æ‰‡åŒºçš„æŒ‡å®šé¡µç è¯»å–æ•°æ®åˆ°ç¼“å†²åŒº
+// å‚æ•°è¯´æ˜     sector_num      éœ€è¦å†™å…¥çš„æ‰‡åŒºç¼–å· å‚æ•°èŒƒå›´ <0 - 63>
+// å‚æ•°è¯´æ˜     page_num        å½“å‰æ‰‡åŒºé¡µçš„ç¼–å·   å‚æ•°èŒƒå›´ <0 - 3>
+// è¿”å›å‚æ•°     void
+// ä½¿ç”¨ç¤ºä¾‹     flash_read_page_to_buffer(63, 3);
+// å¤‡æ³¨ä¿¡æ¯
+//-------------------------------------------------------------------------------------------------------------------
+void flash_read_page_to_buffer (uint32 sector_num, uint32 page_num)
+{
+    //zf_assert(sector_num <= FLASH_MAX_SECTION_INDEX);                                                   // å‚æ•°èŒƒå›´ 0-63
+    //zf_assert(page_num <= FLASH_MAX_PAGE_INDEX);                                                        // å‚æ•°èŒƒå›´ 0-3
+    uint16 temp_loop;
+    uint32 flash_addr = ((FLASH_BASE_ADDR + FLASH_SECTION_SIZE*sector_num + FLASH_PAGE_SIZE*page_num)); // æå–å½“å‰ Flash åœ°å€
+
+
+
+    for(temp_loop = 0; temp_loop < FLASH_DATA_BUFFER_SIZE; temp_loop++)                                 // æ ¹æ®æŒ‡å®šé•¿åº¦è¯»å–
+    {
+        flash_union_buffer[temp_loop].uint32_type = *(__IO uint32*)(flash_addr+temp_loop*4);            // å¾ªç¯è¯»å– Flash çš„å€¼
+    }
+
+
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// å‡½æ•°ç®€ä»‹     å‘æŒ‡å®š FLASH çš„æ‰‡åŒºçš„æŒ‡å®šé¡µç å†™å…¥ç¼“å†²åŒºçš„æ•°æ®
+// å‚æ•°è¯´æ˜     sector_num      éœ€è¦å†™å…¥çš„æ‰‡åŒºç¼–å· å‚æ•°èŒƒå›´ <0 - 63>
+// å‚æ•°è¯´æ˜     page_num        å½“å‰æ‰‡åŒºé¡µçš„ç¼–å·   å‚æ•°èŒƒå›´ <0 - 3>
+// è¿”å›å‚æ•°     uint8           1-è¡¨ç¤ºå¤±è´¥ 0-è¡¨ç¤ºæˆåŠŸ
+// ä½¿ç”¨ç¤ºä¾‹     flash_write_page_from_buffer(63, 3);
+// å¤‡æ³¨ä¿¡æ¯
+//-------------------------------------------------------------------------------------------------------------------
+uint8 flash_write_page_from_buffer (uint32 sector_num, uint32 page_num)
+{
+    //zf_assert(sector_num <= FLASH_MAX_SECTION_INDEX);                                                   // å‚æ•°èŒƒå›´ 0-63
+    //zf_assert(page_num <= FLASH_MAX_PAGE_INDEX);                                                        // å‚æ•°èŒƒå›´ 0-3
+    uint8 return_state = 0;
+
+    static volatile FLASH_Status gFlashStatus = FLASH_COMPLETE;
+    uint32 flash_addr = 0;
+    uint16 len = 0;
+    flash_addr = ((FLASH_BASE_ADDR+FLASH_SECTION_SIZE*sector_num+FLASH_PAGE_SIZE*page_num));            // æå–å½“å‰ Flash åœ°å€
+
+    if(flash_check(sector_num, page_num))                                                               // åˆ¤æ–­æ˜¯å¦æœ‰æ•°æ® è¿™é‡Œæ˜¯å†—ä½™çš„ä¿æŠ¤ é˜²æ­¢æœ‰äººæ²¡æ“¦é™¤å°±å†™å…¥
+        flash_erase_sector(sector_num, page_num);                                                       // æ“¦é™¤è¿™ä¸€é¡µ
+
+    uint32 primask = interrupt_global_disable();
+    //clock_reset();                      // å¤ä½æ—¶é’Ÿ
+    //clock_set_freq(SYSTEM_CLOCK_120M);          // è®¾ç½®ç³»ç»Ÿé¢‘ç‡ä¸º120Mhz
+
+    FLASH_Unlock();                                                                                     // è§£é” Flash
+    while(len < FLASH_DATA_BUFFER_SIZE)                                                                 // æ ¹æ®é•¿åº¦
+    {
+        gFlashStatus = FLASH_ProgramWord(flash_addr, flash_union_buffer[len].uint32_type);              // æŒ‰å­— 32bit å†™å…¥æ•°æ®
+        if(gFlashStatus != FLASH_COMPLETE)                                                              // åå¤ç¡®è®¤æ“ä½œæ˜¯å¦æˆåŠŸ
+        {
+            return_state = 1;
+            break;
+        }
+
+        len++;                                                                                          // é•¿åº¦è‡ªå¢
+        flash_addr += 4;                                                                                // åœ°å€è‡ªå¢
+    }
+    FLASH_Lock();                                                                                       // é”å®š Flash
+
+    //clock_reset();                      // å¤ä½æ—¶é’Ÿ
+    //clock_set_freq(system_clock);       // è®¾ç½®å›åŸæ¥çš„ç³»ç»Ÿé¢‘ç‡
+    interrupt_global_enable(primask);
+
+    return return_state;
+}
+
+
+//-------------------------------------------------------------------------------------------------------------------
+// å‡½æ•°ç®€ä»‹     æ¸…ç©ºæ•°æ®ç¼“å†²åŒº
+// å‚æ•°è¯´æ˜     void
+// è¿”å›å‚æ•°     void
+// ä½¿ç”¨ç¤ºä¾‹     flash_buffer_clear();
+// å¤‡æ³¨ä¿¡æ¯
+//-------------------------------------------------------------------------------------------------------------------
+void flash_buffer_clear (void)
+{
+    memset(flash_union_buffer, 0xFF, FLASH_PAGE_SIZE);
+}
+

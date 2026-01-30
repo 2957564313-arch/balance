@@ -1,21 +1,3 @@
-/*
- * @file    attitude.h
- * @brief   姿态解算模块（Mahony 互补滤波，无磁力计）
- *
- * 功能说明：
- *  1. 输入：陀螺仪角速度 + 加速度
- *  2. 输出：Pitch / Roll / Yaw（角度制）
- *
- * 使用说明：
- *  1. 初始化时设置采样频率和参数
- *  2. 周期性调用 update 函数
- *  3. 直接读取结构体中的姿态角
- *
- * 适用场景：
- *  - 平衡车姿态估计
- *  - 姿态显示（OLED）
- */
-
 #ifndef _ATTITUDE_H_
 #define _ATTITUDE_H_
 
@@ -23,25 +5,22 @@
 
 typedef struct
 {
-    float q0, q1, q2, q3;
-    float pitch;
-    float roll;
-    float yaw;
-
-    float kp;
-    float ki;
-
-    float ix;
-    float iy;
-    float iz;
-
-    float sample_freq;
+    float q0, q1, q2, q3;    // 四元数
+    float pitch, roll, yaw;  // 欧拉角 (-180 ~ 180)
+    
+    // === 累积航向角 ===
+    // 这个变量记录车子转过的总角度（绝对值累加）
+    // 比如：进弯时是 0，出弯时应该是 180
+    float total_yaw; 
+    
+    float ix, iy, iz; 		 // 积分项（补偿陀螺零偏）
+    float kp, ki;			 // Mahony 的 PI 增益
+    float sample_freq;		 // 采样频率 Hz
 } mahony_t;
 
+extern mahony_t m_imu;
+
 void mahony_init(mahony_t *m, float freq, float kp, float ki);
-void mahony_update(mahony_t *m,
-                   float gx, float gy, float gz,
-                   float ax, float ay, float az);
+void mahony_update(mahony_t *m, float ax, float ay, float az, float gx, float gy, float gz);
 
 #endif
-

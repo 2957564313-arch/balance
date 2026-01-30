@@ -1,39 +1,39 @@
-#include "zf_driver_gpio.h"
-#include "zf_driver_timer.h"
-
-
-// ¸ÃÊı×é½ûÖ¹ĞŞ¸Ä£¬ÄÚ²¿Ê¹ÓÃ,ÓÃ»§ÎŞĞè¹ØĞÄ
-static timer_function_enum timer_function_state[6] =
-{
-    TIMER_FUNCTION_INIT,
-    TIMER_FUNCTION_INIT,
-    TIMER_FUNCTION_INIT,			
-    TIMER_FUNCTION_INIT,
-    TIMER_FUNCTION_INIT,
-	TIMER_FUNCTION_INIT,
-};
-
-//-------------------------------------------------------------------------------------------------------------------
-// º¯Êı¼ò½é      TIMER ÍâÉèÈ·ÈÏ¹¦ÄÜ×´Ì¬ ¿âÄÚ²¿µ÷ÓÃ
-// ²ÎÊıËµÃ÷     index           TIMER ÍâÉèÄ£¿éºÅ
-// ²ÎÊıËµÃ÷     mode            ĞèÒªÈ·µÄ¹¦ÄÜÄ£¿é
-// ·µ»Ø²ÎÊı     uint8           1-¿ÉÒÔÊ¹ÓÃ 0-²»¿ÉÒÔÊ¹ÓÃ
-// Ê¹ÓÃÊ¾Àı     zf_assert(timer_funciton_check(TIM_1, TIMER_FUNCTION_PWM);
-//-------------------------------------------------------------------------------------------------------------------
-uint8 timer_funciton_check (timer_index_enum index, timer_function_enum mode)
-{
-    uint8 return_state = 1;
-    if(TIMER_FUNCTION_INIT == timer_function_state[index])
-    {
-        timer_function_state[index] = mode;
-    }
-    else if(timer_function_state[index] == mode)
-    {
-        return_state = 1;
-    }
-    else
-    {
-        return_state = 0;
-    }
-    return return_state;
-}
+#include "zf_driver_gpio.h"
+#include "zf_driver_timer.h"
+
+
+// è¯¥æ•°ç»„ç¦æ­¢ä¿®æ”¹ï¼Œå†…éƒ¨ä½¿ç”¨,ç”¨æˆ·æ— éœ€å…³å¿ƒ
+static timer_function_enum timer_function_state[6] =
+{
+    TIMER_FUNCTION_INIT,
+    TIMER_FUNCTION_INIT,
+    TIMER_FUNCTION_INIT,			
+    TIMER_FUNCTION_INIT,
+    TIMER_FUNCTION_INIT,
+	TIMER_FUNCTION_INIT,
+};
+
+//-------------------------------------------------------------------------------------------------------------------
+// å‡½æ•°ç®€ä»‹      TIMER å¤–è®¾ç¡®è®¤åŠŸèƒ½çŠ¶æ€ åº“å†…éƒ¨è°ƒç”¨
+// å‚æ•°è¯´æ˜     index           TIMER å¤–è®¾æ¨¡å—å·
+// å‚æ•°è¯´æ˜     mode            éœ€è¦ç¡®çš„åŠŸèƒ½æ¨¡å—
+// è¿”å›å‚æ•°     uint8           1-å¯ä»¥ä½¿ç”¨ 0-ä¸å¯ä»¥ä½¿ç”¨
+// ä½¿ç”¨ç¤ºä¾‹     zf_assert(timer_funciton_check(TIM_1, TIMER_FUNCTION_PWM);
+//-------------------------------------------------------------------------------------------------------------------
+uint8 timer_funciton_check (timer_index_enum index, timer_function_enum mode)
+{
+    uint8 return_state = 1;
+    if(TIMER_FUNCTION_INIT == timer_function_state[index])
+    {
+        timer_function_state[index] = mode;
+    }
+    else if(timer_function_state[index] == mode)
+    {
+        return_state = 1;
+    }
+    else
+    {
+        return_state = 0;
+    }
+    return return_state;
+}

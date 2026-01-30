@@ -1,211 +1,160 @@
-#include "zf_common_headfile.h"                  // Device header
+#include "Key.h" 
 
-#include "Key.h"		//使用了位于Key.h的宏定义
+// 状态定义
+#define KEY_PRESSED             1
+#define KEY_UNPRESSED           0
 
-//用宏定义替换1/0，便于理解Key_GetState（）
-#define KEY_PRESSED 			1
-#define	KEY_UNPRESSED			0
+// 时间阈值设定 (基于 5ms 中断周期)
+// 注意：Key_Tick 是在 5ms 中断里调用的，所以计数要除以 5
+// 原来是 1ms，现在是 5ms，数值要缩小 5 倍
+#define KEY_Time_DOUBLE         (300 / 5)   // 300ms 窗口 / 5ms = 60次
+#define KEY_Time_LONG           (1000 / 5)  // 1000ms / 5ms = 200次
+#define KEY_Time_REPEAT         (200 / 5)   // 200ms / 5ms = 40次
 
-//宏定义替换时间阈值
-/*
-说明：由于按键检测和状态机代码每隔20ms才会执行一次
-所以此处的各个时间阈值最好都设置为20ms的倍数
-所以即使设定时间为50ms，但实际却会是60ms
-*/
-#define KEY_Time_DOUBLE 		0
-#define KEY_Time_LONG			2000
-#define KEY_Time_REPEAT			100
-
-uint8 Key_Flag[KEY_COUNT];//不同的位表示不同的事件标志位
-
-// 定义按键引脚
-#define KEY1_PIN    IO_P70
-#define KEY2_PIN    IO_P71
-#define KEY3_PIN    IO_P72
-#define KEY4_PIN    IO_P73
+uint8 Key_Flag[KEY_COUNT]; // 事件标志位数组
 
 void Key_Init(void)
 {
-	gpio_init(KEY1_PIN, GPI, 1, GPI_PULL_UP);
-	gpio_init(KEY2_PIN, GPI, 1, GPI_PULL_UP);
-	gpio_init(KEY3_PIN, GPI, 1, GPI_PULL_UP);
-	gpio_init(KEY4_PIN, GPI, 1, GPI_PULL_UP);
+    // 初始化引脚为输入上拉模式
+    // 逐飞库: gpio_init(引脚, 模式, 默认电平, 驱动方式)
+    gpio_init(KEY1_PIN, GPI, 1, GPI_PULL_UP);
+    gpio_init(KEY2_PIN, GPI, 1, GPI_PULL_UP);
+    gpio_init(KEY3_PIN, GPI, 1, GPI_PULL_UP);
+    gpio_init(KEY4_PIN, GPI, 1, GPI_PULL_UP);
 }
 
-//形参指定按键；返回当前按键按下状态/未按下状态
-uint8 Key_GetState(uint8 n)
+// 读取物理按键状态
+// 返回：KEY_PRESSED (1) 或 KEY_UNPRESSED (0)
+static uint8 Key_GetState(uint8 n)
 {
-	if (n == KEY_NAME_UP)
-	{
-		if (gpio_get_level(KEY1_PIN) == 0)//按下
-		{
-		return KEY_PRESSED;//返回按下
-		}
-		return KEY_UNPRESSED;//返回未按下
-	}
-	else if (n == KEY_NAME_DOWN)
-	{
-		if (gpio_get_level(KEY2_PIN) == 0)//按下
-		{
-		return KEY_PRESSED;
-		}
-		return KEY_UNPRESSED;
+    uint8 level = 1;
+    switch(n)
+    {
+        case 0: level = gpio_get_level(KEY1_PIN); break;
+        case 1: level = gpio_get_level(KEY2_PIN); break;
+        case 2: level = gpio_get_level(KEY3_PIN); break;
+        case 3: level = gpio_get_level(KEY4_PIN); break;
+        default: return KEY_UNPRESSED;
     }
-	else if (n == KEY_NAME_COMFIRM)
-	{
-		if (gpio_get_level(KEY3_PIN) == 0)//按下
-		{
-		return KEY_PRESSED;
-		}
-		return KEY_UNPRESSED;
-	}
-    else if (n == KEY_NAME_BACK)
-	{
-		if (gpio_get_level(KEY4_PIN) == 0)//按下
-		{
-		return KEY_PRESSED;
-		}
-		return KEY_UNPRESSED;
-	}
-	else
-	{
-		return 0;
-	}
+    
+    // 低电平有效（按下为0）
+    return (level == 0) ? KEY_PRESSED : KEY_UNPRESSED;
 }
 
-//第一个参数指定按钮
-//第二个参数指定标志位;格式：0xXX
+// 检查并清除标志位 (核心 API)
 uint8 Key_Check(uint8 n, uint8 Flag)
 {
-	//一个变量&位掩码
-	//例如：变量&0x01，如果最低位是1，则结果为0x01
-	//				   如果最低位是0，则结果为0x00
-	//		变量&0x02，如果次低位是1，则结果为0x02
-	//				   如果次低位是0，则结果为0x00
-	//注意，指定位为1时，结果是位掩码本身(非0)，而不一定是0x01
-	if (Key_Flag[n] & Flag)
-	{
-		if (Flag != KEY_HOLD)//检测指定位是否为KEY_HOLD
-		{
-			//清零KEY_HOLD；其他标志位在主程序读后清零
-			Key_Flag[n] &= ~Flag;
-		}
-		return 1;//指定标志位是1
-	}
-	return 0;//指定标志位是0
+    if (Key_Flag[n] & Flag)
+    {
+        // 如果不是 HOLD 状态，读完自动清除标志位 (模拟事件消耗)
+        if (Flag != KEY_HOLD)
+        {
+            Key_Flag[n] &= ~Flag;
+        }
+        return 1; // 事件发生
+    }
+    return 0;
 }
 
-void Key_Tick(void)//利用定时中断调用，获取通用的时间基准
+// 简易检测 (给 main.c 用)
+// 轮询 4 个按键，只要有单击事件就返回按键号
+uint8 Key_Check_Simple(void)
 {
-	static uint8 Count;//定义静态变量
-	static uint8 i;//用于遍历,按键少时可以这么干
-	static uint8 CurrState[KEY_COUNT],PrevState[KEY_COUNT];//Current,Previous
-	static uint8 S[KEY_COUNT];//状态变量，同江协状态转移图
-	static uint16 Time[KEY_COUNT];//长按/双击 计时器（此处递减计时）
-	//静态变量默认值为0，函数退出后值不会丢失
-	
-	for (i = 0;i < KEY_COUNT; i ++)
-	{
-		if  (Time[i] > 0)
-		{
-			Time[i] --;
-		}
-	}
-	Count++;//计数分频
-	if (Count >= 20)//可过滤按键抖动，按需调整
-	{
-		Count = 0 ;
-		
-		for (i = 0;i < KEY_COUNT; i ++)
-		{
-			PrevState[i] = CurrState[i];//上次状态
-			CurrState[i] = Key_GetState(i);//本次状态
-			
-			//置标志位
-			//Key_Flag |= 0x01;	
-			//只把最低位置一，而不影响其他位
-			//Key_Flag &= 0xFE;  或者  Key_Flag &= ~0x01;
-			//只把最低位清零，而不影响其他位
-			//使用宏定义转换0xXX,增加可读性
-			
-			if (CurrState[i] == KEY_PRESSED)
-			{
-				Key_Flag[i] |= KEY_HOLD;//HOLD = 1
-			}
-			else
-			{
-				Key_Flag[i] &= ~KEY_HOLD;//HOLD = 0
-			}
-			
-			if (CurrState[i] == KEY_PRESSED && PrevState[i] == KEY_UNPRESSED)
-			{
-				Key_Flag[i] |= KEY_DOWN;//DOWM = 1
-				//按下瞬间
-				//(中断程序只需置一，由主程序置零)
-			}
-			
-			if (CurrState[i] == KEY_UNPRESSED && PrevState[i] == KEY_PRESSED)
-			{
-				Key_Flag[i] |= KEY_UP;//UP = 1
-				//松开瞬间
-			}
-			
-			if (S[i] == 0)//状态：空闲
-			{
-				if (CurrState[i] == KEY_PRESSED)//按键按下
-				{
-					Time[i] = KEY_Time_LONG;//设定长按时间
-					S[i] = 1;
-				}
-			}
-			else if (S[i] == 1)//状态：按键已按下
-			{
-				if (CurrState[i] == KEY_UNPRESSED)
-				{
-					Time[i] = KEY_Time_DOUBLE;//设定双击时间（到此分支，长按时间已无效）
-					S[i] = 2;
-				}
-				else if (Time[i] == 0)//长按时间到（超时）
-				{
-					Time[i] = KEY_Time_REPEAT;//设定重复时间
-					Key_Flag[i] |= KEY_LONG;//LONG=1
-					S[i] = 4;
-				}
-			}
-			else if (S[i] == 2)//状态：按键已松开
-			{
-				if (CurrState[i] == KEY_PRESSED)
-				{
-					Key_Flag[i] |= KEY_DOUBLE;//DOUBLE = 1
-					S[i] = 3;
-				}
-				else if (Time[i] == 0)//双击时间到（超时）
-				{
-					Key_Flag[i] |= KEY_SINGLE;//SINGLE = 1
-					S[i] = 0;
-				}
-			}
-			else if (S[i] == 3)//状态：按键已双击
-			{
-				if (CurrState[i] == KEY_UNPRESSED)
-				{
-					S[i] = 0;
-				}
-			}
-			else if (S[i] == 4)//状态：按键已长按
-			{
-				if (CurrState[i] == KEY_UNPRESSED)
-				{
-					S[i] = 0;
-				}
-				else if (Time[i] == 0)
-				{
-					Time[i] = KEY_Time_REPEAT;
-					Key_Flag[i] |= KEY_REPEAT;//REPEAT = 1
-					S[i] = 4;
-				}
-			}
-		}
-		
-	}
+    if(Key_Check(0, KEY_SINGLE)) return 1;
+    if(Key_Check(1, KEY_SINGLE)) return 2;
+    if(Key_Check(2, KEY_SINGLE)) return 3;
+    if(Key_Check(3, KEY_SINGLE)) return 4;
+    return 0;
+}
+
+// 核心状态机函数
+// 在 5ms 定时器中断中调用
+void Key_Tick(void)
+{
+    static uint8 i;
+    static uint8 CurrState[KEY_COUNT]; 
+    static uint8 PrevState[KEY_COUNT]; 
+    static uint8 S[KEY_COUNT];         
+    static uint16 Time[KEY_COUNT];     
+    
+    // 1. 全局计时器递减
+    for (i = 0; i < KEY_COUNT; i++)
+    {
+        if (Time[i] > 0) Time[i]--;
+    }
+
+    // 2. 按键扫描
+    // 由于现在是在 5ms 中断里调用，天然自带消抖，不需要额外的分频 Count
+    // 直接每次进来都扫一遍
+    
+    for (i = 0; i < KEY_COUNT; i++)
+    {
+        PrevState[i] = CurrState[i];
+        CurrState[i] = Key_GetState(i);
+        
+        // --- 边沿事件 ---
+        if (CurrState[i] == KEY_PRESSED && PrevState[i] == KEY_UNPRESSED)
+            Key_Flag[i] |= KEY_DOWN;
+        
+        if (CurrState[i] == KEY_UNPRESSED && PrevState[i] == KEY_PRESSED)
+            Key_Flag[i] |= KEY_UP;
+        
+        // --- 高级状态机 ---
+        switch(S[i])
+        {
+            case 0: // 空闲
+                if (CurrState[i] == KEY_PRESSED)
+                {
+                    Time[i] = KEY_Time_LONG; 
+                    S[i] = 1; 
+                }
+                break;
+                
+            case 1: // 等待释放或长按
+                if (CurrState[i] == KEY_UNPRESSED)
+                {
+                    Time[i] = KEY_Time_DOUBLE; 
+                    S[i] = 2; // 等待双击
+                }
+                else if (Time[i] == 0)
+                {
+                    Time[i] = KEY_Time_REPEAT; 
+                    Key_Flag[i] |= KEY_LONG;
+                    S[i] = 4; // 连发
+                }
+                break;
+                
+            case 2: // 等待第二次按下
+                if (CurrState[i] == KEY_PRESSED)
+                {
+                    Key_Flag[i] |= KEY_DOUBLE;
+                    S[i] = 3; 
+                }
+                else if (Time[i] == 0)
+                {
+                    Key_Flag[i] |= KEY_SINGLE; // 时间到，确认单击
+                    S[i] = 0; 
+                }
+                break;
+                
+            case 3: // 双击后等待松手
+                if (CurrState[i] == KEY_UNPRESSED)
+                {
+                    S[i] = 0;
+                }
+                break;
+                
+            case 4: // 长按连发
+                if (CurrState[i] == KEY_UNPRESSED)
+                {
+                    S[i] = 0;
+                }
+                else if (Time[i] == 0)
+                {
+                    Time[i] = KEY_Time_REPEAT;
+                    Key_Flag[i] |= KEY_REPEAT;
+                }
+                break;
+        }
+    }
 }

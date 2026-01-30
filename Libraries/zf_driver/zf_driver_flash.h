@@ -1,81 +1,46 @@
-/*********************************************************************************************************************
-* CH32V307VCT6 Opensourec Library ¼´£¨CH32V307VCT6 ¿ªÔ´¿â£©ÊÇÒ»¸ö»ùÓÚ¹Ù·½ SDK ½Ó¿ÚµÄµÚÈı·½¿ªÔ´¿â
-* Copyright (c) 2022 SEEKFREE Öğ·É¿Æ¼¼
-*
-* ±¾ÎÄ¼şÊÇCH32V307VCT6 ¿ªÔ´¿âµÄÒ»²¿·Ö
-*
-* CH32V307VCT6 ¿ªÔ´¿â ÊÇÃâ·ÑÈí¼ş
-* Äú¿ÉÒÔ¸ù¾İ×ÔÓÉÈí¼ş»ù½ğ»á·¢²¼µÄ GPL£¨GNU General Public License£¬¼´ GNUÍ¨ÓÃ¹«¹²Ğí¿ÉÖ¤£©µÄÌõ¿î
-* ¼´ GPL µÄµÚ3°æ£¨¼´ GPL3.0£©»ò£¨ÄúÑ¡ÔñµÄ£©ÈÎºÎºóÀ´µÄ°æ±¾£¬ÖØĞÂ·¢²¼ºÍ/»òĞŞ¸ÄËü
-*
-* ±¾¿ªÔ´¿âµÄ·¢²¼ÊÇÏ£ÍûËüÄÜ·¢»Ó×÷ÓÃ£¬µ«²¢Î´¶ÔÆä×÷ÈÎºÎµÄ±£Ö¤
-* ÉõÖÁÃ»ÓĞÒşº¬µÄÊÊÏúĞÔ»òÊÊºÏÌØ¶¨ÓÃÍ¾µÄ±£Ö¤
-* ¸ü¶àÏ¸½ÚÇë²Î¼û GPL
-*
-* ÄúÓ¦¸ÃÔÚÊÕµ½±¾¿ªÔ´¿âµÄÍ¬Ê±ÊÕµ½Ò»·İ GPL µÄ¸±±¾
-* Èç¹ûÃ»ÓĞ£¬Çë²ÎÔÄ<https://www.gnu.org/licenses/>
-*
-* ¶îÍâ×¢Ã÷£º
-* ±¾¿ªÔ´¿âÊ¹ÓÃ GPL3.0 ¿ªÔ´Ğí¿ÉÖ¤Ğ­Òé ÒÔÉÏĞí¿ÉÉêÃ÷ÎªÒëÎÄ°æ±¾
-* Ğí¿ÉÉêÃ÷Ó¢ÎÄ°æÔÚ libraries/doc ÎÄ¼ş¼ĞÏÂµÄ GPL3_permission_statement.txt ÎÄ¼şÖĞ
-* Ğí¿ÉÖ¤¸±±¾ÔÚ libraries ÎÄ¼ş¼ĞÏÂ ¼´¸ÃÎÄ¼ş¼ĞÏÂµÄ LICENSE ÎÄ¼ş
-* »¶Ó­¸÷Î»Ê¹ÓÃ²¢´«²¥±¾³ÌĞò µ«ĞŞ¸ÄÄÚÈİÊ±±ØĞë±£ÁôÖğ·É¿Æ¼¼µÄ°æÈ¨ÉùÃ÷£¨¼´±¾ÉùÃ÷£©
-*
-* ÎÄ¼şÃû³Æ          zf_driver_delay
-* ¹«Ë¾Ãû³Æ          ³É¶¼Öğ·É¿Æ¼¼ÓĞÏŞ¹«Ë¾
-* °æ±¾ĞÅÏ¢          ²é¿´ libraries/doc ÎÄ¼ş¼ĞÄÚ version ÎÄ¼ş °æ±¾ËµÃ÷
-* ¿ª·¢»·¾³          MounRiver Studio V1.8.1
-* ÊÊÓÃÆ½Ì¨          CH32V307VCT6
-* µêÆÌÁ´½Ó          https://seekfree.taobao.com/
-*
-* ĞŞ¸Ä¼ÇÂ¼
-* ÈÕÆÚ                                      ×÷Õß                             ±¸×¢
-* 2022-09-15        ´óW            first version
-********************************************************************************************************************/
-
-#ifndef _zf_driver_flash_h
-#define _zf_driver_flash_h
-
-#include "zf_driver_eeprom.h"
-#include "zf_common_typedef.h"
-
-
-#define FLASH_BASE_ADDR             (0x00)               		// FALSHÊ×µØÖ·
-#define FLASH_MAX_PAGE_INDEX        (3)
-#define FLASH_MAX_SECTION_INDEX     (63)
-#define FLASH_PAGE_SIZE             (0x00000100)                // 256  byte
-#define FLASH_SECTION_SIZE          (FLASH_PAGE_SIZE*4)         // 1024 byte
-#define FLASH_OPERATION_TIME_OUT    0x00FF
-
-#define FLASH_DATA_BUFFER_SIZE      (FLASH_PAGE_SIZE/sizeof(flash_data_union))  // ×Ô¶¯¼ÆËãÃ¿¸öÒ³ÄÜ¹»´æÏÂ¶àÉÙ¸öÊı¾İ
-
-typedef union                                                                   // ¹Ì¶¨µÄÊı¾İ»º³åµ¥Ôª¸ñÊ½
-{
-    float   float_type;                                                       // float  ÀàĞÍ
-    uint32  uint32_type;                                                      // uint32 ÀàĞÍ
-    int32   int32_type;                                                       // int32  ÀàĞÍ
-    uint16  uint16_type;                                                      // uint16 ÀàĞÍ
-    int16   int16_type;                                                       // int16  ÀàĞÍ
-    uint8   uint8_type;                                                       // uint8  ÀàĞÍ
-    int8    int8_type;                                                        // int8   ÀàĞÍ
-}flash_data_union;                                                            // ËùÓĞÀàĞÍÊı¾İ¹²ÓÃÍ¬Ò»¸ö 32bit µØÖ·
-
-
-/*
-  STC-ISP¿ÉÒÔµ÷ÕûEEPROM´óĞ¡£¬Ä¬ÈÏÊ¹ÓÃ1K¡£×î´ó¿ÉÒÔÉèÖÃÎª128K¡£
- Ò»¸öÉÈÇø256¸ö×Ö½Ú¡£
-*/
-
-
-extern flash_data_union flash_union_buffer[FLASH_DATA_BUFFER_SIZE];
-
-uint8   flash_check                         (uint32 sector_num, uint32 page_num);
-uint8   flash_erase_sector                  (uint32 sector_num, uint32 page_num);
-void    flash_read_page                     (uint32 sector_num, uint32 page_num, uint32 *buf, uint16 len);
-uint8   flash_write_page                    (uint32 sector_num, uint32 page_num, const uint32 *buf, uint16 len);
-
-void    flash_read_page_to_buffer           (uint32 sector_num, uint32 page_num);
-uint8   flash_write_page_from_buffer        (uint32 sector_num, uint32 page_num);
-void    flash_buffer_clear                  (void);
-
-#endif
+#ifndef _zf_driver_flash_h
+#define _zf_driver_flash_h
+
+#include "zf_driver_eeprom.h"
+#include "zf_common_typedef.h"
+
+
+#define FLASH_BASE_ADDR             (0x00)               		// FALSHé¦–åœ°å€
+#define FLASH_MAX_PAGE_INDEX        (3)
+#define FLASH_MAX_SECTION_INDEX     (63)
+#define FLASH_PAGE_SIZE             (0x00000100)                // 256  byte
+#define FLASH_SECTION_SIZE          (FLASH_PAGE_SIZE*4)         // 1024 byte
+#define FLASH_OPERATION_TIME_OUT    0x00FF
+
+#define FLASH_DATA_BUFFER_SIZE      (FLASH_PAGE_SIZE/sizeof(flash_data_union))  // è‡ªåŠ¨è®¡ç®—æ¯ä¸ªé¡µèƒ½å¤Ÿå­˜ä¸‹å¤šå°‘ä¸ªæ•°æ®
+
+typedef union                                                                   // å›ºå®šçš„æ•°æ®ç¼“å†²å•å…ƒæ ¼å¼
+{
+    float   float_type;                                                       // float  ç±»å‹
+    uint32  uint32_type;                                                      // uint32 ç±»å‹
+    int32   int32_type;                                                       // int32  ç±»å‹
+    uint16  uint16_type;                                                      // uint16 ç±»å‹
+    int16   int16_type;                                                       // int16  ç±»å‹
+    uint8   uint8_type;                                                       // uint8  ç±»å‹
+    int8    int8_type;                                                        // int8   ç±»å‹
+}flash_data_union;                                                            // æ‰€æœ‰ç±»å‹æ•°æ®å…±ç”¨åŒä¸€ä¸ª 32bit åœ°å€
+
+
+/*
+  STC-ISPå¯ä»¥è°ƒæ•´EEPROMå¤§å°ï¼Œé»˜è®¤ä½¿ç”¨1Kã€‚æœ€å¤§å¯ä»¥è®¾ç½®ä¸º128Kã€‚
+ ä¸€ä¸ªæ‰‡åŒº256ä¸ªå­—èŠ‚ã€‚
+*/
+
+
+extern flash_data_union flash_union_buffer[FLASH_DATA_BUFFER_SIZE];
+
+uint8   flash_check                         (uint32 sector_num, uint32 page_num);
+uint8   flash_erase_sector                  (uint32 sector_num, uint32 page_num);
+void    flash_read_page                     (uint32 sector_num, uint32 page_num, uint32 *buf, uint16 len);
+uint8   flash_write_page                    (uint32 sector_num, uint32 page_num, const uint32 *buf, uint16 len);
+
+void    flash_read_page_to_buffer           (uint32 sector_num, uint32 page_num);
+uint8   flash_write_page_from_buffer        (uint32 sector_num, uint32 page_num);
+void    flash_buffer_clear                  (void);
+
+#endif

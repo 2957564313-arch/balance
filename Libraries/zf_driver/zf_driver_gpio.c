@@ -1,424 +1,424 @@
-#include "zf_common_debug.h"
-#include "zf_driver_gpio.h"
-
-
-// ÄÚ²¿Ê¹ÓÃ£¬ÓÃ»§ÎÞÐè¹ØÐÄ¡£
-static void gpio_set_mode(gpio_pin_enum pin, gpio_mode_enum mode)
-{
-	#define PXPU(pin)  (*(unsigned char volatile far *)(0x7efe10 + (pin >> 4 - 1)))
-//	#define PXPD(pin)  (*(unsigned char volatile far *)(0x7efe40 + (pin >> 4 - 1)))
-	
-    if(GPI_FLOATING_IN == mode || GPIO_NO_PULL == mode)
-    {
-        PXPU(pin) &= ~(1 << (pin & 0x0F));
-//        PXPD(pin) &= ~(1 << (pin & 0x0F));
-    }
-//    else if(GPI_PULL_DOWN == mode)
-//    {
-//        PXPD(pin) |= (1 << (pin & 0x0F));
-//    }
-    else if(GPI_PULL_UP == mode || GPO_PUSH_PULL == mode)
-    {
-        PXPU(pin) |= (1 << (pin & 0x0F));
-    }
-	else if(GPO_OPEN_DTAIN == mode)
-	{
-        // ¿ªÂ©Êä³ö£º²Ù×÷¶ÔÓ¦¶Ë¿ÚµÄÄ£Ê½¼Ä´æÆ÷£¨PnM1/PnM0£©
-		switch(pin & 0xF0)
-		{
-			case IO_P00:
-                P0M1 |= (1 << (pin & 0xF));
-                P0M0 |= (1 << (pin & 0xF));
-				break;
-			case IO_P10:
-                P1M1 |= (1 << (pin & 0xF));
-                P1M0 |= (1 << (pin & 0xF));
-				break;
-			case IO_P20:
-                P2M1 |= (1 << (pin & 0xF));
-                P2M0 |= (1 << (pin & 0xF));
-				break;
-			case IO_P30:
-                P3M1 |= (1 << (pin & 0xF));
-                P3M0 |= (1 << (pin & 0xF));
-				break;
-			case IO_P40:
-                P4M1 |= (1 << (pin & 0xF));
-                P4M0 |= (1 << (pin & 0xF));
-				break;
-			case IO_P50:
-                P5M1 |= (1 << (pin & 0xF));
-                P5M0 |= (1 << (pin & 0xF));
-				break;
-			case IO_P60:
-                P6M1 |= (1 << (pin & 0xF));
-                P6M0 |= (1 << (pin & 0xF));
-				break;
-			case IO_P70:
-                P7M1 |= (1 << (pin & 0xF));
-                P7M0 |= (1 << (pin & 0xF));
-				break;
-			default:
-				break; // ÎÞÐ§Òý½Å
-		}
-	}
-	else
-	{
-		// zf_assert(0); // ²ÎÊý²»Æ¥Åä
-	}
-}
-
-// ÄÚ²¿Ê¹ÓÃ£¬ÓÃ»§ÎÞÐè¹ØÐÄ¡£
-void gpio_set_level_speed(gpio_pin_enum pin, gpio_speed_enum speed)
-{
-    // ÌáÇ°¼ÆËãÒý½ÅÎ»ºÍ¶Ë¿Ú±êÖ¾
-    uint8 pin_bit = pin & 0x0F;
-    uint8 port_flag = pin & 0xF0;
-
-    // ¸ù¾Ý¶Ë¿Ú±êÖ¾²Ù×÷¶ÔÓ¦PnSR¼Ä´æÆ÷£¨ËÙ¶ÈÅäÖÃ£©
-    switch(port_flag)
-    {
-        case IO_P00:
-            // ¿ìËÙÄ£Ê½£ºÇå³ýÎ»£»µÍËÙÄ£Ê½£ºÖÃÎ»
-            (GPIO_SPEED_FAST == speed) ? (P0SR &= ~(1 << pin_bit)) : (P0SR |= (1 << pin_bit));
-            break;
-        case IO_P10:
-            (GPIO_SPEED_FAST == speed) ? (P1SR &= ~(1 << pin_bit)) : (P1SR |= (1 << pin_bit));
-            break;
-        case IO_P20:
-            (GPIO_SPEED_FAST == speed) ? (P2SR &= ~(1 << pin_bit)) : (P2SR |= (1 << pin_bit));
-            break;
-        case IO_P30:
-            (GPIO_SPEED_FAST == speed) ? (P3SR &= ~(1 << pin_bit)) : (P3SR |= (1 << pin_bit));
-            break;
-        case IO_P40:
-            (GPIO_SPEED_FAST == speed) ? (P4SR &= ~(1 << pin_bit)) : (P4SR |= (1 << pin_bit));
-            break;
-        case IO_P50:
-            (GPIO_SPEED_FAST == speed) ? (P5SR &= ~(1 << pin_bit)) : (P5SR |= (1 << pin_bit));
-            break;
-        case IO_P60:
-            (GPIO_SPEED_FAST == speed) ? (P6SR &= ~(1 << pin_bit)) : (P6SR |= (1 << pin_bit));
-            break;
-        case IO_P70:
-            (GPIO_SPEED_FAST == speed) ? (P7SR &= ~(1 << pin_bit)) : (P7SR |= (1 << pin_bit));
-            break;
-        default:
-            // zf_assert(0); // ÎÞÐ§Òý½Å
-            break;
-    }
-}
-
-
-// ÄÚ²¿Ê¹ÓÃ£¬ÓÃ»§ÎÞÐè¹ØÐÄ¡£
-static void gpio_set_dir(gpio_pin_enum pin, gpio_dir_enum dir)
-{
-    switch(pin & 0xF0)
-    {
-        case IO_P00:
-        {
-            if(GPIO == dir || GPI == dir)
-            {
-                P0M1 &= ~(1 << (pin & 0xF));
-                P0M0 &= ~(1 << (pin & 0xF));
-            }
-//            else if(GPO_OPEN_DTAIN == dir)
-//            {
-//                P0M1 |= (1 << (pin & 0xF));
-//                P0M0 |= (1 << (pin & 0xF));
-//            }
-            else if(GPO == dir)
-            {
-                P0M1 &= ~(1 << (pin & 0xF));
-                P0M0 |= (1 << (pin & 0xF));
-            }
-        }
-        break;
-        
-        case IO_P10:
-        {
-            if(GPIO == dir || GPI == dir)
-            {
-                P1M1 &= ~(1 << (pin & 0xF));
-                P1M0 &= ~(1 << (pin & 0xF));
-            }
-//            else if(GPO_OPEN_DTAIN == dir)
-//            {
-//                P1M1 |= (1 << (pin & 0xF));
-//                P1M0 |= (1 << (pin & 0xF));
-//            }
-            else if(GPO == dir)
-            {
-                P1M1 &= ~(1 << (pin & 0xF));
-                P1M0 |= (1 << (pin & 0xF));
-            }
-        }
-        break;
-        
-        case IO_P20:
-        {
-            if(GPIO == dir || GPI == dir)
-            {
-                P2M1 &= ~(1 << (pin & 0xF));
-                P2M0 &= ~(1 << (pin & 0xF));
-            }
-//            else if(GPO_OPEN_DTAIN == dir)
-//            {
-//                P2M1 |= (1 << (pin & 0xF));
-//                P2M0 |= (1 << (pin & 0xF));
-//            }
-            else if(GPO == dir)
-            {
-                P2M1 &= ~(1 << (pin & 0xF));
-                P2M0 |= (1 << (pin & 0xF));
-            }
-        }
-        break;
-        
-        case IO_P30:
-        {
-            if(GPIO == dir || GPI == dir)
-            {
-                P3M1 &= ~(1 << (pin & 0xF));
-                P3M0 &= ~(1 << (pin & 0xF));
-            }
-//            else if(GPO_OPEN_DTAIN == dir)
-//            {
-//                P3M1 |= (1 << (pin & 0xF));
-//                P3M0 |= (1 << (pin & 0xF));
-//            }
-            else if(GPO == dir)
-            {
-                P3M1 &= ~(1 << (pin & 0xF));
-                P3M0 |= (1 << (pin & 0xF));
-            }
-        }
-        break;
-        
-        case IO_P40:
-        {
-            if(GPIO == dir || GPI == dir)
-            {
-                P4M1 &= ~(1 << (pin & 0xF));
-                P4M0 &= ~(1 << (pin & 0xF));
-            }
-//            else if(GPO_OPEN_DTAIN == dir)
-//            {
-//                P4M1 |= (1 << (pin & 0xF));
-//                P4M0 |= (1 << (pin & 0xF));
-//            }
-            else if(GPO == dir)
-            {
-                P4M1 &= ~(1 << (pin & 0xF));
-                P4M0 |= (1 << (pin & 0xF));
-            }
-        }
-        break;
-        
-        case IO_P50:
-        {
-            if(GPIO == dir || GPI == dir)
-            {
-                P5M1 &= ~(1 << (pin & 0xF));
-                P5M0 &= ~(1 << (pin & 0xF));
-            }
-//            else if(GPO_OPEN_DTAIN == dir)
-//            {
-//                P5M1 |= (1 << (pin & 0xF));
-//                P5M0 |= (1 << (pin & 0xF));
-//            }
-            else if(GPO == dir)
-            {
-                P5M1 &= ~(1 << (pin & 0xF));
-                P5M0 |= (1 << (pin & 0xF));
-            }
-        }
-        break;
-		
-		case IO_P60:
-        {
-            if(GPIO == dir || GPI == dir)
-            {
-                P6M1 &= ~(1 << (pin & 0xF));
-                P6M0 &= ~(1 << (pin & 0xF));
-            }
-//            else if(GPO_OPEN_DTAIN == dir)
-//            {
-//                P6M1 |= (1 << (pin & 0xF));
-//                P6M0 |= (1 << (pin & 0xF));
-//            }
-            else if(GPO == dir)
-            {
-                P6M1 &= ~(1 << (pin & 0xF));
-                P6M0 |= (1 << (pin & 0xF));
-            }
-        }
-        break;
-		
-		case IO_P70:
-        {
-            if(GPIO == dir || GPI == dir)
-            {
-                P7M1 &= ~(1 << (pin & 0xF));
-                P7M0 &= ~(1 << (pin & 0xF));
-            }
-//            else if(GPO_OPEN_DTAIN == dir)
-//            {
-//                P7M1 |= (1 << (pin & 0xF));
-//                P7M0 |= (1 << (pin & 0xF));
-//            }
-            else if(GPO == dir)
-            {
-                P7M1 &= ~(1 << (pin & 0xF));
-                P7M0 |= (1 << (pin & 0xF));
-            }
-
-        }
-        break;
-        
-        default:
-        {
-			zf_assert(0);
-			// Ã»ÓÐÕâ¸öÒý½Å
-        } break;
-    }
-}
-
-//-------------------------------------------------------------------------------------------------------------------
-// º¯Êý¼ò½é     GPIO×´Ì¬»ñÈ¡
-// ²ÎÊýËµÃ÷     pin         Ñ¡ÔñµÄÒý½Å (¿ÉÑ¡Ôñ·¶Î§ÓÉ zf_driver_gpio.h ÄÚgpio_pin_enumÃ¶¾ÙÖµÈ·¶¨)
-// ·µ»Ø²ÎÊý     uint8       0£ºµÍµçÆ½ 1£º¸ßµçÆ½
-// Ê¹ÓÃÊ¾Àý     uint8 status = gpio_get_level(IO_P00);//»ñÈ¡P00Òý½ÅµçÆ½
-//-------------------------------------------------------------------------------------------------------------------
-uint8 gpio_get_level(gpio_pin_enum pin)
-{
-    uint8 pin_bit = pin & 0x0F;
-    uint8 port_flag = pin & 0xF0;
-    uint8 status = 0;
-
-    // ¸ù¾Ý¶Ë¿Ú±êÖ¾¶ÁÈ¡¶ÔÓ¦Pn¼Ä´æÆ÷
-    switch(port_flag)
-    {
-        case IO_P00: status = P0 & (1 << pin_bit); break;
-        case IO_P10: status = P1 & (1 << pin_bit); break;
-        case IO_P20: status = P2 & (1 << pin_bit); break;
-        case IO_P30: status = P3 & (1 << pin_bit); break;
-        case IO_P40: status = P4 & (1 << pin_bit); break;
-        case IO_P50: status = P5 & (1 << pin_bit); break;
-        case IO_P60: status = P6 & (1 << pin_bit); break;
-        case IO_P70: status = P7 & (1 << pin_bit); break;
-        default: break; // ÎÞÐ§Òý½Å
-    }
-    
-    return status ? 1 : 0; // ×ª»»Îª0/1·µ»Ø
-}
-
-//-------------------------------------------------------------------------------------------------------------------
-// º¯Êý¼ò½é     GPIOÊä³öÉèÖÃ
-// ²ÎÊýËµÃ÷     pin         Òý½ÅºÅÑ¡ÔñµÄÒý½Å (¿ÉÑ¡Ôñ·¶Î§ÓÉ common.h ÄÚGPIO_PIN_enumÃ¶¾ÙÖµÈ·¶¨)
-// ²ÎÊýËµÃ÷     dat         Òý½ÅµÄµçÆ½×´Ì¬£¬Êä³öÊ±ÓÐÐ§ 0£ºµÍµçÆ½ 1£º¸ßµçÆ½
-// ·µ»Ø²ÎÊý     void
-// Ê¹ÓÃÊ¾Àý     gpio_set_level(D0, 0);//D0Êä³öµÍµçÆ½
-//-------------------------------------------------------------------------------------------------------------------
-void gpio_set_level(gpio_pin_enum pin, uint8 dat)
-{
-    uint8 pin_bit = pin & 0x0F;
-    uint8 port_flag = pin & 0xF0;
-
-    // ÈýÔªÔËËã·û¾«¼òÖÃÎ»/ÇåÁãÂß¼­
-    switch(port_flag)
-    {
-        case IO_P00: dat ? (P0 |= (1 << pin_bit)) : (P0 &= ~(1 << pin_bit)); break;
-        case IO_P10: dat ? (P1 |= (1 << pin_bit)) : (P1 &= ~(1 << pin_bit)); break;
-        case IO_P20: dat ? (P2 |= (1 << pin_bit)) : (P2 &= ~(1 << pin_bit)); break;
-        case IO_P30: dat ? (P3 |= (1 << pin_bit)) : (P3 &= ~(1 << pin_bit)); break;
-        case IO_P40: dat ? (P4 |= (1 << pin_bit)) : (P4 &= ~(1 << pin_bit)); break;
-        case IO_P50: dat ? (P5 |= (1 << pin_bit)) : (P5 &= ~(1 << pin_bit)); break;
-        case IO_P60: dat ? (P6 |= (1 << pin_bit)) : (P6 &= ~(1 << pin_bit)); break;
-        case IO_P70: dat ? (P7 |= (1 << pin_bit)) : (P7 &= ~(1 << pin_bit)); break;
-        default: break; // ÎÞÐ§Òý½Å
-    }
-}
-
-//-------------------------------------------------------------------------------------------------------------------
-// º¯Êý¼ò½é     GPIOµçÆ½·­×ª
-// ²ÎÊýËµÃ÷     pin         Òý½ÅºÅÑ¡ÔñµÄÒý½Å
-// ·µ»Ø²ÎÊý     void
-// Ê¹ÓÃÊ¾Àý     gpio_toggle_level(D0);//·­×ªD0µçÆ½
-//-------------------------------------------------------------------------------------------------------------------
-void gpio_toggle_level(gpio_pin_enum pin)
-{
-    // Ö±½Óµ÷ÓÃÏÖÓÐº¯Êý£¬Âß¼­ÇåÎú
-    gpio_set_level(pin, !gpio_get_level(pin));
-}
-
-//-------------------------------------------------------------------------------------------------------------------
-// º¯Êý¼ò½é     GPIOÉèÖÃ¸ß×èÊäÈë
-// ²ÎÊýËµÃ÷     pin         Òý½ÅºÅÑ¡ÔñµÄÒý½Å
-// ·µ»Ø²ÎÊý     void
-// Ê¹ÓÃÊ¾Àý     
-//-------------------------------------------------------------------------------------------------------------------
-void gpio_set_impedance(gpio_pin_enum pin)
-{
-    uint8 pin_bit = pin & 0x0F;
-    uint8 port_flag = pin & 0xF0;
-
-    // Í³Ò»¸ß×èÊäÈëÅäÖÃ£¨PnM1ÖÃÎ»£¬PnM0ÇåÁã£©
-    switch(port_flag)
-    {
-        case IO_P00: P0M1 |= (1 << pin_bit); P0M0 &= ~(1 << pin_bit); break;
-        case IO_P10: P1M1 |= (1 << pin_bit); P1M0 &= ~(1 << pin_bit); break;
-        case IO_P20: P2M1 |= (1 << pin_bit); P2M0 &= ~(1 << pin_bit); break;
-        case IO_P30: P3M1 |= (1 << pin_bit); P3M0 &= ~(1 << pin_bit); break;
-        case IO_P40: P4M1 |= (1 << pin_bit); P4M0 &= ~(1 << pin_bit); break;
-        case IO_P50: P5M1 |= (1 << pin_bit); P5M0 &= ~(1 << pin_bit); break;
-        case IO_P60: P6M1 |= (1 << pin_bit); P6M0 &= ~(1 << pin_bit); break;
-        case IO_P70: P7M1 |= (1 << pin_bit); P7M0 &= ~(1 << pin_bit); break;
-        default: break; // ÎÞÐ§Òý½Å
-    }
-}
-
-//-------------------------------------------------------------------------------------------------------------------
-// º¯Êý¼ò½é     GPIO³õÊ¼»¯
-// ²ÎÊýËµÃ÷     pin         Ñ¡ÔñµÄÒý½Å
-// ²ÎÊýËµÃ÷     dir         Òý½ÅµÄ·½Ïò   Êä³ö£ºGPO   ÊäÈë£ºGPI
-// ²ÎÊýËµÃ÷     dat         Òý½Å³õÊ¼»¯Ê±ÉèÖÃµÄµçÆ½×´Ì¬£¬Êä³öÊ±ÓÐÐ§
-// ²ÎÊýËµÃ÷     mode        Òý½ÅÄ£Ê½£¨ÉÏÏÂÀ­/¿ªÂ©µÈ£©
-// ·µ»Ø²ÎÊý     void
-// Ê¹ÓÃÊ¾Àý     gpio_init(D0, GPO, 1, GPO_PUSH_PULL);//D0³õÊ¼»¯ÎªÊä³ö¡¢¸ßµçÆ½¡¢ÍÆÍìÄ£Ê½
-//-------------------------------------------------------------------------------------------------------------------
-void gpio_init(gpio_pin_enum pin, gpio_dir_enum dir, const uint8 dat, gpio_mode_enum mode)
-{
-	zf_assert(dir == (mode >> 4));
-
-	if(dir == GPIO)
-	{
-		gpio_set_dir(pin, GPIO);
-		gpio_set_mode(pin, mode);
-	}
-	else if(dir == GPI)
-	{
-		if(mode == GPI_IMPEDANCE)
-		{
-			gpio_set_impedance(pin);
-		}
-		else
-		{
-			gpio_set_dir(pin, GPI);
-			gpio_set_mode(pin, mode);
-		}
-	}
-	else if(dir == GPO)
-	{
-		if(GPO_PUSH_PULL == mode)
-		{
-			gpio_set_dir(pin, GPO);
-			gpio_set_mode(pin, GPI_PULL_UP);
-		}
-		else if(GPO_OPEN_DTAIN == mode)
-		{
-			gpio_set_mode(pin, GPO_OPEN_DTAIN);
-		}
-	}
-	gpio_set_level(pin, dat);
-}
+#include "zf_common_debug.h"
+#include "zf_driver_gpio.h"
+
+
+// å†…éƒ¨ä½¿ç”¨ï¼Œç”¨æˆ·æ— éœ€å…³å¿ƒã€‚
+static void gpio_set_mode(gpio_pin_enum pin, gpio_mode_enum mode)
+{
+	#define PXPU(pin)  (*(unsigned char volatile far *)(0x7efe10 + (pin >> 4 - 1)))
+//	#define PXPD(pin)  (*(unsigned char volatile far *)(0x7efe40 + (pin >> 4 - 1)))
+	
+    if(GPI_FLOATING_IN == mode || GPIO_NO_PULL == mode)
+    {
+        PXPU(pin) &= ~(1 << (pin & 0x0F));
+//        PXPD(pin) &= ~(1 << (pin & 0x0F));
+    }
+//    else if(GPI_PULL_DOWN == mode)
+//    {
+//        PXPD(pin) |= (1 << (pin & 0x0F));
+//    }
+    else if(GPI_PULL_UP == mode || GPO_PUSH_PULL == mode)
+    {
+        PXPU(pin) |= (1 << (pin & 0x0F));
+    }
+	else if(GPO_OPEN_DTAIN == mode)
+	{
+        // å¼€æ¼è¾“å‡ºï¼šæ“ä½œå¯¹åº”ç«¯å£çš„æ¨¡å¼å¯„å­˜å™¨ï¼ˆPnM1/PnM0ï¼‰
+		switch(pin & 0xF0)
+		{
+			case IO_P00:
+                P0M1 |= (1 << (pin & 0xF));
+                P0M0 |= (1 << (pin & 0xF));
+				break;
+			case IO_P10:
+                P1M1 |= (1 << (pin & 0xF));
+                P1M0 |= (1 << (pin & 0xF));
+				break;
+			case IO_P20:
+                P2M1 |= (1 << (pin & 0xF));
+                P2M0 |= (1 << (pin & 0xF));
+				break;
+			case IO_P30:
+                P3M1 |= (1 << (pin & 0xF));
+                P3M0 |= (1 << (pin & 0xF));
+				break;
+			case IO_P40:
+                P4M1 |= (1 << (pin & 0xF));
+                P4M0 |= (1 << (pin & 0xF));
+				break;
+			case IO_P50:
+                P5M1 |= (1 << (pin & 0xF));
+                P5M0 |= (1 << (pin & 0xF));
+				break;
+			case IO_P60:
+                P6M1 |= (1 << (pin & 0xF));
+                P6M0 |= (1 << (pin & 0xF));
+				break;
+			case IO_P70:
+                P7M1 |= (1 << (pin & 0xF));
+                P7M0 |= (1 << (pin & 0xF));
+				break;
+			default:
+				break; // æ— æ•ˆå¼•è„š
+		}
+	}
+	else
+	{
+		// zf_assert(0); // å‚æ•°ä¸åŒ¹é…
+	}
+}
+
+// å†…éƒ¨ä½¿ç”¨ï¼Œç”¨æˆ·æ— éœ€å…³å¿ƒã€‚
+void gpio_set_level_speed(gpio_pin_enum pin, gpio_speed_enum speed)
+{
+    // æå‰è®¡ç®—å¼•è„šä½å’Œç«¯å£æ ‡å¿—
+    uint8 pin_bit = pin & 0x0F;
+    uint8 port_flag = pin & 0xF0;
+
+    // æ ¹æ®ç«¯å£æ ‡å¿—æ“ä½œå¯¹åº”PnSRå¯„å­˜å™¨ï¼ˆé€Ÿåº¦é…ç½®ï¼‰
+    switch(port_flag)
+    {
+        case IO_P00:
+            // å¿«é€Ÿæ¨¡å¼ï¼šæ¸…é™¤ä½ï¼›ä½Žé€Ÿæ¨¡å¼ï¼šç½®ä½
+            (GPIO_SPEED_FAST == speed) ? (P0SR &= ~(1 << pin_bit)) : (P0SR |= (1 << pin_bit));
+            break;
+        case IO_P10:
+            (GPIO_SPEED_FAST == speed) ? (P1SR &= ~(1 << pin_bit)) : (P1SR |= (1 << pin_bit));
+            break;
+        case IO_P20:
+            (GPIO_SPEED_FAST == speed) ? (P2SR &= ~(1 << pin_bit)) : (P2SR |= (1 << pin_bit));
+            break;
+        case IO_P30:
+            (GPIO_SPEED_FAST == speed) ? (P3SR &= ~(1 << pin_bit)) : (P3SR |= (1 << pin_bit));
+            break;
+        case IO_P40:
+            (GPIO_SPEED_FAST == speed) ? (P4SR &= ~(1 << pin_bit)) : (P4SR |= (1 << pin_bit));
+            break;
+        case IO_P50:
+            (GPIO_SPEED_FAST == speed) ? (P5SR &= ~(1 << pin_bit)) : (P5SR |= (1 << pin_bit));
+            break;
+        case IO_P60:
+            (GPIO_SPEED_FAST == speed) ? (P6SR &= ~(1 << pin_bit)) : (P6SR |= (1 << pin_bit));
+            break;
+        case IO_P70:
+            (GPIO_SPEED_FAST == speed) ? (P7SR &= ~(1 << pin_bit)) : (P7SR |= (1 << pin_bit));
+            break;
+        default:
+            // zf_assert(0); // æ— æ•ˆå¼•è„š
+            break;
+    }
+}
+
+
+// å†…éƒ¨ä½¿ç”¨ï¼Œç”¨æˆ·æ— éœ€å…³å¿ƒã€‚
+static void gpio_set_dir(gpio_pin_enum pin, gpio_dir_enum dir)
+{
+    switch(pin & 0xF0)
+    {
+        case IO_P00:
+        {
+            if(GPIO == dir || GPI == dir)
+            {
+                P0M1 &= ~(1 << (pin & 0xF));
+                P0M0 &= ~(1 << (pin & 0xF));
+            }
+//            else if(GPO_OPEN_DTAIN == dir)
+//            {
+//                P0M1 |= (1 << (pin & 0xF));
+//                P0M0 |= (1 << (pin & 0xF));
+//            }
+            else if(GPO == dir)
+            {
+                P0M1 &= ~(1 << (pin & 0xF));
+                P0M0 |= (1 << (pin & 0xF));
+            }
+        }
+        break;
+        
+        case IO_P10:
+        {
+            if(GPIO == dir || GPI == dir)
+            {
+                P1M1 &= ~(1 << (pin & 0xF));
+                P1M0 &= ~(1 << (pin & 0xF));
+            }
+//            else if(GPO_OPEN_DTAIN == dir)
+//            {
+//                P1M1 |= (1 << (pin & 0xF));
+//                P1M0 |= (1 << (pin & 0xF));
+//            }
+            else if(GPO == dir)
+            {
+                P1M1 &= ~(1 << (pin & 0xF));
+                P1M0 |= (1 << (pin & 0xF));
+            }
+        }
+        break;
+        
+        case IO_P20:
+        {
+            if(GPIO == dir || GPI == dir)
+            {
+                P2M1 &= ~(1 << (pin & 0xF));
+                P2M0 &= ~(1 << (pin & 0xF));
+            }
+//            else if(GPO_OPEN_DTAIN == dir)
+//            {
+//                P2M1 |= (1 << (pin & 0xF));
+//                P2M0 |= (1 << (pin & 0xF));
+//            }
+            else if(GPO == dir)
+            {
+                P2M1 &= ~(1 << (pin & 0xF));
+                P2M0 |= (1 << (pin & 0xF));
+            }
+        }
+        break;
+        
+        case IO_P30:
+        {
+            if(GPIO == dir || GPI == dir)
+            {
+                P3M1 &= ~(1 << (pin & 0xF));
+                P3M0 &= ~(1 << (pin & 0xF));
+            }
+//            else if(GPO_OPEN_DTAIN == dir)
+//            {
+//                P3M1 |= (1 << (pin & 0xF));
+//                P3M0 |= (1 << (pin & 0xF));
+//            }
+            else if(GPO == dir)
+            {
+                P3M1 &= ~(1 << (pin & 0xF));
+                P3M0 |= (1 << (pin & 0xF));
+            }
+        }
+        break;
+        
+        case IO_P40:
+        {
+            if(GPIO == dir || GPI == dir)
+            {
+                P4M1 &= ~(1 << (pin & 0xF));
+                P4M0 &= ~(1 << (pin & 0xF));
+            }
+//            else if(GPO_OPEN_DTAIN == dir)
+//            {
+//                P4M1 |= (1 << (pin & 0xF));
+//                P4M0 |= (1 << (pin & 0xF));
+//            }
+            else if(GPO == dir)
+            {
+                P4M1 &= ~(1 << (pin & 0xF));
+                P4M0 |= (1 << (pin & 0xF));
+            }
+        }
+        break;
+        
+        case IO_P50:
+        {
+            if(GPIO == dir || GPI == dir)
+            {
+                P5M1 &= ~(1 << (pin & 0xF));
+                P5M0 &= ~(1 << (pin & 0xF));
+            }
+//            else if(GPO_OPEN_DTAIN == dir)
+//            {
+//                P5M1 |= (1 << (pin & 0xF));
+//                P5M0 |= (1 << (pin & 0xF));
+//            }
+            else if(GPO == dir)
+            {
+                P5M1 &= ~(1 << (pin & 0xF));
+                P5M0 |= (1 << (pin & 0xF));
+            }
+        }
+        break;
+		
+		case IO_P60:
+        {
+            if(GPIO == dir || GPI == dir)
+            {
+                P6M1 &= ~(1 << (pin & 0xF));
+                P6M0 &= ~(1 << (pin & 0xF));
+            }
+//            else if(GPO_OPEN_DTAIN == dir)
+//            {
+//                P6M1 |= (1 << (pin & 0xF));
+//                P6M0 |= (1 << (pin & 0xF));
+//            }
+            else if(GPO == dir)
+            {
+                P6M1 &= ~(1 << (pin & 0xF));
+                P6M0 |= (1 << (pin & 0xF));
+            }
+        }
+        break;
+		
+		case IO_P70:
+        {
+            if(GPIO == dir || GPI == dir)
+            {
+                P7M1 &= ~(1 << (pin & 0xF));
+                P7M0 &= ~(1 << (pin & 0xF));
+            }
+//            else if(GPO_OPEN_DTAIN == dir)
+//            {
+//                P7M1 |= (1 << (pin & 0xF));
+//                P7M0 |= (1 << (pin & 0xF));
+//            }
+            else if(GPO == dir)
+            {
+                P7M1 &= ~(1 << (pin & 0xF));
+                P7M0 |= (1 << (pin & 0xF));
+            }
+
+        }
+        break;
+        
+        default:
+        {
+			zf_assert(0);
+			// æ²¡æœ‰è¿™ä¸ªå¼•è„š
+        } break;
+    }
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// å‡½æ•°ç®€ä»‹     GPIOçŠ¶æ€èŽ·å–
+// å‚æ•°è¯´æ˜Ž     pin         é€‰æ‹©çš„å¼•è„š (å¯é€‰æ‹©èŒƒå›´ç”± zf_driver_gpio.h å†…gpio_pin_enumæžšä¸¾å€¼ç¡®å®š)
+// è¿”å›žå‚æ•°     uint8       0ï¼šä½Žç”µå¹³ 1ï¼šé«˜ç”µå¹³
+// ä½¿ç”¨ç¤ºä¾‹     uint8 status = gpio_get_level(IO_P00);//èŽ·å–P00å¼•è„šç”µå¹³
+//-------------------------------------------------------------------------------------------------------------------
+uint8 gpio_get_level(gpio_pin_enum pin)
+{
+    uint8 pin_bit = pin & 0x0F;
+    uint8 port_flag = pin & 0xF0;
+    uint8 status = 0;
+
+    // æ ¹æ®ç«¯å£æ ‡å¿—è¯»å–å¯¹åº”Pnå¯„å­˜å™¨
+    switch(port_flag)
+    {
+        case IO_P00: status = P0 & (1 << pin_bit); break;
+        case IO_P10: status = P1 & (1 << pin_bit); break;
+        case IO_P20: status = P2 & (1 << pin_bit); break;
+        case IO_P30: status = P3 & (1 << pin_bit); break;
+        case IO_P40: status = P4 & (1 << pin_bit); break;
+        case IO_P50: status = P5 & (1 << pin_bit); break;
+        case IO_P60: status = P6 & (1 << pin_bit); break;
+        case IO_P70: status = P7 & (1 << pin_bit); break;
+        default: break; // æ— æ•ˆå¼•è„š
+    }
+    
+    return status ? 1 : 0; // è½¬æ¢ä¸º0/1è¿”å›ž
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// å‡½æ•°ç®€ä»‹     GPIOè¾“å‡ºè®¾ç½®
+// å‚æ•°è¯´æ˜Ž     pin         å¼•è„šå·é€‰æ‹©çš„å¼•è„š (å¯é€‰æ‹©èŒƒå›´ç”± common.h å†…GPIO_PIN_enumæžšä¸¾å€¼ç¡®å®š)
+// å‚æ•°è¯´æ˜Ž     dat         å¼•è„šçš„ç”µå¹³çŠ¶æ€ï¼Œè¾“å‡ºæ—¶æœ‰æ•ˆ 0ï¼šä½Žç”µå¹³ 1ï¼šé«˜ç”µå¹³
+// è¿”å›žå‚æ•°     void
+// ä½¿ç”¨ç¤ºä¾‹     gpio_set_level(D0, 0);//D0è¾“å‡ºä½Žç”µå¹³
+//-------------------------------------------------------------------------------------------------------------------
+void gpio_set_level(gpio_pin_enum pin, uint8 dat)
+{
+    uint8 pin_bit = pin & 0x0F;
+    uint8 port_flag = pin & 0xF0;
+
+    // ä¸‰å…ƒè¿ç®—ç¬¦ç²¾ç®€ç½®ä½/æ¸…é›¶é€»è¾‘
+    switch(port_flag)
+    {
+        case IO_P00: dat ? (P0 |= (1 << pin_bit)) : (P0 &= ~(1 << pin_bit)); break;
+        case IO_P10: dat ? (P1 |= (1 << pin_bit)) : (P1 &= ~(1 << pin_bit)); break;
+        case IO_P20: dat ? (P2 |= (1 << pin_bit)) : (P2 &= ~(1 << pin_bit)); break;
+        case IO_P30: dat ? (P3 |= (1 << pin_bit)) : (P3 &= ~(1 << pin_bit)); break;
+        case IO_P40: dat ? (P4 |= (1 << pin_bit)) : (P4 &= ~(1 << pin_bit)); break;
+        case IO_P50: dat ? (P5 |= (1 << pin_bit)) : (P5 &= ~(1 << pin_bit)); break;
+        case IO_P60: dat ? (P6 |= (1 << pin_bit)) : (P6 &= ~(1 << pin_bit)); break;
+        case IO_P70: dat ? (P7 |= (1 << pin_bit)) : (P7 &= ~(1 << pin_bit)); break;
+        default: break; // æ— æ•ˆå¼•è„š
+    }
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// å‡½æ•°ç®€ä»‹     GPIOç”µå¹³ç¿»è½¬
+// å‚æ•°è¯´æ˜Ž     pin         å¼•è„šå·é€‰æ‹©çš„å¼•è„š
+// è¿”å›žå‚æ•°     void
+// ä½¿ç”¨ç¤ºä¾‹     gpio_toggle_level(D0);//ç¿»è½¬D0ç”µå¹³
+//-------------------------------------------------------------------------------------------------------------------
+void gpio_toggle_level(gpio_pin_enum pin)
+{
+    // ç›´æŽ¥è°ƒç”¨çŽ°æœ‰å‡½æ•°ï¼Œé€»è¾‘æ¸…æ™°
+    gpio_set_level(pin, !gpio_get_level(pin));
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// å‡½æ•°ç®€ä»‹     GPIOè®¾ç½®é«˜é˜»è¾“å…¥
+// å‚æ•°è¯´æ˜Ž     pin         å¼•è„šå·é€‰æ‹©çš„å¼•è„š
+// è¿”å›žå‚æ•°     void
+// ä½¿ç”¨ç¤ºä¾‹     
+//-------------------------------------------------------------------------------------------------------------------
+void gpio_set_impedance(gpio_pin_enum pin)
+{
+    uint8 pin_bit = pin & 0x0F;
+    uint8 port_flag = pin & 0xF0;
+
+    // ç»Ÿä¸€é«˜é˜»è¾“å…¥é…ç½®ï¼ˆPnM1ç½®ä½ï¼ŒPnM0æ¸…é›¶ï¼‰
+    switch(port_flag)
+    {
+        case IO_P00: P0M1 |= (1 << pin_bit); P0M0 &= ~(1 << pin_bit); break;
+        case IO_P10: P1M1 |= (1 << pin_bit); P1M0 &= ~(1 << pin_bit); break;
+        case IO_P20: P2M1 |= (1 << pin_bit); P2M0 &= ~(1 << pin_bit); break;
+        case IO_P30: P3M1 |= (1 << pin_bit); P3M0 &= ~(1 << pin_bit); break;
+        case IO_P40: P4M1 |= (1 << pin_bit); P4M0 &= ~(1 << pin_bit); break;
+        case IO_P50: P5M1 |= (1 << pin_bit); P5M0 &= ~(1 << pin_bit); break;
+        case IO_P60: P6M1 |= (1 << pin_bit); P6M0 &= ~(1 << pin_bit); break;
+        case IO_P70: P7M1 |= (1 << pin_bit); P7M0 &= ~(1 << pin_bit); break;
+        default: break; // æ— æ•ˆå¼•è„š
+    }
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// å‡½æ•°ç®€ä»‹     GPIOåˆå§‹åŒ–
+// å‚æ•°è¯´æ˜Ž     pin         é€‰æ‹©çš„å¼•è„š
+// å‚æ•°è¯´æ˜Ž     dir         å¼•è„šçš„æ–¹å‘   è¾“å‡ºï¼šGPO   è¾“å…¥ï¼šGPI
+// å‚æ•°è¯´æ˜Ž     dat         å¼•è„šåˆå§‹åŒ–æ—¶è®¾ç½®çš„ç”µå¹³çŠ¶æ€ï¼Œè¾“å‡ºæ—¶æœ‰æ•ˆ
+// å‚æ•°è¯´æ˜Ž     mode        å¼•è„šæ¨¡å¼ï¼ˆä¸Šä¸‹æ‹‰/å¼€æ¼ç­‰ï¼‰
+// è¿”å›žå‚æ•°     void
+// ä½¿ç”¨ç¤ºä¾‹     gpio_init(D0, GPO, 1, GPO_PUSH_PULL);//D0åˆå§‹åŒ–ä¸ºè¾“å‡ºã€é«˜ç”µå¹³ã€æŽ¨æŒ½æ¨¡å¼
+//-------------------------------------------------------------------------------------------------------------------
+void gpio_init(gpio_pin_enum pin, gpio_dir_enum dir, const uint8 dat, gpio_mode_enum mode)
+{
+	zf_assert(dir == (mode >> 4));
+
+	if(dir == GPIO)
+	{
+		gpio_set_dir(pin, GPIO);
+		gpio_set_mode(pin, mode);
+	}
+	else if(dir == GPI)
+	{
+		if(mode == GPI_IMPEDANCE)
+		{
+			gpio_set_impedance(pin);
+		}
+		else
+		{
+			gpio_set_dir(pin, GPI);
+			gpio_set_mode(pin, mode);
+		}
+	}
+	else if(dir == GPO)
+	{
+		if(GPO_PUSH_PULL == mode)
+		{
+			gpio_set_dir(pin, GPO);
+			gpio_set_mode(pin, GPI_PULL_UP);
+		}
+		else if(GPO_OPEN_DTAIN == mode)
+		{
+			gpio_set_mode(pin, GPO_OPEN_DTAIN);
+		}
+	}
+	gpio_set_level(pin, dat);
+}

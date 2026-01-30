@@ -1,1022 +1,1022 @@
-#include "zf_common_debug.h"
-#include "zf_common_function.h"
-#include <stdarg.h>  // °üº¬±ê×¼¿É±ä²ÎÊıºêµÄÍ·ÎÄ¼ş
-#include <stdio.h>   // °üº¬±ê×¼ÊäÈëÊä³öµÄÍ·ÎÄ¼ş
-
-//-------------------------------------------------------------------------------------------------------------------
-// º¯Êı¼ò½é     »ñÈ¡ÕûĞÍÊıµÄ×î´ó¹«Ô¼Êı ¾ÅÕÂËãÊõÖ®¸üÏà¼õËğÊõ
-// ²ÎÊıËµÃ÷     num1            Êı×Ö1
-// ²ÎÊıËµÃ÷     num2            Êı×Ö2
-// ·µ»Ø²ÎÊı     uint32          ×î´ó¹«Ô¼Êı
-// Ê¹ÓÃÊ¾Àı     return func_get_greatest_common_divisor(144, 36);               // »ñÈ¡ 144 Óë 36 µÄ×î´ó¹«Ô¼Êı
-// ±¸×¢ĞÅÏ¢     
-//-------------------------------------------------------------------------------------------------------------------
-uint32 func_get_greatest_common_divisor (uint32 num1, uint32 num2)
-{
-    while(num1 != num2)
-    {
-        if(num1 > num2)
-        {
-            num1 = num1 - num2;
-        }
-        if(num1 < num2)
-        {
-            num2 = num2 - num1;
-        }
-    }
-    return num1;
-}
-
-//-------------------------------------------------------------------------------------------------------------------
-// º¯Êı¼ò½é     Èí¼şÑÓÊ±
-// ²ÎÊıËµÃ÷     t               ÑÓÊ±Ê±¼ä
-// ·µ»Ø²ÎÊı     void
-// Ê¹ÓÃÊ¾Àı     func_soft_delay(100);
-// ±¸×¢ĞÅÏ¢     
-//-------------------------------------------------------------------------------------------------------------------
-void func_soft_delay (volatile long t)
-{
-    while(t --);
-}
-
-//-------------------------------------------------------------------------------------------------------------------
-// º¯Êı¼ò½é     ×Ö·û´®×ªÕûĞÎÊı×Ö Êı¾İ·¶Î§ÊÇ [-32768,32767]
-// ²ÎÊıËµÃ÷     *str            ´«Èë×Ö·û´® ¿É´ø·ûºÅ
-// ·µ»Ø²ÎÊı     int32           ×ª»»ºóµÄÊı¾İ          
-// Ê¹ÓÃÊ¾Àı     int32 dat = func_str_to_int("-100");
-// ±¸×¢ĞÅÏ¢     
-//-------------------------------------------------------------------------------------------------------------------
-int32 func_str_to_int (char *str)
-{
-    uint8 sign = 0;                                                             // ±ê¼Ç·ûºÅ 0-ÕıÊı 1-¸ºÊı
-    int32 temp = 0;                                                             // ÁÙÊ±¼ÆËã±äÁ¿
-	zf_assert(str != NULL);
-	do
-    {
-        if(NULL == str)
-        {
-            break;
-        }
-
-        if('-' == *str)                                                         // Èç¹ûµÚÒ»¸ö×Ö·ûÊÇ¸ººÅ
-        {
-            sign = 1;                                                           // ±ê¼Ç¸ºÊı
-            str ++;
-        }
-        else if('+' == *str)                                                    // Èç¹ûµÚÒ»¸ö×Ö·ûÊÇÕıºÅ
-        {
-            str ++;
-        }
-
-        while(('0' <= *str) && ('9' >= *str))                                   // È·¶¨ÕâÊÇ¸öÊı×Ö
-        {
-            temp = temp * 10 + ((uint8)(*str) - 0x30);                          // ¼ÆËãÊıÖµ
-            str ++;
-        }
-
-        if(sign)
-        {
-            temp = -temp;
-        }
-    }while(0);
-    return temp;
-}
-
-//-------------------------------------------------------------------------------------------------------------------
-// º¯Êı¼ò½é     ÕûĞÎÊı×Ö×ª×Ö·û´® Êı¾İ·¶Î§ÊÇ [-32768,32767]
-// ²ÎÊıËµÃ÷     *str            ×Ö·û´®Ö¸Õë
-// ²ÎÊıËµÃ÷     number          ´«ÈëµÄÊı¾İ
-// ·µ»Ø²ÎÊı     void
-// Ê¹ÓÃÊ¾Àı     func_int_to_str(data_buffer, -300);
-// ±¸×¢ĞÅÏ¢     
-//-------------------------------------------------------------------------------------------------------------------
-void func_int_to_str (char *str, int32 number)
-{
-    uint8 data_temp[16];                                                        // »º³åÇø
-    uint8 temp_bit = 0;                                                              // Êı×ÖÎ»Êı
-    int32 number_temp = 0;
-    zf_assert(str != NULL);
-    do
-    {
-        if(NULL == str)
-        {
-            break;
-        }
-
-        if(0 > number)                                                          // ¸ºÊı
-        {
-            *str ++ = '-';
-            number = -number;
-        }
-        else if(0 == number)                                                    // »òÕßÕâÊÇ¸ö 0
-        {
-            *str = '0';
-            break;
-        }
-
-        while(0 != number)                                                      // Ñ­»·Ö±µ½ÊıÖµ¹éÁã
-        {
-            number_temp = number % 10;
-            data_temp[temp_bit ++] = func_abs(number_temp);                          // µ¹Ğò½«ÊıÖµÌáÈ¡³öÀ´
-            number /= 10;                                                       // Ï÷¼õ±»ÌáÈ¡µÄ¸öÎ»Êı
-        }
-        while(0 != temp_bit)                                                         // ÌáÈ¡µÄÊı×Ö¸öÊıµİ¼õ´¦Àí
-        {
-            *str ++ = (data_temp[temp_bit - 1] + 0x30);                              // ½«Êı×Ö´Óµ¹ĞòÊı×éÖĞµ¹ĞòÈ¡³ö ±ä³ÉÕıĞò·ÅÈë×Ö·û´®
-            temp_bit --;
-        }
-    }while(0);
-}
-
-//-------------------------------------------------------------------------------------------------------------------
-// º¯Êı¼ò½é     ×Ö·û´®×ªÕûĞÎÊı×Ö Êı¾İ·¶Î§ÊÇ [0,65535]
-// ²ÎÊıËµÃ÷     *str            ´«Èë×Ö·û´® ÎŞ·ûºÅ
-// ·µ»Ø²ÎÊı     uint32          ×ª»»ºóµÄÊı¾İ          
-// Ê¹ÓÃÊ¾Àı     uint32 dat = func_str_to_uint("100");
-// ±¸×¢ĞÅÏ¢     
-//-------------------------------------------------------------------------------------------------------------------
-uint32 func_str_to_uint (char *str)
-{
-	uint32 temp = 0;                                                            // ÁÙÊ±¼ÆËã±äÁ¿
-    zf_assert(str != NULL);
-
-    do
-    {
-        if(NULL == str)
-        {
-            break;
-        }
-
-        while(('0' <= *str) && ('9' >= *str))                                  // È·¶¨ÕâÊÇ¸öÊı×Ö
-        {
-            temp = temp * 10 + ((uint8)(*str) - 0x30);                         // ¼ÆËãÊıÖµ
-            str ++;
-        }
-    }while(0);
-
-    return temp;
-}
-
-//-------------------------------------------------------------------------------------------------------------------
-// º¯Êı¼ò½é     ÕûĞÎÊı×Ö×ª×Ö·û´® Êı¾İ·¶Î§ÊÇ [0,65535]
-// ²ÎÊıËµÃ÷     *str            ×Ö·û´®Ö¸Õë
-// ²ÎÊıËµÃ÷     number          ´«ÈëµÄÊı¾İ
-// ·µ»Ø²ÎÊı     void
-// Ê¹ÓÃÊ¾Àı     func_uint_to_str(data_buffer, 300);
-// ±¸×¢ĞÅÏ¢     
-//-------------------------------------------------------------------------------------------------------------------
-void func_uint_to_str (char *str, uint32 number)
-{
-    int8 data_temp[16];                                                         // »º³åÇø
-    uint8 temp_bit = 0;                                                              // Êı×ÖÎ»Êı
-    
-	zf_assert(str != NULL);
-    
-	do
-    {
-        if(NULL == str)
-        {
-            break;
-        }
-
-        if(0 == number)                                                         // ÕâÊÇ¸ö 0
-        {
-            *str = '0';
-            break;
-        }
-
-        while(0 != number)                                                      // Ñ­»·Ö±µ½ÊıÖµ¹éÁã
-        {
-            data_temp[temp_bit ++] = (number % 10);                                  // µ¹Ğò½«ÊıÖµÌáÈ¡³öÀ´
-            number /= 10;                                                       // Ï÷¼õ±»ÌáÈ¡µÄ¸öÎ»Êı
-        }
-        while(0 != temp_bit)                                                         // ÌáÈ¡µÄÊı×Ö¸öÊıµİ¼õ´¦Àí
-        {
-            *str ++ = (data_temp[temp_bit - 1] + 0x30);                              // ½«Êı×Ö´Óµ¹ĞòÊı×éÖĞµ¹ĞòÈ¡³ö ±ä³ÉÕıĞò·ÅÈë×Ö·û´®
-            temp_bit --;
-        }
-    }while(0);
-}
-
-//-------------------------------------------------------------------------------------------------------------------
-// º¯Êı¼ò½é     ×Ö·û´®×ª¸¡µãÊı ÓĞĞ§ÀÛ¼Æ¾«¶ÈÎªĞ¡ÊıµãºóÁùÎ»
-// ²ÎÊıËµÃ÷     *str            ´«Èë×Ö·û´® ¿É´ø·ûºÅ
-// ·µ»Ø²ÎÊı     float           ×ª»»ºóµÄÊı¾İ          
-// Ê¹ÓÃÊ¾Àı     float dat = func_str_to_float("-100.2");
-// ±¸×¢ĞÅÏ¢     
-//-------------------------------------------------------------------------------------------------------------------
-float func_str_to_float (char *str)
-{
-    uint8 sign = 0;                                                             // ±ê¼Ç·ûºÅ 0-ÕıÊı 1-¸ºÊı
-    float temp = 0.0;                                                           // ÁÙÊ±¼ÆËã±äÁ¿ ÕûÊı²¿·Ö
-    float temp_point = 0.0;                                                     // ÁÙÊ±¼ÆËã±äÁ¿ Ğ¡Êı²¿·Ö
-    float point_bit = 1;                                                        // Ğ¡ÊıÀÛ¼Æ³ıÊı
-    
-	zf_assert(str != NULL);
-    
-	do
-    {
-        if(NULL == str)
-        {
-            break;
-        }
-
-        if('-' == *str)                                                         // ¸ºÊı
-        {
-            sign = 1;                                                           // ±ê¼Ç¸ºÊı
-            str ++;
-        }
-        else if('+' == *str)                                                    // Èç¹ûµÚÒ»¸ö×Ö·ûÊÇÕıºÅ
-        {
-            str ++;
-        }
-
-        // ÌáÈ¡ÕûÊı²¿·Ö
-        while(('0' <= *str) && ('9' >= *str))                                   // È·¶¨ÕâÊÇ¸öÊı×Ö
-        {
-            temp = temp * 10 + ((uint8)(*str) - 0x30);                          // ½«ÊıÖµÌáÈ¡³öÀ´
-            str ++;
-        }
-        if('.' == *str)
-        {
-            str ++;
-            while(('0' <= *str) && ('9' >= *str) && point_bit < 1000000.0)      // È·ÈÏÕâÊÇ¸öÊı×Ö ²¢ÇÒ¾«¶È¿ØÖÆ»¹Ã»µ½ÁùÎ»
-            {
-                temp_point = temp_point * 10 + ((uint8)(*str) - 0x30);          // ÌáÈ¡Ğ¡Êı²¿·ÖÊıÖµ
-                point_bit *= 10;                                                // ¼ÆËãÕâ²¿·ÖĞ¡ÊıµÄ³ıÊı
-                str ++;
-            }
-            temp_point /= point_bit;                                            // ¼ÆËãĞ¡Êı
-        }
-        temp += temp_point;                                                     // ½«ÊıÖµÆ´ºÏ
-
-        if(sign)
-        {
-            temp = -temp;
-        }
-    }while(0);
-    return temp;
-}
-
-//-------------------------------------------------------------------------------------------------------------------
-// º¯Êı¼ò½é     ¸¡µãÊı×Ö×ª×Ö·û´®
-// ²ÎÊıËµÃ÷     *str            ×Ö·û´®Ö¸Õë
-// ²ÎÊıËµÃ÷     number          ´«ÈëµÄÊı¾İ
-// ²ÎÊıËµÃ÷     point_bit       Ğ¡Êıµã¾«¶È
-// ·µ»Ø²ÎÊı     void
-// Ê¹ÓÃÊ¾Àı     func_float_to_str(data_buffer, 3.1415, 2);                      // ½á¹ûÊä³ö data_buffer = "3.14"
-// ±¸×¢ĞÅÏ¢     
-//-------------------------------------------------------------------------------------------------------------------
-void func_float_to_str (char *str, float number, uint8 point_bit)
-{
-    int data_int = 0;                                                           // ÕûÊı²¿·Ö
-    int data_float = 0.0;                                                       // Ğ¡Êı²¿·Ö
-    int data_temp[8];                                                           // ÕûÊı×Ö·û»º³å
-    int data_temp_point[6];                                                     // Ğ¡Êı×Ö·û»º³å
-    uint8 temp_bit = point_bit;                                                      // ×ª»»¾«¶ÈÎ»Êı
-    
-	zf_assert(str != NULL);
-    
-	do
-    {
-        if(NULL == str)
-        {
-            break;
-        }
-
-        // ÌáÈ¡ÕûÊı²¿·Ö
-        data_int = (int)number;                                                 // Ö±½ÓÇ¿ÖÆ×ª»»Îª int
-        if(0 > number)                                                          // ÅĞ¶ÏÔ´Êı¾İÊÇÕıÊı»¹ÊÇ¸ºÊı
-        {
-            *str ++ = '-';
-        }
-        else if(0.0 == number)                                                  // Èç¹ûÊÇ¸ö 0
-        {
-            *str ++ = '0';
-            *str ++ = '.';
-            *str = '0';
-            break;
-        }
-
-        // ÌáÈ¡Ğ¡Êı²¿·Ö
-        number = number - data_int;                                             // ¼õÈ¥ÕûÊı²¿·Ö¼´¿É
-        while(temp_bit --)
-        {
-            number = number * 10;                                               // ½«ĞèÒªµÄĞ¡ÊıÎ»ÊıÌáÈ¡µ½ÕûÊı²¿·Ö
-        }
-        data_float = (int)number;                                               // »ñÈ¡Õâ²¿·ÖÊıÖµ
-
-        // ÕûÊı²¿·Ö×ªÎª×Ö·û´®
-        temp_bit = 0;
-        do
-        {
-            data_temp[temp_bit ++] = data_int % 10;                                  // ½«ÕûÊı²¿·Öµ¹ĞòĞ´Èë×Ö·û»º³åÇø
-            data_int /= 10;
-        }while(0 != data_int);
-        while(0 != temp_bit)
-        {
-            *str ++ = (func_abs(data_temp[temp_bit - 1]) + 0x30);                    // ÔÙµ¹Ğò½«µ¹ĞòµÄÊıÖµĞ´Èë×Ö·û´® µÃµ½ÕıĞòÊıÖµ
-            temp_bit --;
-        }
-
-        // Ğ¡Êı²¿·Ö×ªÎª×Ö·û´®
-        if(point_bit != 0)
-        {
-            temp_bit = 0;
-            *str ++ = '.';
-            if(0 == data_float)
-            {
-                *str = '0';
-            }
-            else
-            {
-                while(0 != point_bit)                                           // ÅĞ¶ÏÓĞĞ§Î»Êı
-                {
-                    data_temp_point[temp_bit ++] = data_float % 10;                  // µ¹ĞòĞ´Èë×Ö·û»º³åÇø
-                    data_float /= 10;
-                    point_bit --;                                                
-                }
-                while(0 != temp_bit)
-                {
-                    *str ++ = (func_abs(data_temp_point[temp_bit - 1]) + 0x30);      // ÔÙµ¹Ğò½«µ¹ĞòµÄÊıÖµĞ´Èë×Ö·û´® µÃµ½ÕıĞòÊıÖµ
-                    temp_bit --;
-                }
-            }
-        }
-    }while(0);
-}
-
-//-------------------------------------------------------------------------------------------------------------------
-// º¯Êı¼ò½é     ×Ö·û´®×ª¸¡µãÊı ÓĞĞ§ÀÛ¼Æ¾«¶ÈÎªĞ¡Êıµãºó¾ÅÎ»
-// ²ÎÊıËµÃ÷     str             ´«Èë×Ö·û´® ¿É´ø·ûºÅ
-// ·µ»Ø²ÎÊı     double          ×ª»»ºóµÄÊı¾İ          
-// Ê¹ÓÃÊ¾Àı     double dat = func_str_to_double("-100.2");
-// ±¸×¢ĞÅÏ¢     
-//-------------------------------------------------------------------------------------------------------------------
-double func_str_to_double (char *str)
-{
-    uint8 sign = 0;                                                             // ±ê¼Ç·ûºÅ 0-ÕıÊı 1-¸ºÊı
-    double temp = 0.0;                                                          // ÁÙÊ±¼ÆËã±äÁ¿ ÕûÊı²¿·Ö
-    double temp_point = 0.0;                                                    // ÁÙÊ±¼ÆËã±äÁ¿ Ğ¡Êı²¿·Ö
-    double point_bit = 1;                                                       // Ğ¡ÊıÀÛ¼Æ³ıÊı
-    
-	zf_assert(str != NULL);
-    
-	do
-    {
-        if(NULL == str)
-        {
-            break;
-        }
-
-        if('-' == *str)                                                         // ¸ºÊı
-        {
-            sign = 1;                                                           // ±ê¼Ç¸ºÊı
-            str ++;
-        }
-        else if('+' == *str)                                                    // Èç¹ûµÚÒ»¸ö×Ö·ûÊÇÕıºÅ
-        {
-            str ++;
-        }
-
-        // ÌáÈ¡ÕûÊı²¿·Ö
-        while(('0' <= *str) && ('9' >= *str))                                   // È·¶¨ÕâÊÇ¸öÊı×Ö
-        {
-            temp = temp * 10 + ((uint8)(*str) - 0x30);                          // ½«ÊıÖµÌáÈ¡³öÀ´
-            str ++;
-        }
-        if('.' == *str)
-        {
-            str ++;
-            while(('0' <= *str) && ('9' >= *str) && point_bit < 1000000000.0)   // È·ÈÏÕâÊÇ¸öÊı×Ö ²¢ÇÒ¾«¶È¿ØÖÆ»¹Ã»µ½¾ÅÎ»
-            {
-                temp_point = temp_point * 10 + ((uint8)(*str) - 0x30);          // ÌáÈ¡Ğ¡Êı²¿·ÖÊıÖµ
-                point_bit *= 10;                                                // ¼ÆËãÕâ²¿·ÖĞ¡ÊıµÄ³ıÊı
-                str ++;
-            }
-            temp_point /= point_bit;                                            // ¼ÆËãĞ¡Êı
-        }
-        temp += temp_point;                                                     // ½«ÊıÖµÆ´ºÏ
-
-        if(sign)
-        {
-            temp = -temp;
-        }
-    }while(0);
-    return temp;
-
-}
-
-//-------------------------------------------------------------------------------------------------------------------
-// º¯Êı¼ò½é     ¸¡µãÊı×Ö×ª×Ö·û´®
-// ²ÎÊıËµÃ÷     *str            ×Ö·û´®Ö¸Õë
-// ²ÎÊıËµÃ÷     number          ´«ÈëµÄÊı¾İ
-// ²ÎÊıËµÃ÷     point_bit       Ğ¡Êıµã¾«¶È
-// ·µ»Ø²ÎÊı     void
-// Ê¹ÓÃÊ¾Àı     func_double_to_str(data_buffer, 3.1415, 2);                     // ½á¹ûÊä³ö data_buffer = "3.14"
-// ±¸×¢ĞÅÏ¢     
-//-------------------------------------------------------------------------------------------------------------------
-void func_double_to_str (char *str, double number, uint8 point_bit)
-{
-    int data_int = 0;                                                           // ÕûÊı²¿·Ö
-    int data_float = 0.0;                                                       // Ğ¡Êı²¿·Ö
-    int data_temp[12];                                                          // ÕûÊı×Ö·û»º³å
-    int data_temp_point[9];                                                     // Ğ¡Êı×Ö·û»º³å
-    uint8 temp_bit = point_bit;                                                      // ×ª»»¾«¶ÈÎ»Êı
-    
-	zf_assert(str != NULL);
-    
-	do
-    {
-        if(NULL == str)
-        {
-            break;
-        }
-
-        // ÌáÈ¡ÕûÊı²¿·Ö
-        data_int = (int)number;                                                 // Ö±½ÓÇ¿ÖÆ×ª»»Îª int
-        if(0 > number)                                                          // ÅĞ¶ÏÔ´Êı¾İÊÇÕıÊı»¹ÊÇ¸ºÊı
-        {
-            *str ++ = '-';
-        }
-        else if(0.0 == number)                                                  // Èç¹ûÊÇ¸ö 0
-        {
-            *str ++ = '0';
-            *str ++ = '.';
-            *str = '0';
-            break;
-        }
-
-        // ÌáÈ¡Ğ¡Êı²¿·Ö
-        number = number - data_int;                                             // ¼õÈ¥ÕûÊı²¿·Ö¼´¿É
-        while(temp_bit --)
-        {
-            number = number * 10;                                               // ½«ĞèÒªµÄĞ¡ÊıÎ»ÊıÌáÈ¡µ½ÕûÊı²¿·Ö
-        }
-        data_float = (int)number;                                               // »ñÈ¡Õâ²¿·ÖÊıÖµ
-
-        // ÕûÊı²¿·Ö×ªÎª×Ö·û´®
-        temp_bit = 0;
-        do
-        {
-            data_temp[temp_bit ++] = data_int % 10;                                  // ½«ÕûÊı²¿·Öµ¹ĞòĞ´Èë×Ö·û»º³åÇø
-            data_int /= 10;
-        }while(0 != data_int);
-        while(0 != temp_bit)
-        {
-            *str ++ = (func_abs(data_temp[temp_bit - 1]) + 0x30);                    // ÔÙµ¹Ğò½«µ¹ĞòµÄÊıÖµĞ´Èë×Ö·û´® µÃµ½ÕıĞòÊıÖµ
-            temp_bit --;
-        }
-
-        // Ğ¡Êı²¿·Ö×ªÎª×Ö·û´®
-        if(point_bit != 0)
-        {
-            temp_bit = 0;
-            *str ++ = '.';
-            if(0 == data_float)
-                *str = '0';
-            else
-            {
-                while(0 != point_bit)                                           // ÅĞ¶ÏÓĞĞ§Î»Êı
-                {
-                    data_temp_point[temp_bit ++] = data_float % 10;                  // µ¹ĞòĞ´Èë×Ö·û»º³åÇø
-                    data_float /= 10;
-                    point_bit --;                                                
-                }
-                while(0 != temp_bit)
-                {
-                    *str ++ = (func_abs(data_temp_point[temp_bit - 1]) + 0x30);      // ÔÙµ¹Ğò½«µ¹ĞòµÄÊıÖµĞ´Èë×Ö·û´® µÃµ½ÕıĞòÊıÖµ
-                    temp_bit --;
-                }
-            }
-        }
-    }while(0);
-}
-
-//-------------------------------------------------------------------------------------------------------------------
-// º¯Êı¼ò½é     ×Ö·û´®×ª Hex
-// ²ÎÊıËµÃ÷     str             ´«Èë×Ö·û´® ÎŞ·ûºÅ
-// ·µ»Ø²ÎÊı     uint32          ×ª»»ºóµÄÊı¾İ
-// Ê¹ÓÃÊ¾Àı     uint32 dat = func_str_to_hex("0x11");
-// ±¸×¢ĞÅÏ¢     
-//-------------------------------------------------------------------------------------------------------------------
-uint32 func_str_to_hex (char *str)
-{
-    uint32 str_len = strlen(str);                                               // ×Ö·û´®³¤
-    uint32 result_data = 0;                                                     // ½á¹û»º´æ
-    uint8 temp = 0;                                                             // ¼ÆËã±äÁ¿
-    uint8 flag = 0;                                                             // ±êÖ¾Î»
-
-	zf_assert(str != NULL);
-	
-    do
-    {
-        if(NULL == str)
-        {
-            break;
-        }
-
-        if(flag)
-        {
-            if(('a' <= *str) && ('f' >= *str))
-            {
-                temp = (*str - 87);
-            }
-            else if(('A' <= *str) && ('F' >= *str))
-            {
-                temp = (*str - 55);
-            }
-            else if(('0' <= *str) && ('9' >= *str))
-            {
-                temp = (*str - 48);
-            }
-            else
-            {
-                break;
-            }
-            result_data = ((result_data << 4) | (temp & 0x0F));
-        }
-        else
-        {
-//            if(strncmp("0x", str, 2))
-            if((*str == '0') && (*(str + 1) == 'x'))
-            {
-                str ++;
-                flag = 1;
-            }
-        }
-        str ++;
-    }while(str_len --);
-
-    return result_data;
-}
-
-//-------------------------------------------------------------------------------------------------------------------
-// º¯Êı¼ò½é     Hex ×ª×Ö·û´®
-// ²ÎÊıËµÃ÷     *str            ×Ö·û´®Ö¸Õë
-// ²ÎÊıËµÃ÷     number          ´«ÈëµÄÊı¾İ
-// ·µ»Ø²ÎÊı     void
-// Ê¹ÓÃÊ¾Àı     func_hex_to_str(data_buffer, 0x11);                             // ½á¹ûÊä³ö data_buffer = "0x11"
-// ±¸×¢ĞÅÏ¢     
-//-------------------------------------------------------------------------------------------------------------------
-void func_hex_to_str (char *str, uint32 number)
-{
-    const char hex_index[16] = {
-        '0', '1', '2', '3',
-        '4', '5', '6', '7',
-        '8', '9', 'A', 'B',
-        'C', 'D', 'E', 'F'};
-    int8 data_temp[12];                                                         // »º³åÇø
-    uint8 temp_bit = 0;                                                              // Êı×ÖÎ»Êı
-
-    zf_assert(str != NULL);
-		
-    *str++ = '0';
-    *str++ = 'x';
-    do
-    {
-        if(NULL == str)
-        {
-            break;
-        }
-
-        if(0 == number)                                                         // ÕâÊÇ¸ö 0
-        {
-            *str = '0';
-            break;
-        }
-
-        while(0 != number)                                                      // Ñ­»·Ö±µ½ÊıÖµ¹éÁã
-        {
-            data_temp[temp_bit ++] = (number & 0xF);                                 // µ¹Ğò½«ÊıÖµÌáÈ¡³öÀ´
-            number >>= 4;                                                       // Ï÷¼õ±»ÌáÈ¡µÄ¸öÎ»Êı
-        }
-        while(0 != temp_bit)                                                         // ÌáÈ¡µÄÊı×Ö¸öÊıµİ¼õ´¦Àí
-        {
-            *str ++ = hex_index[data_temp[temp_bit - 1]];                            // ½«Êı×Ö´Óµ¹ĞòÊı×éÖĞµ¹ĞòÈ¡³ö ±ä³ÉÕıĞò·ÅÈë×Ö·û´®
-            temp_bit --;
-        }
-    }while(0);
-}
-
-//-------------------------------------------------------------------------------------------------------------------
-// º¯Êı¼ò½é     Êı×Ö×ª»»Îª ASCII Öµ
-// ²ÎÊıËµÃ÷     dat             ´«ÈëµÄÊı¾İ
-// ²ÎÊıËµÃ÷     *p              Êı¾İ»º³å
-// ²ÎÊıËµÃ÷     neg_type        Êı¾İÀàĞÍ
-// ²ÎÊıËµÃ÷     radix           ½øÖÆ
-// ·µ»Ø²ÎÊı     uint8           Êı¾İ
-// Ê¹ÓÃÊ¾Àı     number_conversion_ascii((uint32)ival, vstr, 1, 10);
-// ±¸×¢ĞÅÏ¢     ±¾º¯ÊıÔÚÎÄ¼şÄÚ²¿µ÷ÓÃ ÓÃ»§²»ÓÃ¹Ø×¢ Ò²²»¿ÉĞŞ¸Ä
-//-------------------------------------------------------------------------------------------------------------------
-static uint8 number_conversion_ascii (uint32 dat, int8 *p, uint8 neg_type, uint8 radix)
-{
-    int32   neg_dat;
-    uint32  pos_dat;
-    uint8   temp_data = 0;
-    uint8   valid_num = 0;
-
-    if(neg_type)
-    {
-        neg_dat = (int32)dat;
-        if(0 > neg_dat)
-        {
-            neg_dat = -neg_dat;
-        }
-        while(1)
-        {
-            *p = neg_dat%radix + '0';
-            neg_dat = neg_dat/radix;
-            valid_num ++;
-
-            if(!neg_dat)
-            {
-                break;
-            }
-            p ++;
-        }
-    }
-    else
-    {
-        pos_dat = dat;
-        while(1)
-        {
-            temp_data = pos_dat%radix;
-            if(10 <= temp_data)
-            {
-                temp_data += 'A'-10;
-            }
-            else
-            {
-                temp_data += '0';
-            }
-
-            *p = temp_data;
-
-            pos_dat = pos_dat/radix;
-            valid_num ++;
-
-            if(!pos_dat)
-            {
-                break;
-            }
-            p ++;
-        }
-    }
-    return valid_num;
-}
-
-//-------------------------------------------------------------------------------------------------------------------
-// º¯Êı¼ò½é     printf ÏÔÊ¾×ª»»
-// ²ÎÊıËµÃ÷     *d_buff         »º³åÇø
-// ²ÎÊıËµÃ÷     len             ³¤¶È
-// ·µ»Ø²ÎÊı     void
-// Ê¹ÓÃÊ¾Àı     printf_reverse_order(vstr, vlen);
-// ±¸×¢ĞÅÏ¢     ±¾º¯ÊıÔÚÎÄ¼şÄÚ²¿µ÷ÓÃ ÓÃ»§²»ÓÃ¹Ø×¢ Ò²²»¿ÉĞŞ¸Ä
-//-------------------------------------------------------------------------------------------------------------------
-static void printf_reverse_order (int8 *d_buff, uint32 len)
-{
-    uint32 i;
-    int8  temp_data;
-    for(i = 0; len / 2 > i; i ++)
-    {
-        temp_data = d_buff[len - 1 - i];
-        d_buff[len - 1 -i ] = d_buff[i];
-        d_buff[i] = temp_data; 
-    }
-}
-
-
-
-//-------------------------------------------------------------------------------------------------------------------
-// º¯Êı¼ò½é     sprintf º¯ÊıÊµÏÖ
-// ²ÎÊıËµÃ÷     *buffer         »º³åÇø
-// ²ÎÊıËµÃ÷		siz				´óĞ¡
-// ²ÎÊıËµÃ÷     *format         Ô´×Ö·û´®
-// ²ÎÊıËµÃ÷     args            ¿É±ä²ÎÊıÁĞ±í
-// ·µ»Ø²ÎÊı     int32          ´¦ÀíºóÊı¾İ³¤
-// Ê¹ÓÃÊ¾Àı     zf_sprintf(buff, "Data : %d", 100);
-// ±¸×¢ĞÅÏ¢     ±¾º¯ÊıÔÚÎÄ¼şÄÚ²¿µ÷ÓÃ ÓÃ»§²»ÓÃ¹Ø×¢ Ò²²»¿ÉĞŞ¸Ä
-//-------------------------------------------------------------------------------------------------------------------
-int32 vsnprintf(char *buffer, uint32 siz, const char *format, va_list args) 
-{
-    uint32 i;
-    char *ptr;
-    int j;
-    int num;
-    char temp[16];
-    int len;
-    int is_negative;
-    char *str;
-    uint32 num_x;
-    char temp_x[9];
-    const char hex_digits[] = "0123456789abcdef";
-
-    i = 0;
-    ptr = buffer;
-    
-    if (buffer == NULL || format == NULL || siz == 0)
-	{
-        return 0;
-    }
-		
-    while (*format != '\0' && i < siz - 1) 
-	{
-        if (*format != '%') 
-		{
-            *ptr++ = *format++;
-            i++;
-            continue;
-        }
-
-        /* ´¦Àí¸ñÊ½·û */
-        format++;
-        switch (*format) 
-		{
-            case 'd':
-                num = va_arg(args, int);
-                len = 0;
-                is_negative = 0;
-
-                if (num < 0) 
-				{
-                    is_negative = 1;
-                    num = -num;
-                }
-
-                /* Êı×Ö×ª×Ö·û´® */
-                do {
-                    temp[len++] = '0' + (num % 10);
-                    num /= 10;
-                } while (num > 0 && len < (int)sizeof(temp) - 1);
-
-                /* Ìí¼Ó¸ººÅ */
-                if (is_negative) 
-				{
-                    temp[len++] = '-';
-                }
-
-                /* ·´×ª×Ö·û´® */
-                for (j = 0; j < len / 2; j++) 
-				{
-                    char t = temp[j];
-                    temp[j] = temp[len - j - 1];
-                    temp[len - j - 1] = t;
-                }
-
-                /* ¸´ÖÆµ½»º³åÇø */
-                for (j = 0; j < len && i < siz - 1; j++) 
-				{
-                    *ptr++ = temp[j];
-                    i++;
-                }
-                break;
-
-            case 's':
-                str = va_arg(args, char*);
-                if (str == NULL) 
-				{
-                    str = "(null)";
-                }
-                
-                while (*str != '\0' && i < siz - 1) 
-				{
-                    *ptr++ = *str++;
-                    i++;
-                }
-                break;
-
-            case 'c':
-                *ptr++ = (char)va_arg(args, int);
-                i++;
-                break;
-
-            case 'x':
-                num_x = va_arg(args, uint32);
-                len = 0;
-
-                do {
-                    temp_x[len++] = hex_digits[num_x % 16];
-                    num_x /= 16;
-                } while (num_x > 0 && len < (int)sizeof(temp_x) - 1);
-
-                /* ·´×ª×Ö·û´® */
-                for (j = 0; j < len / 2; j++) 
-				{
-                    char t = temp_x[j];
-                    temp_x[j] = temp_x[len - j - 1];
-                    temp_x[len - j - 1] = t;
-                }
-
-                /* ¸´ÖÆµ½»º³åÇø */
-                for (j = 0; j < len && i < siz - 1; j++) 
-				{
-                    *ptr++ = temp_x[j];
-                    i++;
-                }
-                break;
-
-            default:
-                *ptr++ = *format;
-                i++;
-                break;
-        }
-        format++;
-    }
-
-    *ptr = '\0';  /* È·±£×Ö·û´®½áÊø */
-    return (int32)i;
-}
-
-//-------------------------------------------------------------------------------------------------------------------
-// º¯Êı¼ò½é     sprintf º¯ÊıÊµÏÖ
-// ²ÎÊıËµÃ÷     *buff           »º³åÇø
-// ²ÎÊıËµÃ÷     *format         Ô´×Ö·û´®
-// ²ÎÊıËµÃ÷     ...             ¿É±ä²ÎÊıÁĞ±í
-// ·µ»Ø²ÎÊı     uint32          ´¦ÀíºóÊı¾İ³¤
-// Ê¹ÓÃÊ¾Àı     zf_sprintf(buff, "Data : %d", 100);
-// ±¸×¢ĞÅÏ¢     ±¾º¯ÊıÔÚÎÄ¼şÄÚ²¿µ÷ÓÃ ÓÃ»§²»ÓÃ¹Ø×¢ Ò²²»¿ÉĞŞ¸Ä
-//-------------------------------------------------------------------------------------------------------------------
-uint32 zf_sprintf (int8 *buff, const int8 *format, ...)
-{
-    uint32 buff_len = 0;
-	va_list arg;
-	va_start(arg, format);
-
-    while (*format)
-    {
-        int8 ret = *format;
-        if ('%' == ret)
-        {
-            switch (*++ format)
-            {
-                case 'a':// Ê®Áù½øÖÆp¼ÆÊı·¨Êä³ö¸¡µãÊı ÔİÎ´ÊµÏÖ
-                    {
-                    }
-                    break;
-
-                case 'c':// Ò»¸ö×Ö·û
-                    {
-                        int8 ch = (int8)va_arg(arg, uint32);
-                        *buff = ch;
-                        buff ++;
-                        buff_len ++;
-                    }
-                    break;
-
-                case 'd':
-                case 'i':// ÓĞ·ûºÅÊ®½øÖÆÕûÊı
-                    {
-                        int8 vstr[33];
-                        int32 ival = (int32)va_arg(arg, int32);
-                        uint8 vlen = number_conversion_ascii((uint32)ival, vstr, 1, 10);
-
-                        if(0 > ival)  
-                        {
-                            vstr[vlen] = '-';
-                            vlen ++;
-                        }
-                        printf_reverse_order(vstr, vlen);
-                        memcpy(buff, vstr, vlen);
-                        buff += vlen;
-                        buff_len += vlen;
-                    }
-                    break;
-
-                case 'f':// ¸¡µãÊı£¬Êä³öĞ¡ÊıµãºóÁùÎ»  ²»ÄÜÖ¸¶¨Êä³ö¾«¶È
-                case 'F':// ¸¡µãÊı£¬Êä³öĞ¡ÊıµãºóÁùÎ»  ²»ÄÜÖ¸¶¨Êä³ö¾«¶È
-                {
-                    int8 vstr[33];
-                    double ival = (double)va_arg(arg, double);
-                    uint8 vlen = number_conversion_ascii((uint32)(int32)ival, vstr, 1, 10);
-
-                    if(0 > ival)  
-                    {
-                        vstr[vlen] = '-';
-                        vlen ++;
-                    }
-                    printf_reverse_order(vstr, vlen);
-                    memcpy(buff, vstr, vlen);
-                    buff += vlen;
-                    buff_len += vlen;
-
-                    ival = ((double)ival - (int32)ival)*1000000;
-                    if(ival)
-                    {
-                        vlen = number_conversion_ascii((uint32)(int32)ival, vstr, 1, 10);
-                    }
-                    else
-                    {
-                        vstr[0] = vstr[1] = vstr[2] = vstr[3] = vstr[4] = vstr[5] = '0';
-                        vlen = 6;
-                    }
-
-                    while(6 > vlen)
-                    {
-                        vstr[vlen] = '0';
-                        vlen ++;
-                    }
-
-                    vstr[vlen] = '.';
-                    vlen ++;
-
-                    printf_reverse_order(vstr, vlen);
-                    memcpy(buff, vstr, vlen);
-                    buff += vlen;
-                    buff_len += vlen;
-                }
-                break;
-
-                case 'u':// ÎŞ·ûºÅÊ®½øÖÆÕûÊı
-                    {
-                        int8 vstr[33];
-                        uint32 ival = (uint32)va_arg(arg, uint32);
-                        uint8 vlen = number_conversion_ascii(ival, vstr, 0, 10);
-
-                        printf_reverse_order(vstr, vlen);
-                        memcpy(buff, vstr, vlen);
-                        buff += vlen;
-                        buff_len += vlen;
-                    }
-                    break;
-
-                case 'o':// ÎŞ·ûºÅ°Ë½øÖÆÕûÊı 
-                    {
-                        int8 vstr[33];
-                        uint32 ival = (uint32)va_arg(arg, uint32);
-                        uint8 vlen = number_conversion_ascii(ival, vstr, 0, 8);
-
-                        printf_reverse_order(vstr, vlen);
-                        memcpy(buff, vstr, vlen);
-                        buff += vlen;
-                        buff_len += vlen;
-
-                    }
-                    break;
-
-                case 'x':// ÎŞ·ûºÅÊ®Áù½øÖÆÕûÊı
-                case 'X':// ÎŞ·ûºÅÊ®Áù½øÖÆÕûÊı
-                    {
-                        int8 vstr[33];
-                        uint32 ival = (uint32)va_arg(arg, uint32);
-                        uint8 vlen = number_conversion_ascii(ival, vstr, 0, 16);
-
-                        printf_reverse_order(vstr, vlen);
-                        memcpy(buff, vstr, vlen);
-                        buff += vlen;
-                        buff_len += vlen;
-                    }
-                    break;
-
-                case 's':// ×Ö·û´®
-                    {
-                        int8 *pc = va_arg(arg, int8 *);
-                        while (*pc)
-                        {
-                            *buff = *pc;
-                            buff ++;
-                            buff_len ++;
-                            pc ++;
-                        }
-                    }
-                    break;
-
-                case 'p':// ÒÔ16½øÖÆĞÎÊ½Êä³öÖ¸Õë
-                    {
-                        int8 vstr[33];
-                        uint32 ival = (uint32)va_arg(arg, uint32);
-                        //uint8 vlen = number_conversion_ascii(ival, vstr, 0, 16);
-                        number_conversion_ascii(ival, vstr, 0, 16);
-                        printf_reverse_order(vstr, 8);
-                        memcpy(buff, vstr, 8);
-                        buff += 8;
-                        buff_len += 8;
-                    }
-                    break;
-
-                case '%':// Êä³ö×Ö·û% 
-                    {
-                        *buff = '%';
-                        buff ++;
-                        buff_len ++;
-                    }
-                    break;
-
-                default:
-                    break;
-            }
-        }
-        else
-        {
-            *buff = (int8)(*format);
-            buff ++;
-            buff_len ++;
-        }
-        format ++;
-    }
-    va_end(arg);
-
-    return buff_len;
-}
-
-
+#include "zf_common_debug.h"
+#include "zf_common_function.h"
+#include <stdarg.h>  // åŒ…å«æ ‡å‡†å¯å˜å‚æ•°å®çš„å¤´æ–‡ä»¶
+#include <stdio.h>   // åŒ…å«æ ‡å‡†è¾“å…¥è¾“å‡ºçš„å¤´æ–‡ä»¶
+
+//-------------------------------------------------------------------------------------------------------------------
+// å‡½æ•°ç®€ä»‹     è·å–æ•´å‹æ•°çš„æœ€å¤§å…¬çº¦æ•° ä¹ç« ç®—æœ¯ä¹‹æ›´ç›¸å‡æŸæœ¯
+// å‚æ•°è¯´æ˜     num1            æ•°å­—1
+// å‚æ•°è¯´æ˜     num2            æ•°å­—2
+// è¿”å›å‚æ•°     uint32          æœ€å¤§å…¬çº¦æ•°
+// ä½¿ç”¨ç¤ºä¾‹     return func_get_greatest_common_divisor(144, 36);               // è·å– 144 ä¸ 36 çš„æœ€å¤§å…¬çº¦æ•°
+// å¤‡æ³¨ä¿¡æ¯     
+//-------------------------------------------------------------------------------------------------------------------
+uint32 func_get_greatest_common_divisor (uint32 num1, uint32 num2)
+{
+    while(num1 != num2)
+    {
+        if(num1 > num2)
+        {
+            num1 = num1 - num2;
+        }
+        if(num1 < num2)
+        {
+            num2 = num2 - num1;
+        }
+    }
+    return num1;
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// å‡½æ•°ç®€ä»‹     è½¯ä»¶å»¶æ—¶
+// å‚æ•°è¯´æ˜     t               å»¶æ—¶æ—¶é—´
+// è¿”å›å‚æ•°     void
+// ä½¿ç”¨ç¤ºä¾‹     func_soft_delay(100);
+// å¤‡æ³¨ä¿¡æ¯     
+//-------------------------------------------------------------------------------------------------------------------
+void func_soft_delay (volatile long t)
+{
+    while(t --);
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// å‡½æ•°ç®€ä»‹     å­—ç¬¦ä¸²è½¬æ•´å½¢æ•°å­— æ•°æ®èŒƒå›´æ˜¯ [-32768,32767]
+// å‚æ•°è¯´æ˜     *str            ä¼ å…¥å­—ç¬¦ä¸² å¯å¸¦ç¬¦å·
+// è¿”å›å‚æ•°     int32           è½¬æ¢åçš„æ•°æ®          
+// ä½¿ç”¨ç¤ºä¾‹     int32 dat = func_str_to_int("-100");
+// å¤‡æ³¨ä¿¡æ¯     
+//-------------------------------------------------------------------------------------------------------------------
+int32 func_str_to_int (char *str)
+{
+    uint8 sign = 0;                                                             // æ ‡è®°ç¬¦å· 0-æ­£æ•° 1-è´Ÿæ•°
+    int32 temp = 0;                                                             // ä¸´æ—¶è®¡ç®—å˜é‡
+	zf_assert(str != NULL);
+	do
+    {
+        if(NULL == str)
+        {
+            break;
+        }
+
+        if('-' == *str)                                                         // å¦‚æœç¬¬ä¸€ä¸ªå­—ç¬¦æ˜¯è´Ÿå·
+        {
+            sign = 1;                                                           // æ ‡è®°è´Ÿæ•°
+            str ++;
+        }
+        else if('+' == *str)                                                    // å¦‚æœç¬¬ä¸€ä¸ªå­—ç¬¦æ˜¯æ­£å·
+        {
+            str ++;
+        }
+
+        while(('0' <= *str) && ('9' >= *str))                                   // ç¡®å®šè¿™æ˜¯ä¸ªæ•°å­—
+        {
+            temp = temp * 10 + ((uint8)(*str) - 0x30);                          // è®¡ç®—æ•°å€¼
+            str ++;
+        }
+
+        if(sign)
+        {
+            temp = -temp;
+        }
+    }while(0);
+    return temp;
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// å‡½æ•°ç®€ä»‹     æ•´å½¢æ•°å­—è½¬å­—ç¬¦ä¸² æ•°æ®èŒƒå›´æ˜¯ [-32768,32767]
+// å‚æ•°è¯´æ˜     *str            å­—ç¬¦ä¸²æŒ‡é’ˆ
+// å‚æ•°è¯´æ˜     number          ä¼ å…¥çš„æ•°æ®
+// è¿”å›å‚æ•°     void
+// ä½¿ç”¨ç¤ºä¾‹     func_int_to_str(data_buffer, -300);
+// å¤‡æ³¨ä¿¡æ¯     
+//-------------------------------------------------------------------------------------------------------------------
+void func_int_to_str (char *str, int32 number)
+{
+    uint8 data_temp[16];                                                        // ç¼“å†²åŒº
+    uint8 temp_bit = 0;                                                              // æ•°å­—ä½æ•°
+    int32 number_temp = 0;
+    zf_assert(str != NULL);
+    do
+    {
+        if(NULL == str)
+        {
+            break;
+        }
+
+        if(0 > number)                                                          // è´Ÿæ•°
+        {
+            *str ++ = '-';
+            number = -number;
+        }
+        else if(0 == number)                                                    // æˆ–è€…è¿™æ˜¯ä¸ª 0
+        {
+            *str = '0';
+            break;
+        }
+
+        while(0 != number)                                                      // å¾ªç¯ç›´åˆ°æ•°å€¼å½’é›¶
+        {
+            number_temp = number % 10;
+            data_temp[temp_bit ++] = func_abs(number_temp);                          // å€’åºå°†æ•°å€¼æå–å‡ºæ¥
+            number /= 10;                                                       // å‰Šå‡è¢«æå–çš„ä¸ªä½æ•°
+        }
+        while(0 != temp_bit)                                                         // æå–çš„æ•°å­—ä¸ªæ•°é€’å‡å¤„ç†
+        {
+            *str ++ = (data_temp[temp_bit - 1] + 0x30);                              // å°†æ•°å­—ä»å€’åºæ•°ç»„ä¸­å€’åºå–å‡º å˜æˆæ­£åºæ”¾å…¥å­—ç¬¦ä¸²
+            temp_bit --;
+        }
+    }while(0);
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// å‡½æ•°ç®€ä»‹     å­—ç¬¦ä¸²è½¬æ•´å½¢æ•°å­— æ•°æ®èŒƒå›´æ˜¯ [0,65535]
+// å‚æ•°è¯´æ˜     *str            ä¼ å…¥å­—ç¬¦ä¸² æ— ç¬¦å·
+// è¿”å›å‚æ•°     uint32          è½¬æ¢åçš„æ•°æ®          
+// ä½¿ç”¨ç¤ºä¾‹     uint32 dat = func_str_to_uint("100");
+// å¤‡æ³¨ä¿¡æ¯     
+//-------------------------------------------------------------------------------------------------------------------
+uint32 func_str_to_uint (char *str)
+{
+	uint32 temp = 0;                                                            // ä¸´æ—¶è®¡ç®—å˜é‡
+    zf_assert(str != NULL);
+
+    do
+    {
+        if(NULL == str)
+        {
+            break;
+        }
+
+        while(('0' <= *str) && ('9' >= *str))                                  // ç¡®å®šè¿™æ˜¯ä¸ªæ•°å­—
+        {
+            temp = temp * 10 + ((uint8)(*str) - 0x30);                         // è®¡ç®—æ•°å€¼
+            str ++;
+        }
+    }while(0);
+
+    return temp;
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// å‡½æ•°ç®€ä»‹     æ•´å½¢æ•°å­—è½¬å­—ç¬¦ä¸² æ•°æ®èŒƒå›´æ˜¯ [0,65535]
+// å‚æ•°è¯´æ˜     *str            å­—ç¬¦ä¸²æŒ‡é’ˆ
+// å‚æ•°è¯´æ˜     number          ä¼ å…¥çš„æ•°æ®
+// è¿”å›å‚æ•°     void
+// ä½¿ç”¨ç¤ºä¾‹     func_uint_to_str(data_buffer, 300);
+// å¤‡æ³¨ä¿¡æ¯     
+//-------------------------------------------------------------------------------------------------------------------
+void func_uint_to_str (char *str, uint32 number)
+{
+    int8 data_temp[16];                                                         // ç¼“å†²åŒº
+    uint8 temp_bit = 0;                                                              // æ•°å­—ä½æ•°
+    
+	zf_assert(str != NULL);
+    
+	do
+    {
+        if(NULL == str)
+        {
+            break;
+        }
+
+        if(0 == number)                                                         // è¿™æ˜¯ä¸ª 0
+        {
+            *str = '0';
+            break;
+        }
+
+        while(0 != number)                                                      // å¾ªç¯ç›´åˆ°æ•°å€¼å½’é›¶
+        {
+            data_temp[temp_bit ++] = (number % 10);                                  // å€’åºå°†æ•°å€¼æå–å‡ºæ¥
+            number /= 10;                                                       // å‰Šå‡è¢«æå–çš„ä¸ªä½æ•°
+        }
+        while(0 != temp_bit)                                                         // æå–çš„æ•°å­—ä¸ªæ•°é€’å‡å¤„ç†
+        {
+            *str ++ = (data_temp[temp_bit - 1] + 0x30);                              // å°†æ•°å­—ä»å€’åºæ•°ç»„ä¸­å€’åºå–å‡º å˜æˆæ­£åºæ”¾å…¥å­—ç¬¦ä¸²
+            temp_bit --;
+        }
+    }while(0);
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// å‡½æ•°ç®€ä»‹     å­—ç¬¦ä¸²è½¬æµ®ç‚¹æ•° æœ‰æ•ˆç´¯è®¡ç²¾åº¦ä¸ºå°æ•°ç‚¹åå…­ä½
+// å‚æ•°è¯´æ˜     *str            ä¼ å…¥å­—ç¬¦ä¸² å¯å¸¦ç¬¦å·
+// è¿”å›å‚æ•°     float           è½¬æ¢åçš„æ•°æ®          
+// ä½¿ç”¨ç¤ºä¾‹     float dat = func_str_to_float("-100.2");
+// å¤‡æ³¨ä¿¡æ¯     
+//-------------------------------------------------------------------------------------------------------------------
+float func_str_to_float (char *str)
+{
+    uint8 sign = 0;                                                             // æ ‡è®°ç¬¦å· 0-æ­£æ•° 1-è´Ÿæ•°
+    float temp = 0.0;                                                           // ä¸´æ—¶è®¡ç®—å˜é‡ æ•´æ•°éƒ¨åˆ†
+    float temp_point = 0.0;                                                     // ä¸´æ—¶è®¡ç®—å˜é‡ å°æ•°éƒ¨åˆ†
+    float point_bit = 1;                                                        // å°æ•°ç´¯è®¡é™¤æ•°
+    
+	zf_assert(str != NULL);
+    
+	do
+    {
+        if(NULL == str)
+        {
+            break;
+        }
+
+        if('-' == *str)                                                         // è´Ÿæ•°
+        {
+            sign = 1;                                                           // æ ‡è®°è´Ÿæ•°
+            str ++;
+        }
+        else if('+' == *str)                                                    // å¦‚æœç¬¬ä¸€ä¸ªå­—ç¬¦æ˜¯æ­£å·
+        {
+            str ++;
+        }
+
+        // æå–æ•´æ•°éƒ¨åˆ†
+        while(('0' <= *str) && ('9' >= *str))                                   // ç¡®å®šè¿™æ˜¯ä¸ªæ•°å­—
+        {
+            temp = temp * 10 + ((uint8)(*str) - 0x30);                          // å°†æ•°å€¼æå–å‡ºæ¥
+            str ++;
+        }
+        if('.' == *str)
+        {
+            str ++;
+            while(('0' <= *str) && ('9' >= *str) && point_bit < 1000000.0)      // ç¡®è®¤è¿™æ˜¯ä¸ªæ•°å­— å¹¶ä¸”ç²¾åº¦æ§åˆ¶è¿˜æ²¡åˆ°å…­ä½
+            {
+                temp_point = temp_point * 10 + ((uint8)(*str) - 0x30);          // æå–å°æ•°éƒ¨åˆ†æ•°å€¼
+                point_bit *= 10;                                                // è®¡ç®—è¿™éƒ¨åˆ†å°æ•°çš„é™¤æ•°
+                str ++;
+            }
+            temp_point /= point_bit;                                            // è®¡ç®—å°æ•°
+        }
+        temp += temp_point;                                                     // å°†æ•°å€¼æ‹¼åˆ
+
+        if(sign)
+        {
+            temp = -temp;
+        }
+    }while(0);
+    return temp;
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// å‡½æ•°ç®€ä»‹     æµ®ç‚¹æ•°å­—è½¬å­—ç¬¦ä¸²
+// å‚æ•°è¯´æ˜     *str            å­—ç¬¦ä¸²æŒ‡é’ˆ
+// å‚æ•°è¯´æ˜     number          ä¼ å…¥çš„æ•°æ®
+// å‚æ•°è¯´æ˜     point_bit       å°æ•°ç‚¹ç²¾åº¦
+// è¿”å›å‚æ•°     void
+// ä½¿ç”¨ç¤ºä¾‹     func_float_to_str(data_buffer, 3.1415, 2);                      // ç»“æœè¾“å‡º data_buffer = "3.14"
+// å¤‡æ³¨ä¿¡æ¯     
+//-------------------------------------------------------------------------------------------------------------------
+void func_float_to_str (char *str, float number, uint8 point_bit)
+{
+    int data_int = 0;                                                           // æ•´æ•°éƒ¨åˆ†
+    int data_float = 0.0;                                                       // å°æ•°éƒ¨åˆ†
+    int data_temp[8];                                                           // æ•´æ•°å­—ç¬¦ç¼“å†²
+    int data_temp_point[6];                                                     // å°æ•°å­—ç¬¦ç¼“å†²
+    uint8 temp_bit = point_bit;                                                      // è½¬æ¢ç²¾åº¦ä½æ•°
+    
+	zf_assert(str != NULL);
+    
+	do
+    {
+        if(NULL == str)
+        {
+            break;
+        }
+
+        // æå–æ•´æ•°éƒ¨åˆ†
+        data_int = (int)number;                                                 // ç›´æ¥å¼ºåˆ¶è½¬æ¢ä¸º int
+        if(0 > number)                                                          // åˆ¤æ–­æºæ•°æ®æ˜¯æ­£æ•°è¿˜æ˜¯è´Ÿæ•°
+        {
+            *str ++ = '-';
+        }
+        else if(0.0 == number)                                                  // å¦‚æœæ˜¯ä¸ª 0
+        {
+            *str ++ = '0';
+            *str ++ = '.';
+            *str = '0';
+            break;
+        }
+
+        // æå–å°æ•°éƒ¨åˆ†
+        number = number - data_int;                                             // å‡å»æ•´æ•°éƒ¨åˆ†å³å¯
+        while(temp_bit --)
+        {
+            number = number * 10;                                               // å°†éœ€è¦çš„å°æ•°ä½æ•°æå–åˆ°æ•´æ•°éƒ¨åˆ†
+        }
+        data_float = (int)number;                                               // è·å–è¿™éƒ¨åˆ†æ•°å€¼
+
+        // æ•´æ•°éƒ¨åˆ†è½¬ä¸ºå­—ç¬¦ä¸²
+        temp_bit = 0;
+        do
+        {
+            data_temp[temp_bit ++] = data_int % 10;                                  // å°†æ•´æ•°éƒ¨åˆ†å€’åºå†™å…¥å­—ç¬¦ç¼“å†²åŒº
+            data_int /= 10;
+        }while(0 != data_int);
+        while(0 != temp_bit)
+        {
+            *str ++ = (func_abs(data_temp[temp_bit - 1]) + 0x30);                    // å†å€’åºå°†å€’åºçš„æ•°å€¼å†™å…¥å­—ç¬¦ä¸² å¾—åˆ°æ­£åºæ•°å€¼
+            temp_bit --;
+        }
+
+        // å°æ•°éƒ¨åˆ†è½¬ä¸ºå­—ç¬¦ä¸²
+        if(point_bit != 0)
+        {
+            temp_bit = 0;
+            *str ++ = '.';
+            if(0 == data_float)
+            {
+                *str = '0';
+            }
+            else
+            {
+                while(0 != point_bit)                                           // åˆ¤æ–­æœ‰æ•ˆä½æ•°
+                {
+                    data_temp_point[temp_bit ++] = data_float % 10;                  // å€’åºå†™å…¥å­—ç¬¦ç¼“å†²åŒº
+                    data_float /= 10;
+                    point_bit --;                                                
+                }
+                while(0 != temp_bit)
+                {
+                    *str ++ = (func_abs(data_temp_point[temp_bit - 1]) + 0x30);      // å†å€’åºå°†å€’åºçš„æ•°å€¼å†™å…¥å­—ç¬¦ä¸² å¾—åˆ°æ­£åºæ•°å€¼
+                    temp_bit --;
+                }
+            }
+        }
+    }while(0);
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// å‡½æ•°ç®€ä»‹     å­—ç¬¦ä¸²è½¬æµ®ç‚¹æ•° æœ‰æ•ˆç´¯è®¡ç²¾åº¦ä¸ºå°æ•°ç‚¹åä¹ä½
+// å‚æ•°è¯´æ˜     str             ä¼ å…¥å­—ç¬¦ä¸² å¯å¸¦ç¬¦å·
+// è¿”å›å‚æ•°     double          è½¬æ¢åçš„æ•°æ®          
+// ä½¿ç”¨ç¤ºä¾‹     double dat = func_str_to_double("-100.2");
+// å¤‡æ³¨ä¿¡æ¯     
+//-------------------------------------------------------------------------------------------------------------------
+double func_str_to_double (char *str)
+{
+    uint8 sign = 0;                                                             // æ ‡è®°ç¬¦å· 0-æ­£æ•° 1-è´Ÿæ•°
+    double temp = 0.0;                                                          // ä¸´æ—¶è®¡ç®—å˜é‡ æ•´æ•°éƒ¨åˆ†
+    double temp_point = 0.0;                                                    // ä¸´æ—¶è®¡ç®—å˜é‡ å°æ•°éƒ¨åˆ†
+    double point_bit = 1;                                                       // å°æ•°ç´¯è®¡é™¤æ•°
+    
+	zf_assert(str != NULL);
+    
+	do
+    {
+        if(NULL == str)
+        {
+            break;
+        }
+
+        if('-' == *str)                                                         // è´Ÿæ•°
+        {
+            sign = 1;                                                           // æ ‡è®°è´Ÿæ•°
+            str ++;
+        }
+        else if('+' == *str)                                                    // å¦‚æœç¬¬ä¸€ä¸ªå­—ç¬¦æ˜¯æ­£å·
+        {
+            str ++;
+        }
+
+        // æå–æ•´æ•°éƒ¨åˆ†
+        while(('0' <= *str) && ('9' >= *str))                                   // ç¡®å®šè¿™æ˜¯ä¸ªæ•°å­—
+        {
+            temp = temp * 10 + ((uint8)(*str) - 0x30);                          // å°†æ•°å€¼æå–å‡ºæ¥
+            str ++;
+        }
+        if('.' == *str)
+        {
+            str ++;
+            while(('0' <= *str) && ('9' >= *str) && point_bit < 1000000000.0)   // ç¡®è®¤è¿™æ˜¯ä¸ªæ•°å­— å¹¶ä¸”ç²¾åº¦æ§åˆ¶è¿˜æ²¡åˆ°ä¹ä½
+            {
+                temp_point = temp_point * 10 + ((uint8)(*str) - 0x30);          // æå–å°æ•°éƒ¨åˆ†æ•°å€¼
+                point_bit *= 10;                                                // è®¡ç®—è¿™éƒ¨åˆ†å°æ•°çš„é™¤æ•°
+                str ++;
+            }
+            temp_point /= point_bit;                                            // è®¡ç®—å°æ•°
+        }
+        temp += temp_point;                                                     // å°†æ•°å€¼æ‹¼åˆ
+
+        if(sign)
+        {
+            temp = -temp;
+        }
+    }while(0);
+    return temp;
+
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// å‡½æ•°ç®€ä»‹     æµ®ç‚¹æ•°å­—è½¬å­—ç¬¦ä¸²
+// å‚æ•°è¯´æ˜     *str            å­—ç¬¦ä¸²æŒ‡é’ˆ
+// å‚æ•°è¯´æ˜     number          ä¼ å…¥çš„æ•°æ®
+// å‚æ•°è¯´æ˜     point_bit       å°æ•°ç‚¹ç²¾åº¦
+// è¿”å›å‚æ•°     void
+// ä½¿ç”¨ç¤ºä¾‹     func_double_to_str(data_buffer, 3.1415, 2);                     // ç»“æœè¾“å‡º data_buffer = "3.14"
+// å¤‡æ³¨ä¿¡æ¯     
+//-------------------------------------------------------------------------------------------------------------------
+void func_double_to_str (char *str, double number, uint8 point_bit)
+{
+    int data_int = 0;                                                           // æ•´æ•°éƒ¨åˆ†
+    int data_float = 0.0;                                                       // å°æ•°éƒ¨åˆ†
+    int data_temp[12];                                                          // æ•´æ•°å­—ç¬¦ç¼“å†²
+    int data_temp_point[9];                                                     // å°æ•°å­—ç¬¦ç¼“å†²
+    uint8 temp_bit = point_bit;                                                      // è½¬æ¢ç²¾åº¦ä½æ•°
+    
+	zf_assert(str != NULL);
+    
+	do
+    {
+        if(NULL == str)
+        {
+            break;
+        }
+
+        // æå–æ•´æ•°éƒ¨åˆ†
+        data_int = (int)number;                                                 // ç›´æ¥å¼ºåˆ¶è½¬æ¢ä¸º int
+        if(0 > number)                                                          // åˆ¤æ–­æºæ•°æ®æ˜¯æ­£æ•°è¿˜æ˜¯è´Ÿæ•°
+        {
+            *str ++ = '-';
+        }
+        else if(0.0 == number)                                                  // å¦‚æœæ˜¯ä¸ª 0
+        {
+            *str ++ = '0';
+            *str ++ = '.';
+            *str = '0';
+            break;
+        }
+
+        // æå–å°æ•°éƒ¨åˆ†
+        number = number - data_int;                                             // å‡å»æ•´æ•°éƒ¨åˆ†å³å¯
+        while(temp_bit --)
+        {
+            number = number * 10;                                               // å°†éœ€è¦çš„å°æ•°ä½æ•°æå–åˆ°æ•´æ•°éƒ¨åˆ†
+        }
+        data_float = (int)number;                                               // è·å–è¿™éƒ¨åˆ†æ•°å€¼
+
+        // æ•´æ•°éƒ¨åˆ†è½¬ä¸ºå­—ç¬¦ä¸²
+        temp_bit = 0;
+        do
+        {
+            data_temp[temp_bit ++] = data_int % 10;                                  // å°†æ•´æ•°éƒ¨åˆ†å€’åºå†™å…¥å­—ç¬¦ç¼“å†²åŒº
+            data_int /= 10;
+        }while(0 != data_int);
+        while(0 != temp_bit)
+        {
+            *str ++ = (func_abs(data_temp[temp_bit - 1]) + 0x30);                    // å†å€’åºå°†å€’åºçš„æ•°å€¼å†™å…¥å­—ç¬¦ä¸² å¾—åˆ°æ­£åºæ•°å€¼
+            temp_bit --;
+        }
+
+        // å°æ•°éƒ¨åˆ†è½¬ä¸ºå­—ç¬¦ä¸²
+        if(point_bit != 0)
+        {
+            temp_bit = 0;
+            *str ++ = '.';
+            if(0 == data_float)
+                *str = '0';
+            else
+            {
+                while(0 != point_bit)                                           // åˆ¤æ–­æœ‰æ•ˆä½æ•°
+                {
+                    data_temp_point[temp_bit ++] = data_float % 10;                  // å€’åºå†™å…¥å­—ç¬¦ç¼“å†²åŒº
+                    data_float /= 10;
+                    point_bit --;                                                
+                }
+                while(0 != temp_bit)
+                {
+                    *str ++ = (func_abs(data_temp_point[temp_bit - 1]) + 0x30);      // å†å€’åºå°†å€’åºçš„æ•°å€¼å†™å…¥å­—ç¬¦ä¸² å¾—åˆ°æ­£åºæ•°å€¼
+                    temp_bit --;
+                }
+            }
+        }
+    }while(0);
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// å‡½æ•°ç®€ä»‹     å­—ç¬¦ä¸²è½¬ Hex
+// å‚æ•°è¯´æ˜     str             ä¼ å…¥å­—ç¬¦ä¸² æ— ç¬¦å·
+// è¿”å›å‚æ•°     uint32          è½¬æ¢åçš„æ•°æ®
+// ä½¿ç”¨ç¤ºä¾‹     uint32 dat = func_str_to_hex("0x11");
+// å¤‡æ³¨ä¿¡æ¯     
+//-------------------------------------------------------------------------------------------------------------------
+uint32 func_str_to_hex (char *str)
+{
+    uint32 str_len = strlen(str);                                               // å­—ç¬¦ä¸²é•¿
+    uint32 result_data = 0;                                                     // ç»“æœç¼“å­˜
+    uint8 temp = 0;                                                             // è®¡ç®—å˜é‡
+    uint8 flag = 0;                                                             // æ ‡å¿—ä½
+
+	zf_assert(str != NULL);
+	
+    do
+    {
+        if(NULL == str)
+        {
+            break;
+        }
+
+        if(flag)
+        {
+            if(('a' <= *str) && ('f' >= *str))
+            {
+                temp = (*str - 87);
+            }
+            else if(('A' <= *str) && ('F' >= *str))
+            {
+                temp = (*str - 55);
+            }
+            else if(('0' <= *str) && ('9' >= *str))
+            {
+                temp = (*str - 48);
+            }
+            else
+            {
+                break;
+            }
+            result_data = ((result_data << 4) | (temp & 0x0F));
+        }
+        else
+        {
+//            if(strncmp("0x", str, 2))
+            if((*str == '0') && (*(str + 1) == 'x'))
+            {
+                str ++;
+                flag = 1;
+            }
+        }
+        str ++;
+    }while(str_len --);
+
+    return result_data;
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// å‡½æ•°ç®€ä»‹     Hex è½¬å­—ç¬¦ä¸²
+// å‚æ•°è¯´æ˜     *str            å­—ç¬¦ä¸²æŒ‡é’ˆ
+// å‚æ•°è¯´æ˜     number          ä¼ å…¥çš„æ•°æ®
+// è¿”å›å‚æ•°     void
+// ä½¿ç”¨ç¤ºä¾‹     func_hex_to_str(data_buffer, 0x11);                             // ç»“æœè¾“å‡º data_buffer = "0x11"
+// å¤‡æ³¨ä¿¡æ¯     
+//-------------------------------------------------------------------------------------------------------------------
+void func_hex_to_str (char *str, uint32 number)
+{
+    const char hex_index[16] = {
+        '0', '1', '2', '3',
+        '4', '5', '6', '7',
+        '8', '9', 'A', 'B',
+        'C', 'D', 'E', 'F'};
+    int8 data_temp[12];                                                         // ç¼“å†²åŒº
+    uint8 temp_bit = 0;                                                              // æ•°å­—ä½æ•°
+
+    zf_assert(str != NULL);
+		
+    *str++ = '0';
+    *str++ = 'x';
+    do
+    {
+        if(NULL == str)
+        {
+            break;
+        }
+
+        if(0 == number)                                                         // è¿™æ˜¯ä¸ª 0
+        {
+            *str = '0';
+            break;
+        }
+
+        while(0 != number)                                                      // å¾ªç¯ç›´åˆ°æ•°å€¼å½’é›¶
+        {
+            data_temp[temp_bit ++] = (number & 0xF);                                 // å€’åºå°†æ•°å€¼æå–å‡ºæ¥
+            number >>= 4;                                                       // å‰Šå‡è¢«æå–çš„ä¸ªä½æ•°
+        }
+        while(0 != temp_bit)                                                         // æå–çš„æ•°å­—ä¸ªæ•°é€’å‡å¤„ç†
+        {
+            *str ++ = hex_index[data_temp[temp_bit - 1]];                            // å°†æ•°å­—ä»å€’åºæ•°ç»„ä¸­å€’åºå–å‡º å˜æˆæ­£åºæ”¾å…¥å­—ç¬¦ä¸²
+            temp_bit --;
+        }
+    }while(0);
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// å‡½æ•°ç®€ä»‹     æ•°å­—è½¬æ¢ä¸º ASCII å€¼
+// å‚æ•°è¯´æ˜     dat             ä¼ å…¥çš„æ•°æ®
+// å‚æ•°è¯´æ˜     *p              æ•°æ®ç¼“å†²
+// å‚æ•°è¯´æ˜     neg_type        æ•°æ®ç±»å‹
+// å‚æ•°è¯´æ˜     radix           è¿›åˆ¶
+// è¿”å›å‚æ•°     uint8           æ•°æ®
+// ä½¿ç”¨ç¤ºä¾‹     number_conversion_ascii((uint32)ival, vstr, 1, 10);
+// å¤‡æ³¨ä¿¡æ¯     æœ¬å‡½æ•°åœ¨æ–‡ä»¶å†…éƒ¨è°ƒç”¨ ç”¨æˆ·ä¸ç”¨å…³æ³¨ ä¹Ÿä¸å¯ä¿®æ”¹
+//-------------------------------------------------------------------------------------------------------------------
+static uint8 number_conversion_ascii (uint32 dat, int8 *p, uint8 neg_type, uint8 radix)
+{
+    int32   neg_dat;
+    uint32  pos_dat;
+    uint8   temp_data = 0;
+    uint8   valid_num = 0;
+
+    if(neg_type)
+    {
+        neg_dat = (int32)dat;
+        if(0 > neg_dat)
+        {
+            neg_dat = -neg_dat;
+        }
+        while(1)
+        {
+            *p = neg_dat%radix + '0';
+            neg_dat = neg_dat/radix;
+            valid_num ++;
+
+            if(!neg_dat)
+            {
+                break;
+            }
+            p ++;
+        }
+    }
+    else
+    {
+        pos_dat = dat;
+        while(1)
+        {
+            temp_data = pos_dat%radix;
+            if(10 <= temp_data)
+            {
+                temp_data += 'A'-10;
+            }
+            else
+            {
+                temp_data += '0';
+            }
+
+            *p = temp_data;
+
+            pos_dat = pos_dat/radix;
+            valid_num ++;
+
+            if(!pos_dat)
+            {
+                break;
+            }
+            p ++;
+        }
+    }
+    return valid_num;
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// å‡½æ•°ç®€ä»‹     printf æ˜¾ç¤ºè½¬æ¢
+// å‚æ•°è¯´æ˜     *d_buff         ç¼“å†²åŒº
+// å‚æ•°è¯´æ˜     len             é•¿åº¦
+// è¿”å›å‚æ•°     void
+// ä½¿ç”¨ç¤ºä¾‹     printf_reverse_order(vstr, vlen);
+// å¤‡æ³¨ä¿¡æ¯     æœ¬å‡½æ•°åœ¨æ–‡ä»¶å†…éƒ¨è°ƒç”¨ ç”¨æˆ·ä¸ç”¨å…³æ³¨ ä¹Ÿä¸å¯ä¿®æ”¹
+//-------------------------------------------------------------------------------------------------------------------
+static void printf_reverse_order (int8 *d_buff, uint32 len)
+{
+    uint32 i;
+    int8  temp_data;
+    for(i = 0; len / 2 > i; i ++)
+    {
+        temp_data = d_buff[len - 1 - i];
+        d_buff[len - 1 -i ] = d_buff[i];
+        d_buff[i] = temp_data; 
+    }
+}
+
+
+
+//-------------------------------------------------------------------------------------------------------------------
+// å‡½æ•°ç®€ä»‹     sprintf å‡½æ•°å®ç°
+// å‚æ•°è¯´æ˜     *buffer         ç¼“å†²åŒº
+// å‚æ•°è¯´æ˜		siz				å¤§å°
+// å‚æ•°è¯´æ˜     *format         æºå­—ç¬¦ä¸²
+// å‚æ•°è¯´æ˜     args            å¯å˜å‚æ•°åˆ—è¡¨
+// è¿”å›å‚æ•°     int32          å¤„ç†åæ•°æ®é•¿
+// ä½¿ç”¨ç¤ºä¾‹     zf_sprintf(buff, "Data : %d", 100);
+// å¤‡æ³¨ä¿¡æ¯     æœ¬å‡½æ•°åœ¨æ–‡ä»¶å†…éƒ¨è°ƒç”¨ ç”¨æˆ·ä¸ç”¨å…³æ³¨ ä¹Ÿä¸å¯ä¿®æ”¹
+//-------------------------------------------------------------------------------------------------------------------
+int32 vsnprintf(char *buffer, uint32 siz, const char *format, va_list args) 
+{
+    uint32 i;
+    char *ptr;
+    int j;
+    int num;
+    char temp[16];
+    int len;
+    int is_negative;
+    char *str;
+    uint32 num_x;
+    char temp_x[9];
+    const char hex_digits[] = "0123456789abcdef";
+
+    i = 0;
+    ptr = buffer;
+    
+    if (buffer == NULL || format == NULL || siz == 0)
+	{
+        return 0;
+    }
+		
+    while (*format != '\0' && i < siz - 1) 
+	{
+        if (*format != '%') 
+		{
+            *ptr++ = *format++;
+            i++;
+            continue;
+        }
+
+        /* å¤„ç†æ ¼å¼ç¬¦ */
+        format++;
+        switch (*format) 
+		{
+            case 'd':
+                num = va_arg(args, int);
+                len = 0;
+                is_negative = 0;
+
+                if (num < 0) 
+				{
+                    is_negative = 1;
+                    num = -num;
+                }
+
+                /* æ•°å­—è½¬å­—ç¬¦ä¸² */
+                do {
+                    temp[len++] = '0' + (num % 10);
+                    num /= 10;
+                } while (num > 0 && len < (int)sizeof(temp) - 1);
+
+                /* æ·»åŠ è´Ÿå· */
+                if (is_negative) 
+				{
+                    temp[len++] = '-';
+                }
+
+                /* åè½¬å­—ç¬¦ä¸² */
+                for (j = 0; j < len / 2; j++) 
+				{
+                    char t = temp[j];
+                    temp[j] = temp[len - j - 1];
+                    temp[len - j - 1] = t;
+                }
+
+                /* å¤åˆ¶åˆ°ç¼“å†²åŒº */
+                for (j = 0; j < len && i < siz - 1; j++) 
+				{
+                    *ptr++ = temp[j];
+                    i++;
+                }
+                break;
+
+            case 's':
+                str = va_arg(args, char*);
+                if (str == NULL) 
+				{
+                    str = "(null)";
+                }
+                
+                while (*str != '\0' && i < siz - 1) 
+				{
+                    *ptr++ = *str++;
+                    i++;
+                }
+                break;
+
+            case 'c':
+                *ptr++ = (char)va_arg(args, int);
+                i++;
+                break;
+
+            case 'x':
+                num_x = va_arg(args, uint32);
+                len = 0;
+
+                do {
+                    temp_x[len++] = hex_digits[num_x % 16];
+                    num_x /= 16;
+                } while (num_x > 0 && len < (int)sizeof(temp_x) - 1);
+
+                /* åè½¬å­—ç¬¦ä¸² */
+                for (j = 0; j < len / 2; j++) 
+				{
+                    char t = temp_x[j];
+                    temp_x[j] = temp_x[len - j - 1];
+                    temp_x[len - j - 1] = t;
+                }
+
+                /* å¤åˆ¶åˆ°ç¼“å†²åŒº */
+                for (j = 0; j < len && i < siz - 1; j++) 
+				{
+                    *ptr++ = temp_x[j];
+                    i++;
+                }
+                break;
+
+            default:
+                *ptr++ = *format;
+                i++;
+                break;
+        }
+        format++;
+    }
+
+    *ptr = '\0';  /* ç¡®ä¿å­—ç¬¦ä¸²ç»“æŸ */
+    return (int32)i;
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// å‡½æ•°ç®€ä»‹     sprintf å‡½æ•°å®ç°
+// å‚æ•°è¯´æ˜     *buff           ç¼“å†²åŒº
+// å‚æ•°è¯´æ˜     *format         æºå­—ç¬¦ä¸²
+// å‚æ•°è¯´æ˜     ...             å¯å˜å‚æ•°åˆ—è¡¨
+// è¿”å›å‚æ•°     uint32          å¤„ç†åæ•°æ®é•¿
+// ä½¿ç”¨ç¤ºä¾‹     zf_sprintf(buff, "Data : %d", 100);
+// å¤‡æ³¨ä¿¡æ¯     æœ¬å‡½æ•°åœ¨æ–‡ä»¶å†…éƒ¨è°ƒç”¨ ç”¨æˆ·ä¸ç”¨å…³æ³¨ ä¹Ÿä¸å¯ä¿®æ”¹
+//-------------------------------------------------------------------------------------------------------------------
+uint32 zf_sprintf (int8 *buff, const int8 *format, ...)
+{
+    uint32 buff_len = 0;
+	va_list arg;
+	va_start(arg, format);
+
+    while (*format)
+    {
+        int8 ret = *format;
+        if ('%' == ret)
+        {
+            switch (*++ format)
+            {
+                case 'a':// åå…­è¿›åˆ¶pè®¡æ•°æ³•è¾“å‡ºæµ®ç‚¹æ•° æš‚æœªå®ç°
+                    {
+                    }
+                    break;
+
+                case 'c':// ä¸€ä¸ªå­—ç¬¦
+                    {
+                        int8 ch = (int8)va_arg(arg, uint32);
+                        *buff = ch;
+                        buff ++;
+                        buff_len ++;
+                    }
+                    break;
+
+                case 'd':
+                case 'i':// æœ‰ç¬¦å·åè¿›åˆ¶æ•´æ•°
+                    {
+                        int8 vstr[33];
+                        int32 ival = (int32)va_arg(arg, int32);
+                        uint8 vlen = number_conversion_ascii((uint32)ival, vstr, 1, 10);
+
+                        if(0 > ival)  
+                        {
+                            vstr[vlen] = '-';
+                            vlen ++;
+                        }
+                        printf_reverse_order(vstr, vlen);
+                        memcpy(buff, vstr, vlen);
+                        buff += vlen;
+                        buff_len += vlen;
+                    }
+                    break;
+
+                case 'f':// æµ®ç‚¹æ•°ï¼Œè¾“å‡ºå°æ•°ç‚¹åå…­ä½  ä¸èƒ½æŒ‡å®šè¾“å‡ºç²¾åº¦
+                case 'F':// æµ®ç‚¹æ•°ï¼Œè¾“å‡ºå°æ•°ç‚¹åå…­ä½  ä¸èƒ½æŒ‡å®šè¾“å‡ºç²¾åº¦
+                {
+                    int8 vstr[33];
+                    double ival = (double)va_arg(arg, double);
+                    uint8 vlen = number_conversion_ascii((uint32)(int32)ival, vstr, 1, 10);
+
+                    if(0 > ival)  
+                    {
+                        vstr[vlen] = '-';
+                        vlen ++;
+                    }
+                    printf_reverse_order(vstr, vlen);
+                    memcpy(buff, vstr, vlen);
+                    buff += vlen;
+                    buff_len += vlen;
+
+                    ival = ((double)ival - (int32)ival)*1000000;
+                    if(ival)
+                    {
+                        vlen = number_conversion_ascii((uint32)(int32)ival, vstr, 1, 10);
+                    }
+                    else
+                    {
+                        vstr[0] = vstr[1] = vstr[2] = vstr[3] = vstr[4] = vstr[5] = '0';
+                        vlen = 6;
+                    }
+
+                    while(6 > vlen)
+                    {
+                        vstr[vlen] = '0';
+                        vlen ++;
+                    }
+
+                    vstr[vlen] = '.';
+                    vlen ++;
+
+                    printf_reverse_order(vstr, vlen);
+                    memcpy(buff, vstr, vlen);
+                    buff += vlen;
+                    buff_len += vlen;
+                }
+                break;
+
+                case 'u':// æ— ç¬¦å·åè¿›åˆ¶æ•´æ•°
+                    {
+                        int8 vstr[33];
+                        uint32 ival = (uint32)va_arg(arg, uint32);
+                        uint8 vlen = number_conversion_ascii(ival, vstr, 0, 10);
+
+                        printf_reverse_order(vstr, vlen);
+                        memcpy(buff, vstr, vlen);
+                        buff += vlen;
+                        buff_len += vlen;
+                    }
+                    break;
+
+                case 'o':// æ— ç¬¦å·å…«è¿›åˆ¶æ•´æ•° 
+                    {
+                        int8 vstr[33];
+                        uint32 ival = (uint32)va_arg(arg, uint32);
+                        uint8 vlen = number_conversion_ascii(ival, vstr, 0, 8);
+
+                        printf_reverse_order(vstr, vlen);
+                        memcpy(buff, vstr, vlen);
+                        buff += vlen;
+                        buff_len += vlen;
+
+                    }
+                    break;
+
+                case 'x':// æ— ç¬¦å·åå…­è¿›åˆ¶æ•´æ•°
+                case 'X':// æ— ç¬¦å·åå…­è¿›åˆ¶æ•´æ•°
+                    {
+                        int8 vstr[33];
+                        uint32 ival = (uint32)va_arg(arg, uint32);
+                        uint8 vlen = number_conversion_ascii(ival, vstr, 0, 16);
+
+                        printf_reverse_order(vstr, vlen);
+                        memcpy(buff, vstr, vlen);
+                        buff += vlen;
+                        buff_len += vlen;
+                    }
+                    break;
+
+                case 's':// å­—ç¬¦ä¸²
+                    {
+                        int8 *pc = va_arg(arg, int8 *);
+                        while (*pc)
+                        {
+                            *buff = *pc;
+                            buff ++;
+                            buff_len ++;
+                            pc ++;
+                        }
+                    }
+                    break;
+
+                case 'p':// ä»¥16è¿›åˆ¶å½¢å¼è¾“å‡ºæŒ‡é’ˆ
+                    {
+                        int8 vstr[33];
+                        uint32 ival = (uint32)va_arg(arg, uint32);
+                        //uint8 vlen = number_conversion_ascii(ival, vstr, 0, 16);
+                        number_conversion_ascii(ival, vstr, 0, 16);
+                        printf_reverse_order(vstr, 8);
+                        memcpy(buff, vstr, 8);
+                        buff += 8;
+                        buff_len += 8;
+                    }
+                    break;
+
+                case '%':// è¾“å‡ºå­—ç¬¦% 
+                    {
+                        *buff = '%';
+                        buff ++;
+                        buff_len ++;
+                    }
+                    break;
+
+                default:
+                    break;
+            }
+        }
+        else
+        {
+            *buff = (int8)(*format);
+            buff ++;
+            buff_len ++;
+        }
+        format ++;
+    }
+    va_end(arg);
+
+    return buff_len;
+}
+
+
