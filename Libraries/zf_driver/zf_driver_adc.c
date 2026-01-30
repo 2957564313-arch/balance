@@ -1,98 +1,98 @@
-#include "zf_common_debug.h"
-#include "zf_driver_adc.h"
-
-
-static uint8 adc_resolution = {ADC_12BIT};
-
-
-//-------------------------------------------------------------------------------------------------------------------
-// º¯Êı¼ò½é     ADC×ª»»N´Î£¬Æ½¾ùÖµÂË²¨
-// ²ÎÊıËµÃ÷     ch              Ñ¡ÔñADCÍ¨µÀ
-// ²ÎÊıËµÃ÷     resolution      ·Ö±æÂÊ(8Î» 10Î» 12Î»)
-// ²ÎÊıËµÃ÷     count           ×ª»»´ÎÊı
-// ·µ»Ø²ÎÊı     void
-// Ê¹ÓÃÊ¾Àı     adc_mean_filter(ADC_IN0_A0, ADC_8BIT,5);  //²É¼¯A0¶Ë¿Ú·µ»Ø8Î»·Ö±æÂÊµÄADÖµ£¬²É¼¯Îå´ÎÈ¡Æ½¾ùÖµ
-//-------------------------------------------------------------------------------------------------------------------
-uint16 adc_mean_filter_convert (adc_channel_enum ch, const uint8 count)
-{
-    uint8 i;
-    uint32 sum;
-
-	zf_assert(count);//¶ÏÑÔ´ÎÊı²»ÄÜÎª0
-	
-    sum = 0;
-    for(i=0; i<count; i++)
-    {
-        sum += adc_convert(ch);
-    }
-
-    sum = sum/count;
-    return sum;
-}
-
-//-------------------------------------------------------------------------------------------------------------------
-//  @brief      ADC×ª»»Ò»´Î
-//  @param      adcn            Ñ¡ÔñADCÍ¨µÀ
-//  @param      resolution      ·Ö±æÂÊ
-//  @return     void
-//  Sample usage:               adc_convert(ADC_P10, ADC_10BIT);
-//-------------------------------------------------------------------------------------------------------------------
-uint16 adc_convert(adc_channel_enum ch)
-{
-    uint16 adc_value;
-    
-    ADC_CONTR &= (0xF0);			//Çå³ıADC_CHS[3:0] £º ADC Ä£ÄâÍ¨µÀÑ¡ÔñÎ»
-    ADC_CONTR |= ch;
-    
-    ADC_CONTR |= 0x40;  			// Æô¶¯ AD ×ª»»
-    
-    while (!(ADC_CONTR & 0x20));  	// ²éÑ¯ ADC Íê³É±êÖ¾
-    
-    ADC_CONTR &= ~0x20;  			// ÇåÍê³É±êÖ¾
-    
-    adc_value = ADC_RES;  			//´æ´¢ ADC µÄ 12 Î»½á¹ûµÄ¸ß 4 Î»
-    adc_value <<= 8;
-    adc_value |= ADC_RESL;  		//´æ´¢ ADC µÄ 12 Î»½á¹ûµÄµÍ 8 Î»
-    
-    ADC_RES = 0;
-    ADC_RESL = 0;
-    
-    adc_value >>= adc_resolution;	//È¡¶àÉÙÎ»
-    
-    
-    return adc_value;
-}
-
-//-------------------------------------------------------------------------------------------------------------------
-// º¯Êı¼ò½é     ADC³õÊ¼»¯
-// ²ÎÊıËµÃ÷     ch      			ch(¿ÉÑ¡Ôñ·¶Î§ÓÉzf_adc.hÄÚadc_channel_enumÃ¶¾ÙÖµÈ·¶¨)
-// ²ÎÊıËµÃ÷     resolution       resolution(¿ÉÑ¡Ôñ·¶Î§ÓÉzf_adc.hÄÚadc_resolution_enumÃ¶¾ÙÖµÈ·¶¨)
-// ·µ»Ø²ÎÊı     void
-// Ê¹ÓÃÊ¾Àı     adc_init(ADC_P10, ADC_12BIT);//³õÊ¼»¯P10Òı½ÅÎªADC¹¦ÄÜ£¬12Î»·Ö±æÂÊ
-//-------------------------------------------------------------------------------------------------------------------
-void adc_init(adc_channel_enum ch, adc_resolution_enum resolution)
-{
-    ADC_CONTR |= 1 << 7;				//1 £º´ò¿ª ADC µçÔ´
-    
-    ADC_CONTR &= (0xF0);			//Çå³ıADC_CHS[3:0] £º ADC Ä£ÄâÍ¨µÀÑ¡ÔñÎ»
-    ADC_CONTR |= ch;
-    
-    if((ch >> 3) == 1) //P0.0
-    {
-        //IO¿ÚĞèÒªÉèÖÃÎª¸ß×èÊäÈë
-        P0M0 &= ~(1 << (ch & 0x07));
-        P0M1 |= (1 << (ch & 0x07));
-    }
-    else if((ch >> 3) == 0) //P1.0
-    {
-        //IO¿ÚĞèÒªÉèÖÃÎª¸ß×èÊäÈë
-        P1M0 &= ~(1 << (ch & 0x07));
-        P1M1 |= (1 << (ch & 0x07));
-    }
-    
-    ADCCFG |= ADC_SYSclk_DIV_16 & 0x0F;			//ADCÊ±ÖÓÆµÂÊSYSclk/16&0x0F;
-    
-    ADCCFG |= 1 << 5;							//×ª»»½á¹ûÓÒ¶ÔÆë¡£ ADC_RES ±£´æ½á¹ûµÄ¸ß 2 Î»£¬ ADC_RESL ±£´æ½á¹ûµÄµÍ 8 Î»¡£
-	
-	adc_resolution = resolution;           // ¼ÇÂ¼ADC¾«¶È ½«ÔÚ²É¼¯Ê±Ê¹ÓÃ
+#include "zf_common_debug.h"
+#include "zf_driver_adc.h"
+
+
+static uint8 adc_resolution = {ADC_12BIT};
+
+
+//-------------------------------------------------------------------------------------------------------------------
+// å‡½æ•°ç®€ä»‹     ADCè½¬æ¢Næ¬¡ï¼Œå¹³å‡å€¼æ»¤æ³¢
+// å‚æ•°è¯´æ˜     ch              é€‰æ‹©ADCé€šé“
+// å‚æ•°è¯´æ˜     resolution      åˆ†è¾¨ç‡(8ä½ 10ä½ 12ä½)
+// å‚æ•°è¯´æ˜     count           è½¬æ¢æ¬¡æ•°
+// è¿”å›å‚æ•°     void
+// ä½¿ç”¨ç¤ºä¾‹     adc_mean_filter(ADC_IN0_A0, ADC_8BIT,5);  //é‡‡é›†A0ç«¯å£è¿”å›8ä½åˆ†è¾¨ç‡çš„ADå€¼ï¼Œé‡‡é›†äº”æ¬¡å–å¹³å‡å€¼
+//-------------------------------------------------------------------------------------------------------------------
+uint16 adc_mean_filter_convert (adc_channel_enum ch, const uint8 count)
+{
+    uint8 i;
+    uint32 sum;
+
+	zf_assert(count);//æ–­è¨€æ¬¡æ•°ä¸èƒ½ä¸º0
+	
+    sum = 0;
+    for(i=0; i<count; i++)
+    {
+        sum += adc_convert(ch);
+    }
+
+    sum = sum/count;
+    return sum;
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+//  @brief      ADCè½¬æ¢ä¸€æ¬¡
+//  @param      adcn            é€‰æ‹©ADCé€šé“
+//  @param      resolution      åˆ†è¾¨ç‡
+//  @return     void
+//  Sample usage:               adc_convert(ADC_P10, ADC_10BIT);
+//-------------------------------------------------------------------------------------------------------------------
+uint16 adc_convert(adc_channel_enum ch)
+{
+    uint16 adc_value;
+    
+    ADC_CONTR &= (0xF0);			//æ¸…é™¤ADC_CHS[3:0] ï¼š ADC æ¨¡æ‹Ÿé€šé“é€‰æ‹©ä½
+    ADC_CONTR |= ch;
+    
+    ADC_CONTR |= 0x40;  			// å¯åŠ¨ AD è½¬æ¢
+    
+    while (!(ADC_CONTR & 0x20));  	// æŸ¥è¯¢ ADC å®Œæˆæ ‡å¿—
+    
+    ADC_CONTR &= ~0x20;  			// æ¸…å®Œæˆæ ‡å¿—
+    
+    adc_value = ADC_RES;  			//å­˜å‚¨ ADC çš„ 12 ä½ç»“æœçš„é«˜ 4 ä½
+    adc_value <<= 8;
+    adc_value |= ADC_RESL;  		//å­˜å‚¨ ADC çš„ 12 ä½ç»“æœçš„ä½ 8 ä½
+    
+    ADC_RES = 0;
+    ADC_RESL = 0;
+    
+    adc_value >>= adc_resolution;	//å–å¤šå°‘ä½
+    
+    
+    return adc_value;
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// å‡½æ•°ç®€ä»‹     ADCåˆå§‹åŒ–
+// å‚æ•°è¯´æ˜     ch      			ch(å¯é€‰æ‹©èŒƒå›´ç”±zf_adc.hå†…adc_channel_enumæšä¸¾å€¼ç¡®å®š)
+// å‚æ•°è¯´æ˜     resolution       resolution(å¯é€‰æ‹©èŒƒå›´ç”±zf_adc.hå†…adc_resolution_enumæšä¸¾å€¼ç¡®å®š)
+// è¿”å›å‚æ•°     void
+// ä½¿ç”¨ç¤ºä¾‹     adc_init(ADC_P10, ADC_12BIT);//åˆå§‹åŒ–P10å¼•è„šä¸ºADCåŠŸèƒ½ï¼Œ12ä½åˆ†è¾¨ç‡
+//-------------------------------------------------------------------------------------------------------------------
+void adc_init(adc_channel_enum ch, adc_resolution_enum resolution)
+{
+    ADC_CONTR |= 1 << 7;				//1 ï¼šæ‰“å¼€ ADC ç”µæº
+    
+    ADC_CONTR &= (0xF0);			//æ¸…é™¤ADC_CHS[3:0] ï¼š ADC æ¨¡æ‹Ÿé€šé“é€‰æ‹©ä½
+    ADC_CONTR |= ch;
+    
+    if((ch >> 3) == 1) //P0.0
+    {
+        //IOå£éœ€è¦è®¾ç½®ä¸ºé«˜é˜»è¾“å…¥
+        P0M0 &= ~(1 << (ch & 0x07));
+        P0M1 |= (1 << (ch & 0x07));
+    }
+    else if((ch >> 3) == 0) //P1.0
+    {
+        //IOå£éœ€è¦è®¾ç½®ä¸ºé«˜é˜»è¾“å…¥
+        P1M0 &= ~(1 << (ch & 0x07));
+        P1M1 |= (1 << (ch & 0x07));
+    }
+    
+    ADCCFG |= ADC_SYSclk_DIV_16 & 0x0F;			//ADCæ—¶é’Ÿé¢‘ç‡SYSclk/16&0x0F;
+    
+    ADCCFG |= 1 << 5;							//è½¬æ¢ç»“æœå³å¯¹é½ã€‚ ADC_RES ä¿å­˜ç»“æœçš„é«˜ 2 ä½ï¼Œ ADC_RESL ä¿å­˜ç»“æœçš„ä½ 8 ä½ã€‚
+	
+	adc_resolution = resolution;           // è®°å½•ADCç²¾åº¦ å°†åœ¨é‡‡é›†æ—¶ä½¿ç”¨
 }

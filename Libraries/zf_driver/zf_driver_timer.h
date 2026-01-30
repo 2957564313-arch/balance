@@ -1,33 +1,33 @@
-#ifndef _zf_driver_timer_h
-#define _zf_driver_timer_h
-
-
-#include "zf_common_debug.h"
-#include "zf_common_clock.h"
-
-//´ËÃ¶¾Ù¶¨Òå²»ÔÊĞíÓÃ»§ĞŞ¸Ä
-typedef enum
-{
-	TIM_0 = 0,
-    TIM_1,
-    TIM_2,
-    TIM_3,
-    TIM_4,
-    TIM_11,
-}timer_index_enum;
-
-
-typedef enum
-{
-    TIMER_FUNCTION_INIT = 0,                  // ¹¦ÄÜÎ´³õÊ¼»¯    
-    TIMER_FUNCTION_TIMER,                     // ÓÃ×÷ TIMER ¼ÆÊ± 
-    TIMER_FUNCTION_PIT,                       // ÓÃ×÷ PIT ÖÜÆÚ¶¨Ê±Æ÷
-    TIMER_FUNCTION_ENCODER,                   // ÓÃ×÷ ENCODER µÄÊäÈë²¶»ñ  
-    TIMER_FUNCTION_UART,                      // ÓÃ×÷ UART µÄ²¨ÌØÂÊ·¢ÉúÆ÷ 
-}timer_function_enum;
-
-
-uint8 timer_funciton_check(timer_index_enum index, timer_function_enum mode);
-
-
-#endif
+#ifndef _zf_driver_timer_h
+#define _zf_driver_timer_h
+
+
+#include "zf_common_debug.h"
+#include "zf_common_clock.h"
+
+//æ­¤æšä¸¾å®šä¹‰ä¸å…è®¸ç”¨æˆ·ä¿®æ”¹
+typedef enum
+{
+	TIM_0 = 0,
+    TIM_1,
+    TIM_2,
+    TIM_3,
+    TIM_4,
+    TIM_11,
+}timer_index_enum;
+
+
+typedef enum
+{
+    TIMER_FUNCTION_INIT = 0,                  // åŠŸèƒ½æœªåˆå§‹åŒ–    
+    TIMER_FUNCTION_TIMER,                     // ç”¨ä½œ TIMER è®¡æ—¶ 
+    TIMER_FUNCTION_PIT,                       // ç”¨ä½œ PIT å‘¨æœŸå®šæ—¶å™¨
+    TIMER_FUNCTION_ENCODER,                   // ç”¨ä½œ ENCODER çš„è¾“å…¥æ•è·  
+    TIMER_FUNCTION_UART,                      // ç”¨ä½œ UART çš„æ³¢ç‰¹ç‡å‘ç”Ÿå™¨ 
+}timer_function_enum;
+
+
+uint8 timer_funciton_check(timer_index_enum index, timer_function_enum mode);
+
+
+#endif

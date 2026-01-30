@@ -1,74 +1,74 @@
-#ifndef _zf_common_debug_h_
-#define _zf_common_debug_h_
-
-#include "zf_common_typedef.h"
-#include "zf_driver_uart.h"
-
-
-#include "zf_common_typedef.h"
-#define PRINTF_ENABLE               (1)                                          // Ê¹ÄÜprintf
-
-// Èç¹ûĞŞ¸Ä´®¿Ú²¢¿ªÆôÁË debug UART µÄÖĞ¶Ï½ÓÊÕ ĞèÒªÍ¬²½¸ü»» debug_interrupr_handler º¯Êıµ½¶ÔÓ¦µÄÖĞ¶Ï·şÎñº¯Êı
-// Èç¹ûĞŞ¸Ä´®¿Ú²¢¿ªÆôÁË debug UART µÄÖĞ¶Ï½ÓÊÕ ĞèÒªÍ¬²½¸ü»» debug_interrupr_handler º¯Êıµ½¶ÔÓ¦µÄÖĞ¶Ï·şÎñº¯Êı
-// Èç¹ûĞŞ¸Ä´®¿Ú²¢¿ªÆôÁË debug UART µÄÖĞ¶Ï½ÓÊÕ ĞèÒªÍ¬²½¸ü»» debug_interrupr_handler º¯Êıµ½¶ÔÓ¦µÄÖĞ¶Ï·şÎñº¯Êı
-#define DEBUG_UART_INDEX            (UART_1)                               	// Ö¸¶¨ debug uart ËùÊ¹ÓÃµÄµÄ´®¿Ú
-#define DEBUG_UART_BAUDRATE         (115200)                				// Ö¸¶¨ debug uart ËùÊ¹ÓÃµÄµÄ´®¿Ú²¨ÌØÂÊ
-#define DEBUG_UART_TX_PIN           (UART1_TX_P31 )                        	// Ö¸¶¨ debug uart ËùÊ¹ÓÃµÄµÄ´®¿ÚÒı½Å
-#define DEBUG_UART_RX_PIN           (UART1_RX_P30 )                        	// Ö¸¶¨ debug uart ËùÊ¹ÓÃµÄµÄ´®¿ÚÒı½Å
-
-#define DEBUG_UART_USE_INTERRUPT    (1)                                         // ÊÇ·ñÆôÓÃ debug uart ½ÓÊÕÖĞ¶Ï
-
-//-------------------------------------------------------------------------------------------------------------------
-// º¯Êı¼ò½é     ¶ÏÑÔ
-// ²ÎÊıËµÃ÷     x           ÅĞ¶ÏÊÇ·ñ´¥·¢¶ÏÑÔ 0-´¥·¢¶ÏÑÔ 1-²»´¥·¢¶ÏÑÔ
-// ·µ»Ø²ÎÊı     void
-// Ê¹ÓÃÊ¾Àı     zf_assert(0);
-// ±¸×¢ĞÅÏ¢     Ò»°ãÓÃÓÚ²ÎÊıÅĞ¶Ï zf_assert(0) ¾Í¶ÏÑÔ±¨´í
-//              Ä¬ÈÏÇé¿öÏÂ»áÔÚ Debug UART Êä³ö
-//              µ«Èç¹ûÊ¹ÓÃ¿ªÔ´¿âÄÚÆÁÄ»½Ó¿Ú³õÊ¼»¯ÁËÆÁÄ» Ôò»áÔÚÆÁÄ»ÉÏÏÔÊ¾
-//-------------------------------------------------------------------------------------------------------------------
-#define zf_assert(x)                (debug_assert_handler((x), __FILE__, __LINE__))
-
-//-------------------------------------------------------------------------------------------------------------------
-// º¯Êı¼ò½é     Log ĞÅÏ¢Êä³ö
-// ²ÎÊıËµÃ÷     x           ÅĞ¶ÏÊÇ·ñ´¥·¢Êä³ö 0-´¥·¢Êä³ö 1-²»´¥·¢Êä³ö
-// ²ÎÊıËµÃ÷     *str        ĞèÒªÊä³öµÄ Log ĞÅÏ¢
-// ·µ»Ø²ÎÊı     void
-// Ê¹ÓÃÊ¾Àı     printf( "Error");
-// ±¸×¢ĞÅÏ¢     µ÷ÊÔĞÅÏ¢Êä³ö ÓÃÀ´×öÒ»Ğ©±¨´í»òÕß¾¯¸æÖ®ÀàµÄÊä³ö
-//              Ä¬ÈÏÇé¿öÏÂ»áÔÚ Debug UART Êä³ö
-//              µ«Èç¹ûÊ¹ÓÃ¿ªÔ´¿âÄÚÆÁÄ»½Ó¿Ú³õÊ¼»¯ÁËÆÁÄ» Ôò»áÔÚÆÁÄ»ÉÏÏÔÊ¾
-//-------------------------------------------------------------------------------------------------------------------
-#define zf_log(x, str)              (debug_log_handler((x), (str), __FILE__, __LINE__))
-
-
-//typedef struct
-//{
-//    uint16 type_index;
-
-//    uint16 display_x_max;
-//    uint16 display_y_max;
-
-//    uint8 font_x_size;
-//    uint8 font_y_size;
-
-//    void (*output_uart)             (const char *str);
-//    void (*output_screen)           (uint16 x, uint16 y, const char *str);
-//    void (*output_screen_clear)     (void);
-//}debug_output_struct;
-
-uint32      debug_send_buffer(const uint8 *buff, uint32 len);
-#if DEBUG_UART_USE_INTERRUPT                                                    // Èç¹ûÆôÓÃ debug uart ½ÓÊÕÖĞ¶Ï
-#define     DEBUG_RING_BUFFER_LEN   (64)                                        // ¶¨Òå»·ĞÎ»º³åÇø´óĞ¡ Ä¬ÈÏ 64byte
-#endif
-
-uint32      debug_read_buffer(uint8 *buff, uint32 len);
-//void        debug_assert_enable         (void);
-//void        debug_assert_disable        (void);
-void        debug_assert_handler        (uint8 pass, char *file, int line);
-void        debug_log_handler           (uint8 pass, char *str, char *file, int line);
-//void        debug_output_struct_init    (debug_output_struct *info);
-//void        debug_output_init           (debug_output_struct *info);
-void        debug_init                  (void);
-
+#ifndef _zf_common_debug_h_
+#define _zf_common_debug_h_
+
+#include "zf_common_typedef.h"
+#include "zf_driver_uart.h"
+
+
+#include "zf_common_typedef.h"
+#define PRINTF_ENABLE               (1)                                          // ä½¿èƒ½printf
+
+// å¦‚æœä¿®æ”¹ä¸²å£å¹¶å¼€å¯äº† debug UART çš„ä¸­æ–­æ¥æ”¶ éœ€è¦åŒæ­¥æ›´æ¢ debug_interrupr_handler å‡½æ•°åˆ°å¯¹åº”çš„ä¸­æ–­æœåŠ¡å‡½æ•°
+// å¦‚æœä¿®æ”¹ä¸²å£å¹¶å¼€å¯äº† debug UART çš„ä¸­æ–­æ¥æ”¶ éœ€è¦åŒæ­¥æ›´æ¢ debug_interrupr_handler å‡½æ•°åˆ°å¯¹åº”çš„ä¸­æ–­æœåŠ¡å‡½æ•°
+// å¦‚æœä¿®æ”¹ä¸²å£å¹¶å¼€å¯äº† debug UART çš„ä¸­æ–­æ¥æ”¶ éœ€è¦åŒæ­¥æ›´æ¢ debug_interrupr_handler å‡½æ•°åˆ°å¯¹åº”çš„ä¸­æ–­æœåŠ¡å‡½æ•°
+#define DEBUG_UART_INDEX            (UART_1)                               	// æŒ‡å®š debug uart æ‰€ä½¿ç”¨çš„çš„ä¸²å£
+#define DEBUG_UART_BAUDRATE         (115200)                				// æŒ‡å®š debug uart æ‰€ä½¿ç”¨çš„çš„ä¸²å£æ³¢ç‰¹ç‡
+#define DEBUG_UART_TX_PIN           (UART1_TX_P31 )                        	// æŒ‡å®š debug uart æ‰€ä½¿ç”¨çš„çš„ä¸²å£å¼•è„š
+#define DEBUG_UART_RX_PIN           (UART1_RX_P30 )                        	// æŒ‡å®š debug uart æ‰€ä½¿ç”¨çš„çš„ä¸²å£å¼•è„š
+
+#define DEBUG_UART_USE_INTERRUPT    (1)                                         // æ˜¯å¦å¯ç”¨ debug uart æ¥æ”¶ä¸­æ–­
+
+//-------------------------------------------------------------------------------------------------------------------
+// å‡½æ•°ç®€ä»‹     æ–­è¨€
+// å‚æ•°è¯´æ˜     x           åˆ¤æ–­æ˜¯å¦è§¦å‘æ–­è¨€ 0-è§¦å‘æ–­è¨€ 1-ä¸è§¦å‘æ–­è¨€
+// è¿”å›å‚æ•°     void
+// ä½¿ç”¨ç¤ºä¾‹     zf_assert(0);
+// å¤‡æ³¨ä¿¡æ¯     ä¸€èˆ¬ç”¨äºå‚æ•°åˆ¤æ–­ zf_assert(0) å°±æ–­è¨€æŠ¥é”™
+//              é»˜è®¤æƒ…å†µä¸‹ä¼šåœ¨ Debug UART è¾“å‡º
+//              ä½†å¦‚æœä½¿ç”¨å¼€æºåº“å†…å±å¹•æ¥å£åˆå§‹åŒ–äº†å±å¹• åˆ™ä¼šåœ¨å±å¹•ä¸Šæ˜¾ç¤º
+//-------------------------------------------------------------------------------------------------------------------
+#define zf_assert(x)                (debug_assert_handler((x), __FILE__, __LINE__))
+
+//-------------------------------------------------------------------------------------------------------------------
+// å‡½æ•°ç®€ä»‹     Log ä¿¡æ¯è¾“å‡º
+// å‚æ•°è¯´æ˜     x           åˆ¤æ–­æ˜¯å¦è§¦å‘è¾“å‡º 0-è§¦å‘è¾“å‡º 1-ä¸è§¦å‘è¾“å‡º
+// å‚æ•°è¯´æ˜     *str        éœ€è¦è¾“å‡ºçš„ Log ä¿¡æ¯
+// è¿”å›å‚æ•°     void
+// ä½¿ç”¨ç¤ºä¾‹     printf( "Error");
+// å¤‡æ³¨ä¿¡æ¯     è°ƒè¯•ä¿¡æ¯è¾“å‡º ç”¨æ¥åšä¸€äº›æŠ¥é”™æˆ–è€…è­¦å‘Šä¹‹ç±»çš„è¾“å‡º
+//              é»˜è®¤æƒ…å†µä¸‹ä¼šåœ¨ Debug UART è¾“å‡º
+//              ä½†å¦‚æœä½¿ç”¨å¼€æºåº“å†…å±å¹•æ¥å£åˆå§‹åŒ–äº†å±å¹• åˆ™ä¼šåœ¨å±å¹•ä¸Šæ˜¾ç¤º
+//-------------------------------------------------------------------------------------------------------------------
+#define zf_log(x, str)              (debug_log_handler((x), (str), __FILE__, __LINE__))
+
+
+//typedef struct
+//{
+//    uint16 type_index;
+
+//    uint16 display_x_max;
+//    uint16 display_y_max;
+
+//    uint8 font_x_size;
+//    uint8 font_y_size;
+
+//    void (*output_uart)             (const char *str);
+//    void (*output_screen)           (uint16 x, uint16 y, const char *str);
+//    void (*output_screen_clear)     (void);
+//}debug_output_struct;
+
+uint32      debug_send_buffer(const uint8 *buff, uint32 len);
+#if DEBUG_UART_USE_INTERRUPT                                                    // å¦‚æœå¯ç”¨ debug uart æ¥æ”¶ä¸­æ–­
+#define     DEBUG_RING_BUFFER_LEN   (64)                                        // å®šä¹‰ç¯å½¢ç¼“å†²åŒºå¤§å° é»˜è®¤ 64byte
+#endif
+
+uint32      debug_read_buffer(uint8 *buff, uint32 len);
+//void        debug_assert_enable         (void);
+//void        debug_assert_disable        (void);
+void        debug_assert_handler        (uint8 pass, char *file, int line);
+void        debug_log_handler           (uint8 pass, char *str, char *file, int line);
+//void        debug_output_struct_init    (debug_output_struct *info);
+//void        debug_output_init           (debug_output_struct *info);
+void        debug_init                  (void);
+
 #endif

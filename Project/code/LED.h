@@ -3,14 +3,13 @@
 
 #include "zf_common_headfile.h"
 
-// ºËĞÄ°åÉÏµÄ LED ½ÓÔÚ P5.2 (µÍµçÆ½µãÁÁ)
+// æ ¸å¿ƒæ¿ä¸Šçš„ LED é€šå¸¸æ¥åœ¨ P5.2 (ä½ç”µå¹³ç‚¹äº®)
 #define LED_PIN IO_P52
 
 void LED_Init(void);
-void LED_ON(void);			
+void LED_ON(void);
 void LED_OFF(void);
-
-// ·­×ªº¯Êı (µ÷ÊÔÉÁË¸ÓÃ)
+// ç¿»è½¬å‡½æ•° (è°ƒè¯•é—ªçƒç”¨)
 #define LED_TOGGLE()  gpio_set_level(LED_PIN, !gpio_get_level(LED_PIN))
 
 #endif

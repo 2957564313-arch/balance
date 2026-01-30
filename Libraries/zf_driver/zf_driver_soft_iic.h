@@ -1,48 +1,48 @@
-#ifndef _zf_driver_soft_iic_h_
-#define _zf_driver_soft_iic_h_
-
-
-#include "zf_driver_gpio.h"
-
-typedef struct
-{
-    gpio_pin_enum       scl_pin;                                                // ÓÃÓÚ¼ÇÂ¼¶ÔÓ¦µÄÒı½Å±àºÅ
-    gpio_pin_enum       sda_pin;                                                // ÓÃÓÚ¼ÇÂ¼¶ÔÓ¦µÄÒı½Å±àºÅ
-    uint8               addr;                                                   // Æ÷¼şµØÖ· ÆßÎ»µØÖ·Ä£Ê½
-    uint32              delay;                                                  // Ä£Äâ IIC ÈíÑÓÊ±Ê±³¤
-}soft_iic_info_struct;
-
-void        soft_iic_write_8bit             (soft_iic_info_struct *soft_iic_obj, const uint8 dat);
-void        soft_iic_write_8bit_array       (soft_iic_info_struct *soft_iic_obj, const uint8 *dat, uint32 len);
-
-void        soft_iic_write_16bit            (soft_iic_info_struct *soft_iic_obj, const uint16 dat);
-void        soft_iic_write_16bit_array      (soft_iic_info_struct *soft_iic_obj, const uint16 *dat, uint32 len);
-
-void        soft_iic_write_8bit_register    (soft_iic_info_struct *soft_iic_obj, const uint8 register_name, const uint8 dat);
-void        soft_iic_write_8bit_registers   (soft_iic_info_struct *soft_iic_obj, const uint8 register_name, const uint8 *dat, uint32 len);
-
-void        soft_iic_write_16bit_register   (soft_iic_info_struct *soft_iic_obj, const uint16 register_name, const uint16 dat);
-void        soft_iic_write_16bit_registers  (soft_iic_info_struct *soft_iic_obj, const uint16 register_name, const uint16 *dat, uint32 len);
-
-uint8       soft_iic_read_8bit              (soft_iic_info_struct *soft_iic_obj);
-void        soft_iic_read_8bit_array        (soft_iic_info_struct *soft_iic_obj, uint8 *dat, uint32 len);
-
-uint16      soft_iic_read_16bit             (soft_iic_info_struct *soft_iic_obj);
-void        soft_iic_read_16bit_array       (soft_iic_info_struct *soft_iic_obj, uint16 *dat, uint32 len);
-
-uint8       soft_iic_read_8bit_register     (soft_iic_info_struct *soft_iic_obj, const uint8 register_name);
-void        soft_iic_read_8bit_registers    (soft_iic_info_struct *soft_iic_obj, const uint8 register_name, uint8 *dat, uint32 len);
-
-uint16      soft_iic_read_16bit_register    (soft_iic_info_struct *soft_iic_obj, const uint16 register_name);
-void        soft_iic_read_16bit_registers   (soft_iic_info_struct *soft_iic_obj, const uint16 register_name, uint16 *dat, uint32 len);
-
-void        soft_iic_transfer_8bit_array    (soft_iic_info_struct *soft_iic_obj, const uint8 *write_data, uint32 write_len, uint8 *read_data, uint32 read_len);
-void        soft_iic_transfer_16bit_array   (soft_iic_info_struct *soft_iic_obj, const uint16 *write_data, uint32 write_len, uint16 *read_data, uint32 read_len);
-
-void        soft_iic_sccb_write_register    (soft_iic_info_struct *soft_iic_obj, const uint8 register_name, uint8 dat);
-uint8       soft_iic_sccb_read_register     (soft_iic_info_struct *soft_iic_obj, const uint8 register_name);
-
-void        soft_iic_init                   (soft_iic_info_struct *soft_iic_obj, uint8 addr, uint32 delay, gpio_pin_enum scl_pin, gpio_pin_enum sda_pin);
-
-#endif
-
+#ifndef _zf_driver_soft_iic_h_
+#define _zf_driver_soft_iic_h_
+
+
+#include "zf_driver_gpio.h"
+
+typedef struct
+{
+    gpio_pin_enum       scl_pin;                                                // ç”¨äºè®°å½•å¯¹åº”çš„å¼•è„šç¼–å·
+    gpio_pin_enum       sda_pin;                                                // ç”¨äºè®°å½•å¯¹åº”çš„å¼•è„šç¼–å·
+    uint8               addr;                                                   // å™¨ä»¶åœ°å€ ä¸ƒä½åœ°å€æ¨¡å¼
+    uint32              delay;                                                  // æ¨¡æ‹Ÿ IIC è½¯å»¶æ—¶æ—¶é•¿
+}soft_iic_info_struct;
+
+void        soft_iic_write_8bit             (soft_iic_info_struct *soft_iic_obj, const uint8 dat);
+void        soft_iic_write_8bit_array       (soft_iic_info_struct *soft_iic_obj, const uint8 *dat, uint32 len);
+
+void        soft_iic_write_16bit            (soft_iic_info_struct *soft_iic_obj, const uint16 dat);
+void        soft_iic_write_16bit_array      (soft_iic_info_struct *soft_iic_obj, const uint16 *dat, uint32 len);
+
+void        soft_iic_write_8bit_register    (soft_iic_info_struct *soft_iic_obj, const uint8 register_name, const uint8 dat);
+void        soft_iic_write_8bit_registers   (soft_iic_info_struct *soft_iic_obj, const uint8 register_name, const uint8 *dat, uint32 len);
+
+void        soft_iic_write_16bit_register   (soft_iic_info_struct *soft_iic_obj, const uint16 register_name, const uint16 dat);
+void        soft_iic_write_16bit_registers  (soft_iic_info_struct *soft_iic_obj, const uint16 register_name, const uint16 *dat, uint32 len);
+
+uint8       soft_iic_read_8bit              (soft_iic_info_struct *soft_iic_obj);
+void        soft_iic_read_8bit_array        (soft_iic_info_struct *soft_iic_obj, uint8 *dat, uint32 len);
+
+uint16      soft_iic_read_16bit             (soft_iic_info_struct *soft_iic_obj);
+void        soft_iic_read_16bit_array       (soft_iic_info_struct *soft_iic_obj, uint16 *dat, uint32 len);
+
+uint8       soft_iic_read_8bit_register     (soft_iic_info_struct *soft_iic_obj, const uint8 register_name);
+void        soft_iic_read_8bit_registers    (soft_iic_info_struct *soft_iic_obj, const uint8 register_name, uint8 *dat, uint32 len);
+
+uint16      soft_iic_read_16bit_register    (soft_iic_info_struct *soft_iic_obj, const uint16 register_name);
+void        soft_iic_read_16bit_registers   (soft_iic_info_struct *soft_iic_obj, const uint16 register_name, uint16 *dat, uint32 len);
+
+void        soft_iic_transfer_8bit_array    (soft_iic_info_struct *soft_iic_obj, const uint8 *write_data, uint32 write_len, uint8 *read_data, uint32 read_len);
+void        soft_iic_transfer_16bit_array   (soft_iic_info_struct *soft_iic_obj, const uint16 *write_data, uint32 write_len, uint16 *read_data, uint32 read_len);
+
+void        soft_iic_sccb_write_register    (soft_iic_info_struct *soft_iic_obj, const uint8 register_name, uint8 dat);
+uint8       soft_iic_sccb_read_register     (soft_iic_info_struct *soft_iic_obj, const uint8 register_name);
+
+void        soft_iic_init                   (soft_iic_info_struct *soft_iic_obj, uint8 addr, uint32 delay, gpio_pin_enum scl_pin, gpio_pin_enum sda_pin);
+
+#endif
+

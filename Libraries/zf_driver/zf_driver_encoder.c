@@ -1,173 +1,173 @@
-#include "zf_driver_gpio.h"
-#include "zf_driver_encoder.h"
-
-static volatile uint8 encoder_dir_pin[6] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
-
-//-------------------------------------------------------------------------------------------------------------------
-// º¯Êı¼ò½é     ¶¨Ê±Æ÷±àÂëÆ÷½âÂëÈ¡Öµ
-// ²ÎÊıËµÃ÷     encoder_n      ¶¨Ê±Æ÷Ã¶¾ÙÌå
-// ·µ»Ø²ÎÊı     void
-// ±¸×¢ĞÅÏ¢
-// Ê¹ÓÃÊ¾Àı    encoder_get_count(TIM2_ENCOEDER)  // »ñÈ¡¶¨Ê±Æ÷2µÄ²É¼¯µ½µÄ±àÂëÆ÷Êı¾İ
-//-------------------------------------------------------------------------------------------------------------------
-int16 encoder_get_count(encoder_index_enum encoder_n)
-{
-    int16 dat = 0;
-    switch(encoder_n)
-    {
-        case TIM0_ENCOEDER:
-        {
-            dat = (uint16)TH0 << 8;
-            dat = ((uint8)TL0) | dat;
-            break;
-        }
-        case TIM1_ENCOEDER:
-        {
-            dat = (uint16)TH1 << 8;
-            dat = ((uint8)TL1) | dat;
-            break;
-        }
-        case TIM2_ENCOEDER:
-        {
-            dat = (uint16)T2H << 8;
-            dat = ((uint8)T2L) | dat;
-            break;
-        }
-        case TIM3_ENCOEDER:
-        {
-            dat = (uint16)T3H << 8;
-            dat = ((uint8)T3L) | dat;
-            break;
-        }
-        case TIM4_ENCOEDER:
-        {
-            dat = (uint16)T4H << 8;
-            dat = ((uint8)T4L) | dat;
-            break;
-        }
-    }
-    if(gpio_get_level(encoder_dir_pin[encoder_n]))
-    {
-        return (-dat);
-    }
-    return dat;
-}
-
-//-------------------------------------------------------------------------------------------------------------------
-// º¯Êı¼ò½é     ¶¨Ê±Æ÷µÄ¼ÆÊıÆ÷Çå¿Õ
-// ²ÎÊıËµÃ÷     encoder_n      ¶¨Ê±Æ÷Ã¶¾ÙÌå
-// ·µ»Ø²ÎÊı     void
-// ±¸×¢ĞÅÏ¢
-// Ê¹ÓÃÊ¾Àı    encoder_clear_count(TIM1_ENCOEDER)  //Çå³ı¶¨Ê±Æ÷1²É¼¯µ½µÄ±àÂëÆ÷Êı¾İ
-//-------------------------------------------------------------------------------------------------------------------
-void encoder_clear_count(encoder_index_enum encoder_n)
-{
-    switch(encoder_n)
-    {
-        case TIM0_ENCOEDER:
-        {
-            TR0 = 0;
-            TH0 = 0;
-            TL0 = 0;
-            TR0 = 1;
-            break;
-        }
-        case TIM1_ENCOEDER:
-        {
-            TR1 = 0;
-            TH1 = 0;
-            TL1 = 0;
-            TR1 = 1;
-            break;
-        }
-        case TIM2_ENCOEDER:
-        {
-            AUXR &= ~(1 << 4);
-            T2H = 0;
-            T2L = 0;
-            AUXR |= 1 << 4;
-            break;
-        }
-        case TIM3_ENCOEDER:
-        {
-            T4T3M &= ~(1 << 3);
-            T3H = 0;
-            T3L = 0;
-            T4T3M |= (1 << 3);
-            break;
-        }
-        case TIM4_ENCOEDER:
-        {
-            T4T3M &= ~(1 << 7);
-            T4H = 0;
-            T4L = 0;
-            T4T3M |= (1 << 7);
-            break;
-        }
-    }
-}
-
-//-------------------------------------------------------------------------------------------------------------------
-// º¯Êı¼ò½é     ±àÂëÆ÷½âÂë³õÊ¼»¯
-// ²ÎÊıËµÃ÷     timer_ch        ¶¨Ê±Æ÷Ã¶¾ÙÌå
-// ²ÎÊıËµÃ÷     lsb_pin         ±àÂëÆ÷Âö³åÒı½Å
-// ²ÎÊıËµÃ÷     dir_pin         ±àÂëÆ÷·½ÏòÒı½Å
-// ·µ»Ø²ÎÊı     void
-//          ÍÆ¼öÊ¹ÓÃ´ø·½Ïò½âÂë±àÂëÆ÷¡£
-// Ê¹ÓÃÊ¾Àı      encoder_init_dir(TIM1_ENCOEDER, TIM1_CH1_ENCOEDER_E9, TIM1_CH2_ENCOEDER_E11)
-//                              // Ê¹ÓÃ¶¨Ê±Æ÷1 ×ö´ø·½ÏòµÄ±àÂëÆ÷½âÂë£¬ Í¨µÀ1·½ÏòĞÅºÅÒı½ÅE9£¬Í¨µÀ2Âö³åĞÅºÅÒı½ÅE11
-//-------------------------------------------------------------------------------------------------------------------
-void encoder_dir_init(encoder_index_enum encoder_n, gpio_pin_enum dir_pin, encoder_channel_enum lsb_pin)
-{
-    // Èç¹û³ÌĞòÔÚÊä³öÁË¶ÏÑÔĞÅÏ¢ ²¢ÇÒÌáÊ¾³ö´íÎ»ÖÃÔÚÕâÀï
-    // ¾ÍÈ¥²é¿´ÄãÔÚÊ²Ã´µØ·½µ÷ÓÃÕâ¸öº¯Êı ¼ì²éÄãµÄ´«Èë²ÎÊı
-    // ÕâÀïÊÇ¼ì²éÊÇ·ñÓĞÖØ¸´Ê¹ÓÃ¶¨Ê±Æ÷
-    // ±ÈÈç³õÊ¼»¯ÁË TIM1_PWM È»ºóÓÖ³õÊ¼»¯³É TIM1_ENCODER ÕâÖÖÓÃ·¨ÊÇ²»ÔÊĞíµÄ
-    zf_assert(timer_funciton_check(encoder_n, TIMER_FUNCTION_ENCODER));
-    zf_assert((dir_pin >> 8) == 0x00);
-    zf_assert((lsb_pin >> 8) == encoder_n);
-    // ³õÊ¼»¯·½ÏòÒı½Å
-    gpio_init(dir_pin, GPI, 0, GPI_PULL_UP);
-    gpio_init(lsb_pin&0xFF, GPI, 0, GPI_PULL_UP);
-    encoder_dir_pin[encoder_n] = dir_pin;                               // ½«·½ÏòÒı½ÅºÅ´æÈëÊı×éÖĞ
-    switch(encoder_n)
-    {
-        case TIM0_ENCOEDER:
-        {
-            TL0 = 0;
-            TH0 = 0;
-            TMOD |= 0x04; //Íâ²¿¼ÆÊıÄ£Ê½
-            TR0 = 1; //Æô¶¯¶¨Ê±Æ÷
-            break;
-        }
-        case TIM1_ENCOEDER:
-        {
-            TL1 = 0x00;
-            TH1 = 0x00;
-            TMOD |= 0x40; // Íâ²¿¼ÆÊıÄ£Ê½
-            TR1 = 1; // Æô¶¯¶¨Ê±Æ÷
-            break;
-        }
-        case TIM2_ENCOEDER:
-        {
-            T2L = 0x00;
-            T2H = 0x00;
-            AUXR |= 0x18; // ÉèÖÃÍâ²¿¼ÆÊıÄ£Ê½²¢Æô¶¯¶¨Ê±Æ÷
-            break;
-        }
-        case TIM3_ENCOEDER:
-        {
-            T3L = 0;
-            T3H = 0;
-            T4T3M |= 0x0c; // ÉèÖÃÍâ²¿¼ÆÊıÄ£Ê½²¢Æô¶¯¶¨Ê±Æ÷
-            break;
-        }
-        case TIM4_ENCOEDER:
-        {
-            T4L = 0;
-            T4H = 0;
-            T4T3M |= 0xc0; // ÉèÖÃÍâ²¿¼ÆÊıÄ£Ê½²¢Æô¶¯¶¨Ê±Æ÷
-            break;
-        }
-    }
+#include "zf_driver_gpio.h"
+#include "zf_driver_encoder.h"
+
+static volatile uint8 encoder_dir_pin[6] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+
+//-------------------------------------------------------------------------------------------------------------------
+// å‡½æ•°ç®€ä»‹     å®šæ—¶å™¨ç¼–ç å™¨è§£ç å–å€¼
+// å‚æ•°è¯´æ˜     encoder_n      å®šæ—¶å™¨æšä¸¾ä½“
+// è¿”å›å‚æ•°     void
+// å¤‡æ³¨ä¿¡æ¯
+// ä½¿ç”¨ç¤ºä¾‹    encoder_get_count(TIM2_ENCOEDER)  // è·å–å®šæ—¶å™¨2çš„é‡‡é›†åˆ°çš„ç¼–ç å™¨æ•°æ®
+//-------------------------------------------------------------------------------------------------------------------
+int16 encoder_get_count(encoder_index_enum encoder_n)
+{
+    int16 dat = 0;
+    switch(encoder_n)
+    {
+        case TIM0_ENCOEDER:
+        {
+            dat = (uint16)TH0 << 8;
+            dat = ((uint8)TL0) | dat;
+            break;
+        }
+        case TIM1_ENCOEDER:
+        {
+            dat = (uint16)TH1 << 8;
+            dat = ((uint8)TL1) | dat;
+            break;
+        }
+        case TIM2_ENCOEDER:
+        {
+            dat = (uint16)T2H << 8;
+            dat = ((uint8)T2L) | dat;
+            break;
+        }
+        case TIM3_ENCOEDER:
+        {
+            dat = (uint16)T3H << 8;
+            dat = ((uint8)T3L) | dat;
+            break;
+        }
+        case TIM4_ENCOEDER:
+        {
+            dat = (uint16)T4H << 8;
+            dat = ((uint8)T4L) | dat;
+            break;
+        }
+    }
+    if(gpio_get_level(encoder_dir_pin[encoder_n]))
+    {
+        return (-dat);
+    }
+    return dat;
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// å‡½æ•°ç®€ä»‹     å®šæ—¶å™¨çš„è®¡æ•°å™¨æ¸…ç©º
+// å‚æ•°è¯´æ˜     encoder_n      å®šæ—¶å™¨æšä¸¾ä½“
+// è¿”å›å‚æ•°     void
+// å¤‡æ³¨ä¿¡æ¯
+// ä½¿ç”¨ç¤ºä¾‹    encoder_clear_count(TIM1_ENCOEDER)  //æ¸…é™¤å®šæ—¶å™¨1é‡‡é›†åˆ°çš„ç¼–ç å™¨æ•°æ®
+//-------------------------------------------------------------------------------------------------------------------
+void encoder_clear_count(encoder_index_enum encoder_n)
+{
+    switch(encoder_n)
+    {
+        case TIM0_ENCOEDER:
+        {
+            TR0 = 0;
+            TH0 = 0;
+            TL0 = 0;
+            TR0 = 1;
+            break;
+        }
+        case TIM1_ENCOEDER:
+        {
+            TR1 = 0;
+            TH1 = 0;
+            TL1 = 0;
+            TR1 = 1;
+            break;
+        }
+        case TIM2_ENCOEDER:
+        {
+            AUXR &= ~(1 << 4);
+            T2H = 0;
+            T2L = 0;
+            AUXR |= 1 << 4;
+            break;
+        }
+        case TIM3_ENCOEDER:
+        {
+            T4T3M &= ~(1 << 3);
+            T3H = 0;
+            T3L = 0;
+            T4T3M |= (1 << 3);
+            break;
+        }
+        case TIM4_ENCOEDER:
+        {
+            T4T3M &= ~(1 << 7);
+            T4H = 0;
+            T4L = 0;
+            T4T3M |= (1 << 7);
+            break;
+        }
+    }
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+// å‡½æ•°ç®€ä»‹     ç¼–ç å™¨è§£ç åˆå§‹åŒ–
+// å‚æ•°è¯´æ˜     timer_ch        å®šæ—¶å™¨æšä¸¾ä½“
+// å‚æ•°è¯´æ˜     lsb_pin         ç¼–ç å™¨è„‰å†²å¼•è„š
+// å‚æ•°è¯´æ˜     dir_pin         ç¼–ç å™¨æ–¹å‘å¼•è„š
+// è¿”å›å‚æ•°     void
+//          æ¨èä½¿ç”¨å¸¦æ–¹å‘è§£ç ç¼–ç å™¨ã€‚
+// ä½¿ç”¨ç¤ºä¾‹      encoder_init_dir(TIM1_ENCOEDER, TIM1_CH1_ENCOEDER_E9, TIM1_CH2_ENCOEDER_E11)
+//                              // ä½¿ç”¨å®šæ—¶å™¨1 åšå¸¦æ–¹å‘çš„ç¼–ç å™¨è§£ç ï¼Œ é€šé“1æ–¹å‘ä¿¡å·å¼•è„šE9ï¼Œé€šé“2è„‰å†²ä¿¡å·å¼•è„šE11
+//-------------------------------------------------------------------------------------------------------------------
+void encoder_dir_init(encoder_index_enum encoder_n, gpio_pin_enum dir_pin, encoder_channel_enum lsb_pin)
+{
+    // å¦‚æœç¨‹åºåœ¨è¾“å‡ºäº†æ–­è¨€ä¿¡æ¯ å¹¶ä¸”æç¤ºå‡ºé”™ä½ç½®åœ¨è¿™é‡Œ
+    // å°±å»æŸ¥çœ‹ä½ åœ¨ä»€ä¹ˆåœ°æ–¹è°ƒç”¨è¿™ä¸ªå‡½æ•° æ£€æŸ¥ä½ çš„ä¼ å…¥å‚æ•°
+    // è¿™é‡Œæ˜¯æ£€æŸ¥æ˜¯å¦æœ‰é‡å¤ä½¿ç”¨å®šæ—¶å™¨
+    // æ¯”å¦‚åˆå§‹åŒ–äº† TIM1_PWM ç„¶ååˆåˆå§‹åŒ–æˆ TIM1_ENCODER è¿™ç§ç”¨æ³•æ˜¯ä¸å…è®¸çš„
+    zf_assert(timer_funciton_check(encoder_n, TIMER_FUNCTION_ENCODER));
+    zf_assert((dir_pin >> 8) == 0x00);
+    zf_assert((lsb_pin >> 8) == encoder_n);
+    // åˆå§‹åŒ–æ–¹å‘å¼•è„š
+    gpio_init(dir_pin, GPI, 0, GPI_PULL_UP);
+    gpio_init(lsb_pin&0xFF, GPI, 0, GPI_PULL_UP);
+    encoder_dir_pin[encoder_n] = dir_pin;                               // å°†æ–¹å‘å¼•è„šå·å­˜å…¥æ•°ç»„ä¸­
+    switch(encoder_n)
+    {
+        case TIM0_ENCOEDER:
+        {
+            TL0 = 0;
+            TH0 = 0;
+            TMOD |= 0x04; //å¤–éƒ¨è®¡æ•°æ¨¡å¼
+            TR0 = 1; //å¯åŠ¨å®šæ—¶å™¨
+            break;
+        }
+        case TIM1_ENCOEDER:
+        {
+            TL1 = 0x00;
+            TH1 = 0x00;
+            TMOD |= 0x40; // å¤–éƒ¨è®¡æ•°æ¨¡å¼
+            TR1 = 1; // å¯åŠ¨å®šæ—¶å™¨
+            break;
+        }
+        case TIM2_ENCOEDER:
+        {
+            T2L = 0x00;
+            T2H = 0x00;
+            AUXR |= 0x18; // è®¾ç½®å¤–éƒ¨è®¡æ•°æ¨¡å¼å¹¶å¯åŠ¨å®šæ—¶å™¨
+            break;
+        }
+        case TIM3_ENCOEDER:
+        {
+            T3L = 0;
+            T3H = 0;
+            T4T3M |= 0x0c; // è®¾ç½®å¤–éƒ¨è®¡æ•°æ¨¡å¼å¹¶å¯åŠ¨å®šæ—¶å™¨
+            break;
+        }
+        case TIM4_ENCOEDER:
+        {
+            T4L = 0;
+            T4H = 0;
+            T4T3M |= 0xc0; // è®¾ç½®å¤–éƒ¨è®¡æ•°æ¨¡å¼å¹¶å¯åŠ¨å®šæ—¶å™¨
+            break;
+        }
+    }
 }

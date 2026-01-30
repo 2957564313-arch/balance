@@ -1,41 +1,41 @@
-#ifndef __ZF_DRIVER_NVIC_H
-#define __ZF_DRIVER_NVIC_H
-
-#include "zf_common_typedef.h"
-
-//¸ÃÃ¶¾ÙÌå½ûÖ¹ÓÃ»§ĞŞ¸Ä
-//ÖĞ¶ÏÓÅÏÈ¼¶¿ØÖÆÃ¶¾ÙÌå
-typedef enum
-{
-	INT0_IRQn = 0x00,
-	TIMER0_IRQn,
-	INT1_IRQn,
-	TIMER1_IRQn,
-	UART1_IRQn,
-	ADC_IRQn,
-	LVD_IRQn,			//µÍÑ¹¼ì²âÖĞ¶Ï
-
-	UART2_IRQn = 0x10,
-	SPI_IRQn,
-	PWM1_IRQn,
-	PWM2_IRQn,
-	INT4_IRQn,
-	CMP_IRQn,
-	IIC_IRQn,
-	USB_IRQn,	//ÔöÇ¿ĞÍ PWM2 Òì³£¼ì²âÖĞ¶Ï ºÍ ´¥Ãş°´¼üÖĞ¶Ï
-
-	UART3_IRQn = 0x20,
-	UART4_IRQn,
-
-	// ÆäÓà²»ÄÜÉèÖÃµÄ£¬ÖĞ¶ÏÓÅÏÈ¼¶È«²¿Îª×îµÍÓÅÏÈ¼¶0
-    
-} irqn_type_enum;
-
-
-void interrupt_set_priority(irqn_type_enum irqn, uint8 priority);
-
-void interrupt_global_disable(void);
-void interrupt_global_enable(void);
-
-
+#ifndef __ZF_DRIVER_NVIC_H
+#define __ZF_DRIVER_NVIC_H
+
+#include "zf_common_typedef.h"
+
+//è¯¥æšä¸¾ä½“ç¦æ­¢ç”¨æˆ·ä¿®æ”¹
+//ä¸­æ–­ä¼˜å…ˆçº§æ§åˆ¶æšä¸¾ä½“
+typedef enum
+{
+	INT0_IRQn = 0x00,
+	TIMER0_IRQn,
+	INT1_IRQn,
+	TIMER1_IRQn,
+	UART1_IRQn,
+	ADC_IRQn,
+	LVD_IRQn,			//ä½å‹æ£€æµ‹ä¸­æ–­
+
+	UART2_IRQn = 0x10,
+	SPI_IRQn,
+	PWM1_IRQn,
+	PWM2_IRQn,
+	INT4_IRQn,
+	CMP_IRQn,
+	IIC_IRQn,
+	USB_IRQn,	//å¢å¼ºå‹ PWM2 å¼‚å¸¸æ£€æµ‹ä¸­æ–­ å’Œ è§¦æ‘¸æŒ‰é”®ä¸­æ–­
+
+	UART3_IRQn = 0x20,
+	UART4_IRQn,
+
+	// å…¶ä½™ä¸èƒ½è®¾ç½®çš„ï¼Œä¸­æ–­ä¼˜å…ˆçº§å…¨éƒ¨ä¸ºæœ€ä½ä¼˜å…ˆçº§0
+    
+} irqn_type_enum;
+
+
+void interrupt_set_priority(irqn_type_enum irqn, uint8 priority);
+
+void interrupt_global_disable(void);
+void interrupt_global_enable(void);
+
+
 #endif
