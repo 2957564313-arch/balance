@@ -1,12 +1,13 @@
-#include "balance.h"
-#include "motor.h"
-#include "pid.h"
-#include "param.h"
-#include "imu_mpu6050.h" 
-#include "attitude.h"
-#include "mode.h" 
-#include "Buzzer.h" 
+//#include "balance.h"
+//#include "motor.h"
+//#include "pid.h"
+//#include "param.h"
+//#include "imu_mpu6050.h" 
+//#include "attitude.h"
+//#include "mode.h" 
+//#include "Buzzer.h" 
 
+<<<<<<< Updated upstream
 // å®šä¹‰å…¨å±€å§¿æ€å˜é‡ Pitch (ä¾›å¤–éƒ¨è°ƒç”¨)
 float pitch = 0.0f;
 
@@ -136,3 +137,133 @@ void Balance_Task(void)
     Motor_Set_L(motor_out_l);
     Motor_Set_R(motor_out_r);
 }
+=======
+//// ¶¨ÒåÈ«¾Ö×ËÌ¬±äÁ¿ Pitch (¹©Íâ²¿µ÷ÓÃ)
+//float pitch = 0.0f;
+
+//// ÄÚ²¿±äÁ¿£º´®¼¶¿ØÖÆÖÐ¼äÁ¿
+//static float target_tilt_angle = 0.0f; // ËÙ¶È»·¼ÆËã³öµÄ"Ä¿±êÇã½Ç"
+//static uint8 velocity_div_count = 0;   // ËÙ¶È»··ÖÆµ¼ÆÊýÆ÷
+
+//// ³£Á¿¶¨Òå
+//#define RAD_TO_DEG 57.29578f
+//#define DEG_TO_RAD 0.0174533f
+
+//// =================================================================
+//// Æ½ºâ¿ØÖÆ³õÊ¼»¯
+//// =================================================================
+//void Balance_Init(void)
+//{
+//    // 1. ³õÊ¼»¯ PID
+//    PID_Init();
+//    // Èç¹û Flash ²ÎÊýÎ´³õÊ¼»¯£¬¼ÓÔØÄ¬ÈÏÖµ
+//    if(g_sys_param.balance_kp < 0.1f) Param_SetDefaults();
+//    
+//    // 2. ³õÊ¼»¯ MPU6050
+//    mpu6050_init(); 
+//    
+//    // 3. ³õÊ¼»¯ Mahony ×ËÌ¬½âËã
+//    // ²ÉÑùÆµÂÊ 200Hz, Kp=0.5, Ki=0.0 (¾­ÑéÖµ)
+//    mahony_init(&m_imu, 200.0f, 0.5f, 0.0f); 
+//}
+
+//// =================================================================
+//// Æ½ºâ¿ØÖÆÈÎÎñ (±ØÐëÃ¿ 5ms Ö´ÐÐÒ»´Î)
+//// =================================================================
+//void Balance_Task(void)
+//{
+//    // C251 ±äÁ¿¶¨ÒåÖÃ¶¥
+//    int16 speed_l, speed_r, speed_avg;
+//    int16 vertical_pwm, turn_pwm;
+//    int16 motor_out_l, motor_out_r;
+//    float gyro_x_rad, gyro_y_rad, gyro_z_rad;
+//    float acc_x_g, acc_y_g, acc_z_g;
+
+//    // -----------------------------------------------------------
+//    // 1. »ñÈ¡´«¸ÐÆ÷Ô­Ê¼Êý¾Ý
+//    // -----------------------------------------------------------
+//    mpu6050_get_gyro(); 
+//    mpu6050_get_acc();  
+//    
+//    // -----------------------------------------------------------
+//    // 2. Êý¾Ý×ª»» (¹Ø¼üÐÞÕý£º×ªÎª rad/s ¹© Mahony Ê¹ÓÃ)
+//    // -----------------------------------------------------------
+//    acc_x_g = mpu6050_acc_transition(mpu6050_acc_x);
+//    acc_y_g = mpu6050_acc_transition(mpu6050_acc_y);
+//    acc_z_g = mpu6050_acc_transition(mpu6050_acc_z);
+//    
+//    // ¡¾ÐÞÕý¡¿½« deg/s ×ª»»Îª rad/s
+//    gyro_x_rad = mpu6050_gyro_transition(mpu6050_gyro_x) * DEG_TO_RAD;
+//    gyro_y_rad = mpu6050_gyro_transition(mpu6050_gyro_y) * DEG_TO_RAD;
+//    gyro_z_rad = mpu6050_gyro_transition(mpu6050_gyro_z) * DEG_TO_RAD;
+
+//    // -----------------------------------------------------------
+//    // 3. ×ËÌ¬½âËã (Mahony Ëã·¨)
+//    // -----------------------------------------------------------
+//    // ±ØÐë´«Èë rad/s£¬·ñÔò½âËã»á·¢É¢
+//    mahony_update(&m_imu, 
+//                  acc_x_g, acc_y_g, acc_z_g, 
+//                  gyro_x_rad, gyro_y_rad, gyro_z_rad);
+//    
+//    // »ñÈ¡×îÐÂµÄ Pitch ½Ç¶È (mahony ÄÚ²¿ÒÑ×ª»Ø½Ç¶ÈÖÆ)
+//    pitch = m_imu.pitch;
+
+//    // -----------------------------------------------------------
+//    // 4. Âß¼­µ÷¶È
+//    // -----------------------------------------------------------
+//    Mode_Handler(); // ¼ÆËã target_speed_val ºÍ target_turn_val
+//    Buzzer_Task();  // Ë¢ÐÂ·äÃùÆ÷
+
+//    // -----------------------------------------------------------
+//    // 5. °²È«±£»¤ (µ¹µØÍ£³µ)
+//    // -----------------------------------------------------------
+//    if ((pitch > 45.0f || pitch < -45.0f) || 
+//        (current_mode == MODE_4_REPLAY && path_state == REC_ON))
+//    {
+//        Motor_Set_L(0);
+//        Motor_Set_R(0);
+//        PID_Clear_Integral(); // µ¹µØºóÇå³ý»ý·Ö
+//        return; 
+//    }
+
+//    // -----------------------------------------------------------
+//    // 6. ´®¼¶ PID ¼ÆËã
+//    // -----------------------------------------------------------
+//    
+//    // === A. ËÙ¶È»· (Íâ»·) ===
+//    // ½µÆµ´¦Àí£ºÃ¿ 20ms (4 * 5ms) Ö´ÐÐÒ»´Î
+//    velocity_div_count++;
+//    if(velocity_div_count >= 4)
+//    {
+//        velocity_div_count = 0;
+//        
+//        Encoder_Get_Val(&speed_l, &speed_r);
+//        speed_avg = (speed_l + speed_r) / 2;
+//        
+//        // ¡¾´®¼¶ºËÐÄ¡¿¼ÆËãÄ¿±êÇã½Ç (Êä³öµÄÊÇ float ½Ç¶È)
+//        // ÊäÈë£ºÄ¿±êËÙ¶È£¬µ±Ç°ËÙ¶È
+//        // Êä³ö£ºtarget_tilt_angle (ÀýÈç£ºÎªÁË¼ÓËÙ£¬ÐèÒªÇ°Çã 3.5 ¶È)
+//        target_tilt_angle = PID_Velocity(target_speed_val, speed_avg);
+//    }
+//    
+//    // === B. Ö±Á¢»· (ÄÚ»·) ===
+//    // Ã¿ 5ms Ö´ÐÐÒ»´Î
+//    // ¡¾´®¼¶ºËÐÄ¡¿Ä¿±ê½Ç¶È = ËÙ¶È»·Êä³ö + »úÐµÖÐÖµ
+//    // ´«Èë²ÎÊý£ºµ±Ç°½Ç¶È, µ±Ç°½ÇËÙ¶È(deg/s), Ä¿±ê½Ç¶È
+//    // ×¢Òâ£ºPID_Vertical ÄÚ²¿Ê¹ÓÃµÄÊÇ deg/s£¬ËùÒÔÕâÀï´«Èë transition ºóµÄÔ­Ê¼Öµ(Î´×ªrad)
+//    vertical_pwm = PID_Vertical(pitch, mpu6050_gyro_transition(mpu6050_gyro_y), target_tilt_angle);
+//    
+//    // === C. ×ªÏò»· ===
+//    // ÐÞÕý£º´«ÈëÔ­Ê¼Êý¾Ý¸ø PID_Turn (ËüÖ»×ö¼òµ¥±ÈÀý¿ØÖÆ)
+//    turn_pwm = PID_Turn(target_turn_val, mpu6050_gyro_z);
+
+//    // -----------------------------------------------------------
+//    // 7. µç»úÊä³öºÏ³É
+//    // -----------------------------------------------------------
+//    motor_out_l = vertical_pwm + turn_pwm;
+//    motor_out_r = vertical_pwm - turn_pwm;
+//    
+//    Motor_Set_L(motor_out_l);
+//    Motor_Set_R(motor_out_r);
+//}
+>>>>>>> Stashed changes

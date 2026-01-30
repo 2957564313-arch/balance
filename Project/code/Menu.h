@@ -25,6 +25,18 @@ typedef struct MenuNode_t {
     float step;           // 调节步长
     float limit_min;      // 最小值
     float limit_max;      // 最大值
+<<<<<<< Updated upstream
+
+    // --- 关系网 (指针域) ---
+    struct MenuNode_t *prev;   // 上一个兄弟 (哥哥)
+    struct MenuNode_t *next;   // 下一个兄弟 (弟弟)
+    struct MenuNode_t *parent; // 父节点 (爸爸) - 用于返回上一级
+} MenuNode_t;
+
+void Menu_Init(void);
+void Menu_Show(void);
+=======
+>>>>>>> Stashed changes
 
     // --- 关系网 (指针域) ---
     struct MenuNode_t *prev;   // 上一个兄弟 (哥哥)
