@@ -33,10 +33,10 @@
           <SFDFile></SFDFile>
           <bCustSvd>0</bCustSvd>
           <UseEnv>0</UseEnv>
-          <BinPath></BinPath>
-          <IncludePath></IncludePath>
-          <LibPath></LibPath>
-          <RegisterFilePath>STC\</RegisterFilePath>
+          <BinPath>D:\keil_5\C251\BIN\</BinPath>
+          <IncludePath>D:\keil_5\C251\INC\</IncludePath>
+          <LibPath>D:\keil_5\C251\LIB\</LibPath>
+          <RegisterFilePath></RegisterFilePath>
           <DBRegisterFilePath>STC\</DBRegisterFilePath>
           <TargetStatus>
             <Error>0</Error>
@@ -188,7 +188,7 @@
           <Target251Misc>
             <MemoryModel>4</MemoryModel>
             <RTOS>0</RTOS>
-            <RomSize>4</RomSize>
+            <RomSize>3</RomSize>
             <NearDataHold>0</NearDataHold>
             <XDataHold>0</XDataHold>
             <FarDataHold>0</FarDataHold>
@@ -206,8 +206,8 @@
             <OnChipMemories>
               <RCB>
                 <Type>0</Type>
-                <StartAddress>0x0</StartAddress>
-                <Size>0x10000</Size>
+                <StartAddress>0x2000</StartAddress>
+                <Size>0xffff</Size>
               </RCB>
               <IROM>
                 <Type>1</Type>
@@ -230,7 +230,7 @@
                 <Size>0x0</Size>
               </Ocm1>
               <Ocm2>
-                <Type>0</Type>
+                <Type>1</Type>
                 <StartAddress>0x0</StartAddress>
                 <Size>0x0</Size>
               </Ocm2>
@@ -264,7 +264,7 @@
             <uUch>0</uUch>
             <uFlt64>0</uFlt64>
             <Fuzzy>3</Fuzzy>
-            <Optim>0</Optim>
+            <Optim>1</Optim>
             <wLevel>3</wLevel>
             <SizSpd>0</SizSpd>
             <AcaOpt>0</AcaOpt>
@@ -301,7 +301,7 @@
             <Assign></Assign>
             <ReserveString></ReserveString>
             <CClasses></CClasses>
-            <UserClasses></UserClasses>
+            <UserClasses>XDATA (0x010000-0x011FFF)</UserClasses>
             <CSection></CSection>
             <UserSection></UserSection>
             <CodeBaseAddress></CodeBaseAddress>
@@ -510,26 +510,6 @@
               <FilePath>..\..\libraries\zf_driver\zf_driver_pwm.h</FilePath>
             </File>
             <File>
-              <FileName>zf_driver_soft_iic.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\libraries\zf_driver\zf_driver_soft_iic.c</FilePath>
-            </File>
-            <File>
-              <FileName>zf_driver_soft_iic.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\libraries\zf_driver\zf_driver_soft_iic.h</FilePath>
-            </File>
-            <File>
-              <FileName>zf_driver_soft_spi.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\libraries\zf_driver\zf_driver_soft_spi.c</FilePath>
-            </File>
-            <File>
-              <FileName>zf_driver_soft_spi.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\libraries\zf_driver\zf_driver_soft_spi.h</FilePath>
-            </File>
-            <File>
               <FileName>zf_driver_spi.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\libraries\zf_driver\zf_driver_spi.c</FilePath>
@@ -563,6 +543,33 @@
         </Group>
         <Group>
           <GroupName>zf_device</GroupName>
+          <Files>
+            <File>
+              <FileName>zf_device_imu660ra.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Libraries\zf_device\zf_device_imu660ra.c</FilePath>
+            </File>
+            <File>
+              <FileName>zf_device_imu660ra.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\Libraries\zf_device\zf_device_imu660ra.h</FilePath>
+            </File>
+            <File>
+              <FileName>zf_device_config.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Libraries\zf_device\zf_device_config.c</FilePath>
+            </File>
+            <File>
+              <FileName>zf_device_config.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\Libraries\zf_device\zf_device_config.h</FilePath>
+            </File>
+            <File>
+              <FileName>zf_device_config.lib</FileName>
+              <FileType>4</FileType>
+              <FilePath>..\..\Libraries\zf_device\zf_device_config.lib</FilePath>
+            </File>
+          </Files>
         </Group>
         <Group>
           <GroupName>zf_components</GroupName>
@@ -579,16 +586,6 @@
               <FileName>Key.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\code\Key.h</FilePath>
-            </File>
-            <File>
-              <FileName>balance.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\code\balance.c</FilePath>
-            </File>
-            <File>
-              <FileName>balance.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\code\balance.h</FilePath>
             </File>
             <File>
               <FileName>bluetooth.c</FileName>
@@ -609,16 +606,6 @@
               <FileName>Buzzer.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\code\Buzzer.h</FilePath>
-            </File>
-            <File>
-              <FileName>imu_mpu6050.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\code\imu_mpu6050.c</FilePath>
-            </File>
-            <File>
-              <FileName>imu_mpu6050.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\code\imu_mpu6050.h</FilePath>
             </File>
             <File>
               <FileName>LED.c</FileName>
@@ -701,24 +688,14 @@
               <FilePath>..\code\param.h</FilePath>
             </File>
             <File>
-              <FileName>pid.c</FileName>
+              <FileName>balance_control.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\code\pid.c</FilePath>
+              <FilePath>..\code\balance_control.c</FilePath>
             </File>
             <File>
-              <FileName>pid.h</FileName>
+              <FileName>balance_control.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\code\pid.h</FilePath>
-            </File>
-            <File>
-              <FileName>filter.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\code\filter.c</FilePath>
-            </File>
-            <File>
-              <FileName>filter.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\code\filter.h</FilePath>
+              <FilePath>..\code\balance_control.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -739,6 +716,11 @@
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\user\main.c</FilePath>
+            </File>
+            <File>
+              <FileName>portint_stub.a51</FileName>
+              <FileType>2</FileType>
+              <FilePath>..\user\portint_stub.a51</FilePath>
             </File>
           </Files>
         </Group>

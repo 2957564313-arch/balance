@@ -1,46 +1,46 @@
-/*********************************************************************************************************************
-* STC32G Opensourec Library 即（STC32G 开源库）是一个基于官方 SDK 接口的第三方开源库
-* Copyright (c) 2022 SEEKFREE 逐飞科技
+﻿/*********************************************************************************************************************
+* STC32G Opensourec Library 鍗筹紙STC32G 寮€婧愬簱锛夋槸涓€涓熀浜庡畼鏂?SDK 鎺ュ彛鐨勭涓夋柟寮€婧愬簱
+* Copyright (c) 2022 SEEKFREE 閫愰绉戞妧
 *
-* 本文件是STC 开源库的一部分
+* 鏈枃浠舵槸STC 寮€婧愬簱鐨勪竴閮ㄥ垎
 *
-* STC32G 开源库 是免费软件
-* 您可以根据自由软件基金会发布的 GPL（GNU General Public License，即 GNU通用公共许可证）的条款
-* 即 GPL 的第3版（即 GPL3.0）或（您选择的）任何后来的版本，重新发布和/或修改它
+* STC32G 寮€婧愬簱 鏄厤璐硅蒋浠?
+* 鎮ㄥ彲浠ユ牴鎹嚜鐢辫蒋浠跺熀閲戜細鍙戝竷鐨?GPL锛圙NU General Public License锛屽嵆 GNU閫氱敤鍏叡璁稿彲璇侊級鐨勬潯娆?
+* 鍗?GPL 鐨勭3鐗堬紙鍗?GPL3.0锛夋垨锛堟偍閫夋嫨鐨勶級浠讳綍鍚庢潵鐨勭増鏈紝閲嶆柊鍙戝竷鍜?鎴栦慨鏀瑰畠
 *
-* 本开源库的发布是希望它能发挥作用，但并未对其作任何的保证
-* 甚至没有隐含的适销性或适合特定用途的保证
-* 更多细节请参见 GPL
+* 鏈紑婧愬簱鐨勫彂甯冩槸甯屾湜瀹冭兘鍙戞尌浣滅敤锛屼絾骞舵湭瀵瑰叾浣滀换浣曠殑淇濊瘉
+* 鐢氳嚦娌℃湁闅愬惈鐨勯€傞攢鎬ф垨閫傚悎鐗瑰畾鐢ㄩ€旂殑淇濊瘉
+* 鏇村缁嗚妭璇峰弬瑙?GPL
 *
-* 您应该在收到本开源库的同时收到一份 GPL 的副本
-* 如果没有，请参阅<https://www.gnu.org/licenses/>
+* 鎮ㄥ簲璇ュ湪鏀跺埌鏈紑婧愬簱鐨勫悓鏃舵敹鍒颁竴浠?GPL 鐨勫壇鏈?
+* 濡傛灉娌℃湁锛岃鍙傞槄<https://www.gnu.org/licenses/>
 *
-* 额外注明：
-* 本开源库使用 GPL3.0 开源许可证协议 以上许可申明为译文版本
-* 许可申明英文版在 libraries/doc 文件夹下的 GPL3_permission_statement.txt 文件中
-* 许可证副本在 libraries 文件夹下 即该文件夹下的 LICENSE 文件
-* 欢迎各位使用并传播本程序 但修改内容时必须保留逐飞科技的版权声明（即本声明）
+* 棰濆娉ㄦ槑锛?
+* 鏈紑婧愬簱浣跨敤 GPL3.0 寮€婧愯鍙瘉鍗忚 浠ヤ笂璁稿彲鐢虫槑涓鸿瘧鏂囩増鏈?
+* 璁稿彲鐢虫槑鑻辨枃鐗堝湪 libraries/doc 鏂囦欢澶逛笅鐨?GPL3_permission_statement.txt 鏂囦欢涓?
+* 璁稿彲璇佸壇鏈湪 libraries 鏂囦欢澶逛笅 鍗宠鏂囦欢澶逛笅鐨?LICENSE 鏂囦欢
+* 娆㈣繋鍚勪綅浣跨敤骞朵紶鎾湰绋嬪簭 浣嗕慨鏀瑰唴瀹规椂蹇呴』淇濈暀閫愰绉戞妧鐨勭増鏉冨０鏄庯紙鍗虫湰澹版槑锛?
 *
-* 文件名称          
-* 公司名称          成都逐飞科技有限公司
-* 版本信息          查看 libraries/doc 文件夹内 version 文件 版本说明
-* 开发环境          MDK FOR C251
-* 适用平台          STC32G
-* 店铺链接          https://seekfree.taobao.com/
+* 鏂囦欢鍚嶇О          
+* 鍏徃鍚嶇О          鎴愰兘閫愰绉戞妧鏈夐檺鍏徃
+* 鐗堟湰淇℃伅          鏌ョ湅 libraries/doc 鏂囦欢澶瑰唴 version 鏂囦欢 鐗堟湰璇存槑
+* 寮€鍙戠幆澧?         MDK FOR C251
+* 閫傜敤骞冲彴          STC32G
+* 搴楅摵閾炬帴          https://seekfree.taobao.com/
 *
-* 修改记录
-* 日期              作者           备注
-* 2024-08-01        大W            first version
+* 淇敼璁板綍
+* 鏃ユ湡              浣滆€?          澶囨敞
+* 2024-08-01        澶            first version
 ********************************************************************************************************************/
 /*********************************************************************************************************************
-* 接线定义：
+* 鎺ョ嚎瀹氫箟锛?
 *                   ------------------------------------
-*                   模块管脚            单片机管脚
-*                   SCL                 查看 zf_device_dl1a.h 中 DL1A_SCL_PIN  宏定义
-*                   SDA                 查看 zf_device_dl1a.h 中 DL1A_SDA_PIN  宏定义
-*                   XS                  查看 zf_device_dl1a.h 中 DL1A_XS_PIN   宏定义
-*                   VCC                 5V 电源
-*                   GND                 电源地
+*                   妯″潡绠¤剼            鍗曠墖鏈虹鑴?
+*                   SCL                 鏌ョ湅 zf_device_dl1a.h 涓?DL1A_SCL_PIN  瀹忓畾涔?
+*                   SDA                 鏌ョ湅 zf_device_dl1a.h 涓?DL1A_SDA_PIN  瀹忓畾涔?
+*                   XS                  鏌ョ湅 zf_device_dl1a.h 涓?DL1A_XS_PIN   瀹忓畾涔?
+*                   VCC                 5V 鐢垫簮
+*                   GND                 鐢垫簮鍦?
 *                   ------------------------------------
 ********************************************************************************************************************/
 
@@ -70,28 +70,28 @@ uint16 dl1a_distance_mm = 8192;
 	#define dl1a_read_registers(reg, dat, len)  (iic_read_8bit_registers(DL1A_IIC, DL1A_DEV_ADDR, (reg), (dat), (len)))
 #endif
 
-// 这个速率表示从目标反射并被设备检测到的信号的振幅
-// 设置此限制可以确定传感器报告有效读数所需的最小测量值
-// 设置一个较低的限制可以增加传感器的测量范围
-// 但似乎也增加了 <由于来自目标以外的物体的不需要的反射导致> 得到不准确读数的可能性
-// 默认为 0.25 MCPS 可预设范围为 0 - 511.99
+// 杩欎釜閫熺巼琛ㄧず浠庣洰鏍囧弽灏勫苟琚澶囨娴嬪埌鐨勪俊鍙风殑鎸箙
+// 璁剧疆姝ら檺鍒跺彲浠ョ‘瀹氫紶鎰熷櫒鎶ュ憡鏈夋晥璇绘暟鎵€闇€鐨勬渶灏忔祴閲忓€?
+// 璁剧疆涓€涓緝浣庣殑闄愬埗鍙互澧炲姞浼犳劅鍣ㄧ殑娴嬮噺鑼冨洿
+// 浣嗕技涔庝篃澧炲姞浜?<鐢变簬鏉ヨ嚜鐩爣浠ュ鐨勭墿浣撶殑涓嶉渶瑕佺殑鍙嶅皠瀵艰嚧> 寰楀埌涓嶅噯纭鏁扮殑鍙兘鎬?
+// 榛樿涓?0.25 MCPS 鍙璁捐寖鍥翠负 0 - 511.99
 #define DL1A_DEFAULT_RATE_LIMIT  (0.25)
 
-// 从寄存器数据解码 PCLKs 中 VCSEL (vertical cavity surface emitting laser) 的脉宽周期
+// 浠庡瘎瀛樺櫒鏁版嵁瑙ｇ爜 PCLKs 涓?VCSEL (vertical cavity surface emitting laser) 鐨勮剦瀹藉懆鏈?
 #define decode_vcsel_period(reg_val)            (((reg_val) + 1) << 1)
 
-// 从 PCLK 中的 VCSEL 周期计算宏周期 (以 *纳秒为单位)
+// 浠?PCLK 涓殑 VCSEL 鍛ㄦ湡璁＄畻瀹忓懆鏈?(浠?*绾崇涓哄崟浣?
 // PLL_period_ps = 1655
 // macro_period_vclks = 2304
 #define calc_macro_period(vcsel_period_pclks)   ((((uint32)2304 * (vcsel_period_pclks) * 1655) + 500) / 1000)
 
 //-------------------------------------------------------------------------------------------------------------------
-// 函数简介     获取设备 SPAD 信息
-// 参数说明     index           索引
-// 参数说明     type            类型值
-// 返回参数     uint8           是否成功 0-成功 1-失败
-// 使用示例     dl1a_get_spad_info(index, type_is_aperture);
-// 备注信息
+// 鍑芥暟绠€浠?    鑾峰彇璁惧 SPAD 淇℃伅
+// 鍙傛暟璇存槑     index           绱㈠紩
+// 鍙傛暟璇存槑     type            绫诲瀷鍊?
+// 杩斿洖鍙傛暟     uint8           鏄惁鎴愬姛 0-鎴愬姛 1-澶辫触
+// 浣跨敤绀轰緥     dl1a_get_spad_info(index, type_is_aperture);
+// 澶囨敞淇℃伅
 //-------------------------------------------------------------------------------------------------------------------
 static uint8 dl1a_get_spad_info (uint8 *index, uint8 *type_is_aperture)
 {
@@ -158,12 +158,12 @@ static uint8 dl1a_get_spad_info (uint8 *index, uint8 *type_is_aperture)
 }
 
 //-------------------------------------------------------------------------------------------------------------------
-// 函数简介     将超时数值从 MCLKs 转换到对应的 ms
-// 参数说明     timeout_period_mclks    超时周期 MCLKs
-// 参数说明     vcsel_period_pclks      PCLK 值
-// 返回参数     uint32                  返回超时数值
-// 使用示例     dl1a_timeout_mclks_to_microseconds(timeout_period_mclks, vcsel_period_pclks);
-// 备注信息     将序列步骤超时从具有给定 VCSEL 周期的 MCLK (以 PCLK 为单位)转换为微秒
+// 鍑芥暟绠€浠?    灏嗚秴鏃舵暟鍊间粠 MCLKs 杞崲鍒板搴旂殑 ms
+// 鍙傛暟璇存槑     timeout_period_mclks    瓒呮椂鍛ㄦ湡 MCLKs
+// 鍙傛暟璇存槑     vcsel_period_pclks      PCLK 鍊?
+// 杩斿洖鍙傛暟     uint32                  杩斿洖瓒呮椂鏁板€?
+// 浣跨敤绀轰緥     dl1a_timeout_mclks_to_microseconds(timeout_period_mclks, vcsel_period_pclks);
+// 澶囨敞淇℃伅     灏嗗簭鍒楁楠よ秴鏃朵粠鍏锋湁缁欏畾 VCSEL 鍛ㄦ湡鐨?MCLK (浠?PCLK 涓哄崟浣?杞崲涓哄井绉?
 //-------------------------------------------------------------------------------------------------------------------
 static uint32 dl1a_timeout_mclks_to_microseconds (uint16 timeout_period_mclks, uint8 vcsel_period_pclks)
 {
@@ -173,12 +173,12 @@ static uint32 dl1a_timeout_mclks_to_microseconds (uint16 timeout_period_mclks, u
 }
 
 //-------------------------------------------------------------------------------------------------------------------
-// 函数简介     将超时数值从 ms 转换到对应的 MCLKs
-// 参数说明     timeout_period_us   超时周期 微秒单位
-// 参数说明     vcsel_period_pclks  PCLK 值
-// 返回参数     uint32              返回超时数值
-// 使用示例     dl1a_timeout_microseconds_to_mclks(timeout_period_us, vcsel_period_pclks);
-// 备注信息     将序列步骤超时从微秒转换为具有给定 VCSEL 周期的 MCLK (以 PCLK 为单位)
+// 鍑芥暟绠€浠?    灏嗚秴鏃舵暟鍊间粠 ms 杞崲鍒板搴旂殑 MCLKs
+// 鍙傛暟璇存槑     timeout_period_us   瓒呮椂鍛ㄦ湡 寰鍗曚綅
+// 鍙傛暟璇存槑     vcsel_period_pclks  PCLK 鍊?
+// 杩斿洖鍙傛暟     uint32              杩斿洖瓒呮椂鏁板€?
+// 浣跨敤绀轰緥     dl1a_timeout_microseconds_to_mclks(timeout_period_us, vcsel_period_pclks);
+// 澶囨敞淇℃伅     灏嗗簭鍒楁楠よ秴鏃朵粠寰杞崲涓哄叿鏈夌粰瀹?VCSEL 鍛ㄦ湡鐨?MCLK (浠?PCLK 涓哄崟浣?
 //-------------------------------------------------------------------------------------------------------------------
 static uint32 dl1a_timeout_microseconds_to_mclks (uint32 timeout_period_us, uint8 vcsel_period_pclks)
 {
@@ -188,25 +188,25 @@ static uint32 dl1a_timeout_microseconds_to_mclks (uint32 timeout_period_us, uint
 }
 
 //-------------------------------------------------------------------------------------------------------------------
-// 函数简介     对超时数值进行解码
-// 参数说明     reg_val         超时时长 寄存器值
-// 返回参数     uint16          返回超时数值
-// 使用示例     dl1a_decode_timeout(reg_val);
-// 备注信息     从寄存器值解码 MCLK 中的序列步骤超时
+// 鍑芥暟绠€浠?    瀵硅秴鏃舵暟鍊艰繘琛岃В鐮?
+// 鍙傛暟璇存槑     reg_val         瓒呮椂鏃堕暱 瀵勫瓨鍣ㄥ€?
+// 杩斿洖鍙傛暟     uint16          杩斿洖瓒呮椂鏁板€?
+// 浣跨敤绀轰緥     dl1a_decode_timeout(reg_val);
+// 澶囨敞淇℃伅     浠庡瘎瀛樺櫒鍊艰В鐮?MCLK 涓殑搴忓垪姝ラ瓒呮椂
 //-------------------------------------------------------------------------------------------------------------------
 static uint16 dl1a_decode_timeout (uint16 reg_val)
 {
-    // 格式: (LSByte * 2 ^ MSByte) + 1
+    // 鏍煎紡: (LSByte * 2 ^ MSByte) + 1
     return  (uint16)((reg_val & 0x00FF) <<
                      (uint16)((reg_val & 0xFF00) >> 8)) + 1;
 }
 
 //-------------------------------------------------------------------------------------------------------------------
-// 函数简介     对超时数值进行编码
-// 参数说明     timeout_mclks   超时时长 -MCLKs 值
-// 返回参数     uint16          返回编码值
-// 使用示例     dl1a_encode_timeout(timeout_mclks);
-// 备注信息     在 MCLK 中对超时的序列步骤超时寄存器值进行编码
+// 鍑芥暟绠€浠?    瀵硅秴鏃舵暟鍊艰繘琛岀紪鐮?
+// 鍙傛暟璇存槑     timeout_mclks   瓒呮椂鏃堕暱 -MCLKs 鍊?
+// 杩斿洖鍙傛暟     uint16          杩斿洖缂栫爜鍊?
+// 浣跨敤绀轰緥     dl1a_encode_timeout(timeout_mclks);
+// 澶囨敞淇℃伅     鍦?MCLK 涓瓒呮椂鐨勫簭鍒楁楠よ秴鏃跺瘎瀛樺櫒鍊艰繘琛岀紪鐮?
 //-------------------------------------------------------------------------------------------------------------------
 static uint16 dl1a_encode_timeout (uint16 timeout_mclks)
 {
@@ -216,7 +216,7 @@ static uint16 dl1a_encode_timeout (uint16 timeout_mclks)
     
     if (timeout_mclks > 0)
     {
-        // 格式: (LSByte * 2 ^ MSByte) + 1
+        // 鏍煎紡: (LSByte * 2 ^ MSByte) + 1
         ls_byte = timeout_mclks - 1;
         
         while ((ls_byte & 0xFFFFFF00) > 0)
@@ -232,11 +232,11 @@ static uint16 dl1a_encode_timeout (uint16 timeout_mclks)
 }
 
 //-------------------------------------------------------------------------------------------------------------------
-// 函数简介     获取序列步骤使能设置
-// 参数说明     enables         序列使能步骤结构体
-// 返回参数     void
-// 使用示例     dl1a_get_sequence_step_enables(enables);
-// 备注信息
+// 鍑芥暟绠€浠?    鑾峰彇搴忓垪姝ラ浣胯兘璁剧疆
+// 鍙傛暟璇存槑     enables         搴忓垪浣胯兘姝ラ缁撴瀯浣?
+// 杩斿洖鍙傛暟     void
+// 浣跨敤绀轰緥     dl1a_get_sequence_step_enables(enables);
+// 澶囨敞淇℃伅
 //-------------------------------------------------------------------------------------------------------------------
 static void dl1a_get_sequence_step_enables(dl1a_sequence_enables_step_struct *enables)
 {
@@ -251,11 +251,11 @@ static void dl1a_get_sequence_step_enables(dl1a_sequence_enables_step_struct *en
 }
 
 //-------------------------------------------------------------------------------------------------------------------
-// 函数简介     获取脉冲周期
-// 参数说明     type            预量程类型
-// 返回参数     uint8           返回的周期值
-// 使用示例     dl1a_get_vcsel_pulse_period(DL1A_VCSEL_PERIOD_PER_RANGE);
-// 备注信息     在 PCLKs 中获取给定周期类型的 VCSEL 脉冲周期
+// 鍑芥暟绠€浠?    鑾峰彇鑴夊啿鍛ㄦ湡
+// 鍙傛暟璇存槑     type            棰勯噺绋嬬被鍨?
+// 杩斿洖鍙傛暟     uint8           杩斿洖鐨勫懆鏈熷€?
+// 浣跨敤绀轰緥     dl1a_get_vcsel_pulse_period(DL1A_VCSEL_PERIOD_PER_RANGE);
+// 澶囨敞淇℃伅     鍦?PCLKs 涓幏鍙栫粰瀹氬懆鏈熺被鍨嬬殑 VCSEL 鑴夊啿鍛ㄦ湡
 //-------------------------------------------------------------------------------------------------------------------
 static uint8 dl1a_get_vcsel_pulse_period (dl1a_vcsel_period_type_enum type)
 {
@@ -280,12 +280,12 @@ static uint8 dl1a_get_vcsel_pulse_period (dl1a_vcsel_period_type_enum type)
 }
 
 //-------------------------------------------------------------------------------------------------------------------
-// 函数简介     获取序列步骤超时设置
-// 参数说明     enables         序列使能步骤结构体
-// 参数说明     timeouts        序列超时步骤结构体
-// 返回参数     void
-// 使用示例     dl1a_get_sequence_step_timeouts(enables, timeouts);
-// 备注信息     获取所有超时而不仅仅是请求的超时 并且还存储中间值
+// 鍑芥暟绠€浠?    鑾峰彇搴忓垪姝ラ瓒呮椂璁剧疆
+// 鍙傛暟璇存槑     enables         搴忓垪浣胯兘姝ラ缁撴瀯浣?
+// 鍙傛暟璇存槑     timeouts        搴忓垪瓒呮椂姝ラ缁撴瀯浣?
+// 杩斿洖鍙傛暟     void
+// 浣跨敤绀轰緥     dl1a_get_sequence_step_timeouts(enables, timeouts);
+// 澶囨敞淇℃伅     鑾峰彇鎵€鏈夎秴鏃惰€屼笉浠呬粎鏄姹傜殑瓒呮椂 骞朵笖杩樺瓨鍌ㄤ腑闂村€?
 //-------------------------------------------------------------------------------------------------------------------
 static void dl1a_get_sequence_step_timeouts (dl1a_sequence_enables_step_struct const *enables, dl1a_sequence_timeout_step_struct *timeouts)
 {
@@ -318,11 +318,11 @@ static void dl1a_get_sequence_step_timeouts (dl1a_sequence_enables_step_struct c
 }
 
 //-------------------------------------------------------------------------------------------------------------------
-// 函数简介     执行单次参考校准
-// 参数说明     vhv_init_byte   预设校准值
-// 返回参数     uint8           操作是否成功 0-成功 1-失败
-// 使用示例     dl1a_get_vcsel_pulse_period(DL1A_VCSEL_PERIOD_PER_RANGE);
-// 备注信息     在 PCLKs 中获取给定周期类型的 VCSEL 脉冲周期
+// 鍑芥暟绠€浠?    鎵ц鍗曟鍙傝€冩牎鍑?
+// 鍙傛暟璇存槑     vhv_init_byte   棰勮鏍″噯鍊?
+// 杩斿洖鍙傛暟     uint8           鎿嶄綔鏄惁鎴愬姛 0-鎴愬姛 1-澶辫触
+// 浣跨敤绀轰緥     dl1a_get_vcsel_pulse_period(DL1A_VCSEL_PERIOD_PER_RANGE);
+// 澶囨敞淇℃伅     鍦?PCLKs 涓幏鍙栫粰瀹氬懆鏈熺被鍨嬬殑 VCSEL 鑴夊啿鍛ㄦ湡
 //-------------------------------------------------------------------------------------------------------------------
 static uint8 dl1a_perform_single_ref_calibration (uint8 vhv_init_byte)
 {
@@ -361,15 +361,15 @@ static uint8 dl1a_perform_single_ref_calibration (uint8 vhv_init_byte)
 }
 
 //-------------------------------------------------------------------------------------------------------------------
-// 函数简介     设置测量定时预算 (以微秒为单位)
-// 参数说明     budget_us       设定的测量允许的时间
-// 返回参数     uint8           操作结果 0-成功 1-失败
-// 使用示例     dl1a_set_measurement_timing_budget(measurement_timing_budget_us);
-// 备注信息     这是一次测量允许的时间
-//              即在测距序列的子步骤之间分配时间预算
-//              更长的时间预算允许更精确的测量
-//              增加一个N倍的预算可以减少一个sqrt(N)倍的范围测量标准偏差
-//              默认为33毫秒 最小值为20 ms
+// 鍑芥暟绠€浠?    璁剧疆娴嬮噺瀹氭椂棰勭畻 (浠ュ井绉掍负鍗曚綅)
+// 鍙傛暟璇存槑     budget_us       璁惧畾鐨勬祴閲忓厑璁哥殑鏃堕棿
+// 杩斿洖鍙傛暟     uint8           鎿嶄綔缁撴灉 0-鎴愬姛 1-澶辫触
+// 浣跨敤绀轰緥     dl1a_set_measurement_timing_budget(measurement_timing_budget_us);
+// 澶囨敞淇℃伅     杩欐槸涓€娆℃祴閲忓厑璁哥殑鏃堕棿
+//              鍗冲湪娴嬭窛搴忓垪鐨勫瓙姝ラ涔嬮棿鍒嗛厤鏃堕棿棰勭畻
+//              鏇撮暱鐨勬椂闂撮绠楀厑璁告洿绮剧‘鐨勬祴閲?
+//              澧炲姞涓€涓狽鍊嶇殑棰勭畻鍙互鍑忓皯涓€涓猻qrt(N)鍊嶇殑鑼冨洿娴嬮噺鏍囧噯鍋忓樊
+//              榛樿涓?3姣 鏈€灏忓€间负20 ms
 //-------------------------------------------------------------------------------------------------------------------
 static uint8 dl1a_set_measurement_timing_budget (uint32 budget_us)
 {
@@ -417,21 +417,21 @@ static uint8 dl1a_set_measurement_timing_budget (uint32 budget_us)
         
         if(enables.final_range)
         {
-            // 请注意 最终范围超时由计时预算和序列中所有其他超时的总和决定
-            // 如果没有空间用于最终范围超时 则将设置错误
-            // 否则 剩余时间将应用于最终范围
+            // 璇锋敞鎰?鏈€缁堣寖鍥磋秴鏃剁敱璁℃椂棰勭畻鍜屽簭鍒椾腑鎵€鏈夊叾浠栬秴鏃剁殑鎬诲拰鍐冲畾
+            // 濡傛灉娌℃湁绌洪棿鐢ㄤ簬鏈€缁堣寖鍥磋秴鏃?鍒欏皢璁剧疆閿欒
+            // 鍚﹀垯 鍓╀綑鏃堕棿灏嗗簲鐢ㄤ簬鏈€缁堣寖鍥?
             used_budget_us += DL1A_FINALlRANGE_OVERHEAD;
             
             if(used_budget_us > budget_us)
             {
-                // 请求的超时太大
+                // 璇锋眰鐨勮秴鏃跺お澶?
                 return_state = 1;
                 break;
             }
             
-            // 对于最终超时范围 必须添加预量程范围超时
-            // 为此 最终超时和预量程超时必须以宏周期 MClks 表示
-            // 因为它们具有不同的 VCSEL 周期
+            // 瀵逛簬鏈€缁堣秴鏃惰寖鍥?蹇呴』娣诲姞棰勯噺绋嬭寖鍥磋秴鏃?
+            // 涓烘 鏈€缁堣秴鏃跺拰棰勯噺绋嬭秴鏃跺繀椤讳互瀹忓懆鏈?MClks 琛ㄧず
+            // 鍥犱负瀹冧滑鍏锋湁涓嶅悓鐨?VCSEL 鍛ㄦ湡
             final_range_timeout_us = budget_us - used_budget_us;
             final_range_timeout_mclks =
                 (uint16)dl1a_timeout_microseconds_to_mclks(final_range_timeout_us,
@@ -455,18 +455,18 @@ static uint8 dl1a_set_measurement_timing_budget (uint32 budget_us)
 }
 
 //-------------------------------------------------------------------------------------------------------------------
-// 函数简介     获取测量定时预算 (以微秒为单位)
-// 参数说明     void
-// 返回参数     uint32          已设定的测量允许的时间
-// 使用示例     dl1a_get_measurement_timing_budget();
-// 备注信息
+// 鍑芥暟绠€浠?    鑾峰彇娴嬮噺瀹氭椂棰勭畻 (浠ュ井绉掍负鍗曚綅)
+// 鍙傛暟璇存槑     void
+// 杩斿洖鍙傛暟     uint32          宸茶瀹氱殑娴嬮噺鍏佽鐨勬椂闂?
+// 浣跨敤绀轰緥     dl1a_get_measurement_timing_budget();
+// 澶囨敞淇℃伅
 //-------------------------------------------------------------------------------------------------------------------
 static uint32 dl1a_get_measurement_timing_budget (void)
 {
     dl1a_sequence_enables_step_struct enables;
     dl1a_sequence_timeout_step_struct timeouts;
     
-    // 开始和结束开销时间始终存在
+    // 寮€濮嬪拰缁撴潫寮€閿€鏃堕棿濮嬬粓瀛樺湪
     uint32 budget_us = DL1A_GET_START_OVERHEAD + DL1A_END_OVERHEAD;
     
     dl1a_get_sequence_step_enables(&enables);
@@ -500,15 +500,15 @@ static uint32 dl1a_get_measurement_timing_budget (void)
 }
 
 //-------------------------------------------------------------------------------------------------------------------
-// 函数简介     设置返回信号速率限制 该值单位为 MCPS (百万次每秒)
-// 参数说明     limit_mcps      设置的最小速率
-// 返回参数     void
-// 使用示例     dl1a_set_signal_rate_limit(0.25);
-// 备注信息     这个速率表示从目标反射并被设备检测到的信号的振幅
-//              设置此限制可以确定传感器报告有效读数所需的最小测量值
-//              设置一个较低的限制可以增加传感器的测量范围
-//              但似乎也增加了 <由于来自目标以外的物体的不需要的反射导致> 得到不准确读数的可能性
-//              默认为 0.25 MCPS 可预设范围为 0 - 511.99
+// 鍑芥暟绠€浠?    璁剧疆杩斿洖淇″彿閫熺巼闄愬埗 璇ュ€煎崟浣嶄负 MCPS (鐧句竾娆℃瘡绉?
+// 鍙傛暟璇存槑     limit_mcps      璁剧疆鐨勬渶灏忛€熺巼
+// 杩斿洖鍙傛暟     void
+// 浣跨敤绀轰緥     dl1a_set_signal_rate_limit(0.25);
+// 澶囨敞淇℃伅     杩欎釜閫熺巼琛ㄧず浠庣洰鏍囧弽灏勫苟琚澶囨娴嬪埌鐨勪俊鍙风殑鎸箙
+//              璁剧疆姝ら檺鍒跺彲浠ョ‘瀹氫紶鎰熷櫒鎶ュ憡鏈夋晥璇绘暟鎵€闇€鐨勬渶灏忔祴閲忓€?
+//              璁剧疆涓€涓緝浣庣殑闄愬埗鍙互澧炲姞浼犳劅鍣ㄧ殑娴嬮噺鑼冨洿
+//              浣嗕技涔庝篃澧炲姞浜?<鐢变簬鏉ヨ嚜鐩爣浠ュ鐨勭墿浣撶殑涓嶉渶瑕佺殑鍙嶅皠瀵艰嚧> 寰楀埌涓嶅噯纭鏁扮殑鍙兘鎬?
+//              榛樿涓?0.25 MCPS 鍙璁捐寖鍥翠负 0 - 511.99
 //-------------------------------------------------------------------------------------------------------------------
 static void dl1a_set_signal_rate_limit (float limit_mcps)
 {
@@ -525,11 +525,11 @@ static void dl1a_set_signal_rate_limit (float limit_mcps)
 }
 
 //-------------------------------------------------------------------------------------------------------------------
-// 函数简介     返回以毫米为单位的范围读数
-// 参数说明     void
-// 返回参数     void
-// 使用示例     dl1a_get_distance();
-// 备注信息     在开始单次射程测量后也调用此函数
+// 鍑芥暟绠€浠?    杩斿洖浠ユ绫充负鍗曚綅鐨勮寖鍥磋鏁?
+// 鍙傛暟璇存槑     void
+// 杩斿洖鍙傛暟     void
+// 浣跨敤绀轰緥     dl1a_get_distance();
+// 澶囨敞淇℃伅     鍦ㄥ紑濮嬪崟娆″皠绋嬫祴閲忓悗涔熻皟鐢ㄦ鍑芥暟
 //-------------------------------------------------------------------------------------------------------------------
 void dl1a_get_distance (void)
 {
@@ -541,7 +541,7 @@ void dl1a_get_distance (void)
         
         if(0 != (reg_databuffer[0] & 0x07))
         {
-            // 假设线性度校正增益为默认值 1000 且未启用分数范围
+            // 鍋囪绾挎€у害鏍℃澧炵泭涓洪粯璁ゅ€?1000 涓旀湭鍚敤鍒嗘暟鑼冨洿
             dl1a_read_registers(DL1A_RESULT_RANGE_STATUS + 10, reg_databuffer, 2);
             dl1a_distance_mm = ((uint16)reg_databuffer[0] << 8);
             dl1a_distance_mm |= reg_databuffer[1];
@@ -559,11 +559,11 @@ void dl1a_get_distance (void)
 }
 
 //-------------------------------------------------------------------------------------------------------------------
-// 函数简介     DL1A INT 中断响应处理函数
-// 参数说明     void
-// 返回参数     void
-// 使用示例     dl1a_int_handler();
-// 备注信息     本函数需要在 DL1A_INT_PIN 对应的外部中断处理函数中调用
+// 鍑芥暟绠€浠?    DL1A INT 涓柇鍝嶅簲澶勭悊鍑芥暟
+// 鍙傛暟璇存槑     void
+// 杩斿洖鍙傛暟     void
+// 浣跨敤绀轰緥     dl1a_int_handler();
+// 澶囨敞淇℃伅     鏈嚱鏁伴渶瑕佸湪 DL1A_INT_PIN 瀵瑰簲鐨勫閮ㄤ腑鏂鐞嗗嚱鏁颁腑璋冪敤
 //-------------------------------------------------------------------------------------------------------------------
 void dl1a_int_handler (void)
 {
@@ -571,11 +571,11 @@ void dl1a_int_handler (void)
     dl1a_get_distance();
 #endif
 }
-// 函数简介     初始化 DL1A
-// 参数说明     void
-// 返回参数     uint8           1-初始化失败 0-初始化成功
-// 使用示例     dl1a_init();
-// 备注信息
+// 鍑芥暟绠€浠?    鍒濆鍖?DL1A
+// 鍙傛暟璇存槑     void
+// 杩斿洖鍙傛暟     uint8           1-鍒濆鍖栧け璐?0-鍒濆鍖栨垚鍔?
+// 浣跨敤绀轰緥     dl1a_init();
+// 澶囨敞淇℃伅
 //-------------------------------------------------------------------------------------------------------------------
 uint8 dl1a_init (void)
 {
@@ -719,16 +719,16 @@ uint8 dl1a_init (void)
         system_delay_ms(100);
 #endif
         
-        // -------------------------------- DL1A 启动初始化 --------------------------------
-        reg_data_buffer = dl1a_read_register(DL1A_IO_VOLTAGE_CONFIG);         // 传感器默认 IO 为 1.8V 模式
-        dl1a_write_register(DL1A_IO_VOLTAGE_CONFIG, reg_data_buffer | 0x01);  // 配置 IO 为 2.8V 模式
+        // -------------------------------- DL1A 鍚姩鍒濆鍖?--------------------------------
+        reg_data_buffer = dl1a_read_register(DL1A_IO_VOLTAGE_CONFIG);         // 浼犳劅鍣ㄩ粯璁?IO 涓?1.8V 妯″紡
+        dl1a_write_register(DL1A_IO_VOLTAGE_CONFIG, reg_data_buffer | 0x01);  // 閰嶇疆 IO 涓?2.8V 妯″紡
         
         for(i = 0; i < (sizeof(temp_buff1) / 2); i++)
         {
             dl1a_write_register(temp_buff1[i][0], temp_buff1[i][1]);
         }
         
-        //        dl1a_write_register(0x88, 0x00);                                         // 设置为标准 IIC 模式
+        //        dl1a_write_register(0x88, 0x00);                                         // 璁剧疆涓烘爣鍑?IIC 妯″紡
         //        dl1a_write_register(0x80, 0x01);
         //        dl1a_write_register(0xFF, 0x01);
         //        dl1a_write_register(0x00, 0x00);
@@ -744,23 +744,23 @@ uint8 dl1a_init (void)
         //        dl1a_write_register(0xFF, 0x00);
         //        dl1a_write_register(0x80, 0x00);
         
-        // 禁用 SIGNAL_RATE_MSRC(bit1) 和 SIGNAL_RATE_PRE_RANGE(bit4) 限制检查
+        // 绂佺敤 SIGNAL_RATE_MSRC(bit1) 鍜?SIGNAL_RATE_PRE_RANGE(bit4) 闄愬埗妫€鏌?
         reg_data_buffer = dl1a_read_register(DL1A_MSRC_CONFIG);
         dl1a_write_register(DL1A_MSRC_CONFIG, reg_data_buffer | 0x12);
         
-        dl1a_set_signal_rate_limit(DL1A_DEFAULT_RATE_LIMIT);                  // 设置信号速率限制
+        dl1a_set_signal_rate_limit(DL1A_DEFAULT_RATE_LIMIT);                  // 璁剧疆淇″彿閫熺巼闄愬埗
         dl1a_write_register(DL1A_SYSTEM_SEQUENCE_CONFIG, 0xFF);
-        // -------------------------------- DL1A 启动初始化 --------------------------------
+        // -------------------------------- DL1A 鍚姩鍒濆鍖?--------------------------------
         
-        // -------------------------------- DL1A 配置初始化 --------------------------------
+        // -------------------------------- DL1A 閰嶇疆鍒濆鍖?--------------------------------
         if(dl1a_get_spad_info(&data_buffer[0], &data_buffer[1]))
         {
             return_state = 1;
-            printf( "DL1A self check error.\r\n");
+            // printf( "DL1A self check error.\r\n");
             break;
         }
         
-        // 从 GLOBAL_CONFIG_SPAD_ENABLES_REF_[0-6] 获取 SPAD map (RefGoodSpadMap) 数据
+        // 浠?GLOBAL_CONFIG_SPAD_ENABLES_REF_[0-6] 鑾峰彇 SPAD map (RefGoodSpadMap) 鏁版嵁
         dl1a_read_registers(DL1A_GLOBAL_CONFIG_SPAD_ENABLES_REF_0, ref_spad_map, 6);
         
         for(i = 0; i < (sizeof(temp_buff3) / 2); i++)
@@ -780,9 +780,9 @@ uint8 dl1a_init (void)
         {
             if(i < data_buffer[2] || data_buffer[3] == data_buffer[0])
             {
-                // 此位低于应启用的第一个位
-                // 或者 (eference_spad_count) 位已启用
-                // 因此此位为零
+                // 姝や綅浣庝簬搴斿惎鐢ㄧ殑绗竴涓綅
+                // 鎴栬€?(eference_spad_count) 浣嶅凡鍚敤
+                // 鍥犳姝や綅涓洪浂
                 ref_spad_map[i / 8] &= ~(1 << (i % 8));
             }
             else if((ref_spad_map[i / 8] >> (i % 8)) & 0x1)
@@ -805,7 +805,7 @@ uint8 dl1a_init (void)
             dl1a_write_register(temp_buff4[i][0], temp_buff4[i][1]);
         }
         
-        //        // 默认转换设置 version 02/11/2015_v36
+        //        // 榛樿杞崲璁剧疆 version 02/11/2015_v36
         //        dl1a_write_register(0xFF, 0x01);
         //        dl1a_write_register(0x00, 0x00);
         //        dl1a_write_register(0xFF, 0x00);
@@ -887,7 +887,7 @@ uint8 dl1a_init (void)
         //        dl1a_write_register(0xFF, 0x00);
         //        dl1a_write_register(0x80, 0x00);
         
-        // 将中断配置设置为新样品就绪
+        // 灏嗕腑鏂厤缃缃负鏂版牱鍝佸氨缁?
         dl1a_write_register(DL1A_SYSTEM_INTERRUPT_GPIO_CONFIG, 0x04);
         reg_data_buffer = dl1a_read_register(DL1A_GPIO_HV_MUX_ACTIVE_HIGH);
         dl1a_write_register(DL1A_GPIO_HV_MUX_ACTIVE_HIGH, reg_data_buffer & ~0x10);
@@ -895,19 +895,19 @@ uint8 dl1a_init (void)
         
         measurement_timing_budget_us  = dl1a_get_measurement_timing_budget();
         
-        // 默认情况下禁用 MSRC 和 TCC
+        // 榛樿鎯呭喌涓嬬鐢?MSRC 鍜?TCC
         // MSRC = Minimum Signal Rate Check
         // TCC = Target CentreCheck
         dl1a_write_register(DL1A_SYSTEM_SEQUENCE_CONFIG, 0xE8);
-        dl1a_set_measurement_timing_budget(measurement_timing_budget_us);    // 重新计算时序预算
-        // -------------------------------- DL1A 配置初始化 --------------------------------
+        dl1a_set_measurement_timing_budget(measurement_timing_budget_us);    // 閲嶆柊璁＄畻鏃跺簭棰勭畻
+        // -------------------------------- DL1A 閰嶇疆鍒濆鍖?--------------------------------
         
         dl1a_write_register(DL1A_SYSTEM_SEQUENCE_CONFIG, 0x01);
         
         if(dl1a_perform_single_ref_calibration(0x40))
         {
             return_state = 1;
-            printf( "DL1A perform single reference calibration error.\r\n");
+            // printf( "DL1A perform single reference calibration error.\r\n");
             break;
         }
         
@@ -916,11 +916,11 @@ uint8 dl1a_init (void)
         if(dl1a_perform_single_ref_calibration(0x00))
         {
             return_state = 1;
-            printf( "DL1A perform single reference calibration error.\r\n");
+            // printf( "DL1A perform single reference calibration error.\r\n");
             break;
         }
         
-        dl1a_write_register(DL1A_SYSTEM_SEQUENCE_CONFIG, 0xE8);           // 恢复以前的序列配置
+        dl1a_write_register(DL1A_SYSTEM_SEQUENCE_CONFIG, 0xE8);           // 鎭㈠浠ュ墠鐨勫簭鍒楅厤缃?
         
         system_delay_ms(100);
         
