@@ -3,27 +3,27 @@
 
 #include "zf_common_typedef.h"
 
-//-------常用颜色----------
+//-------甯哥敤棰滆壊----------
 typedef enum
 {
-    RGB565_WHITE    = (0xFFFF),                                                     // 白色
-    RGB565_BLACK    = (0x0000),                                                     // 黑色
-    RGB565_BLUE     = (0x001F),                                                     // 蓝色
-    RGB565_PURPLE   = (0xF81F),                                                     // 紫色
-    RGB565_PINK     = (0xFE19),                                                     // 粉色
-    RGB565_RED      = (0xF800),                                                     // 红色
-    RGB565_MAGENTA  = (0xF81F),                                                     // 品红
-    RGB565_GREEN    = (0x07E0),                                                     // 绿色
-    RGB565_CYAN     = (0x07FF),                                                     // 青色
-    RGB565_YELLOW   = (0xFFE0),                                                     // 黄色
-    RGB565_BROWN    = (0xBC40),                                                     // 棕色
-    RGB565_GRAY     = (0x8430),                                                     // 灰色
+    RGB565_WHITE    = (0xFFFF),                                                     // 鐧借壊
+    RGB565_BLACK    = (0x0000),                                                     // 榛戣壊
+    RGB565_BLUE     = (0x001F),                                                     // 钃濊壊
+    RGB565_PURPLE   = (0xF81F),                                                     // 绱壊
+    RGB565_PINK     = (0xFE19),                                                     // 绮夎壊
+    RGB565_RED      = (0xF800),                                                     // 绾㈣壊
+    RGB565_MAGENTA  = (0xF81F),                                                     // 鍝佺孩
+    RGB565_GREEN    = (0x07E0),                                                     // 缁胯壊
+    RGB565_CYAN     = (0x07FF),                                                     // 闈掕壊
+    RGB565_YELLOW   = (0xFFE0),                                                     // 榛勮壊
+    RGB565_BROWN    = (0xBC40),                                                     // 妫曡壊
+    RGB565_GRAY     = (0x8430),                                                     // 鐏拌壊
 
     RGB565_39C5BB   = (0x3616),
     RGB565_66CCFF   = (0x665F),
 }rgb565_color_enum;
 
-extern const uint8 code ascii_font_8x16[][16];
+extern const uint8 ascii_font_8x16[][16];
 //extern const uint8 code ascii_font_6x8[][6];
 
 

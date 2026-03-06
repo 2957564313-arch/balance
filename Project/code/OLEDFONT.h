@@ -1,5 +1,5 @@
-#ifndef _zf_device_oledfont_h_
-#define _zf_device_oledfont_h_
+#ifndef __OLEDFONT_H__
+#define __OLEDFONT_H__
 
 #include "zf_common_typedef.h"
 
